@@ -1,7 +1,7 @@
-﻿var loginUrl = "/login";
-var logoutUrl = "/logout";
-var userUrl = "/user";
-var apiUrl = "/api";
+﻿var loginUrl = "/bff/login";
+var logoutUrl = "/bff/logout";
+var userUrl = "/bff/user";
+var apiUrl = "/bff/api";
 
 async function onLoad() {
     var req = new Request(userUrl, { credentials: 'include' })
