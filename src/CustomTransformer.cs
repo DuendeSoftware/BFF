@@ -9,11 +9,11 @@ namespace Duende.Bff
 {
     internal class ProxyApiTransformer : HttpTransformer
     {
-        private readonly HttpContext _context;
+        private readonly string _accessToken;
 
-        public ProxyApiTransformer(HttpContext context)
+        public ProxyApiTransformer(string accessToken)
         {
-            _context = context;
+            _accessToken = accessToken;
         }
 
         public override async Task TransformRequestAsync(HttpContext httpContext,
@@ -24,7 +24,7 @@ namespace Duende.Bff
             await base.TransformRequestAsync(httpContext, proxyRequest, destinationPrefix);
             proxyRequest.Headers.Host = null;
 
-            proxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _context.GetUserAccessTokenAsync());
+            proxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
         }
     }
 }

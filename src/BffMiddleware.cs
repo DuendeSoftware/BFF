@@ -139,23 +139,23 @@ namespace Duende.Bff
 
         private async Task InvokeApi(HttpContext context)
         {
-            var result = await context.AuthenticateAsync();
-            if (!result.Succeeded)
-            {
-                context.Response.StatusCode = 401;
-            }
-
-            var transformer = new ProxyApiTransformer(context);
-            var requestOptions = new RequestProxyOptions(TimeSpan.FromSeconds(100), null);
-
-            await _proxy.ProxyAsync(context, "https://localhost:5006", _httpClient, requestOptions, transformer);
-
-            var errorFeature = context.Features.Get<IProxyErrorFeature>();
-            if (errorFeature != null)
-            {
-                var error = errorFeature.Error;
-                var exception = errorFeature.Exception;
-            }
+            // var result = await context.AuthenticateAsync();
+            // if (!result.Succeeded)
+            // {
+            //     context.Response.StatusCode = 401;
+            // }
+            //
+            // //var transformer = new ProxyApiTransformer(context);
+            // var requestOptions = new RequestProxyOptions(TimeSpan.FromSeconds(100), null);
+            //
+            // await _proxy.ProxyAsync(context, "https://localhost:5006", _httpClient, requestOptions, transformer);
+            //
+            // var errorFeature = context.Features.Get<IProxyErrorFeature>();
+            // if (errorFeature != null)
+            // {
+            //     var error = errorFeature.Error;
+            //     var exception = errorFeature.Exception;
+            // }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Duende.Bff;
@@ -28,7 +29,8 @@ namespace Host5
             // .AddBff(o => o.AddApiRoute(...)
             services.Configure<BffOptions>(o => {});
             services.AddReverseProxy()
-                .LoadFromConfig(_configuration.GetSection("ReverseProxy")); 
+                .LoadFromConfig(_configuration.GetSection("ReverseProxy"));
+            services.AddAccessTokenManagement();
             
             services.AddAuthentication(options =>
                 {
@@ -70,14 +72,16 @@ namespace Host5
             app.UseStaticFiles();
 
             app.UseAuthentication();
-            app.UseMiddleware<BffMiddleware>();
+            //app.UseMiddleware<BffMiddleware>();
 
-            // app.UseRouting();
-            //
-            // app.UseEndpoints(endpoints =>
-            // {
-            //     endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
-            // });
+            app.UseRouting();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapBffSessionEndpoints("/bff");
+                
+                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002", AccessTokenRequirement.RequireUserToken);
+            });
         }
     }
 }
