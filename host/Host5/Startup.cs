@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,17 +16,15 @@ namespace Host5
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
+        
         public void ConfigureServices(IServiceCollection services)
         {
             // plugin for server side sessions -> decompose, extract: sub, sid
             // add endoint for backchannel signout
             
-            // .AddBff(o => o.AddApiRoute(...)
-            services.Configure<BffOptions>(o => {});
-            services.AddReverseProxy()
-                .LoadFromConfig(_configuration.GetSection("ReverseProxy"));
-            services.AddAccessTokenManagement();
+            services.AddBff();
             
             services.AddAuthentication(options =>
                 {

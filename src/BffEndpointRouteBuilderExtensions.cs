@@ -109,7 +109,7 @@ namespace Microsoft.AspNetCore.Builder
                 }
                 
                 var transformer = new ProxyApiTransformer(token);
-                var requestOptions = new RequestProxyOptions(TimeSpan.FromSeconds(100), null);
+                var requestOptions = new RequestProxyOptions { Timeout = TimeSpan.FromSeconds(100) };
 
                 await proxy.ProxyAsync(context, apiAddress, httpClient, requestOptions, transformer);
 
@@ -120,8 +120,6 @@ namespace Microsoft.AspNetCore.Builder
                     var exception = errorFeature.Exception;
                 }
             });
-            
-            
         }
         
     }
