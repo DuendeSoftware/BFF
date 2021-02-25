@@ -1,5 +1,5 @@
-﻿var loginUrl = "/bff/login";
-var logoutUrl = "/bff/logout";
+﻿var loginUrl = "/bff/login?returnUrl=/index.html?state=loggedin";
+var logoutUrl = "/bff/logout?returnUrl=/index.html?state=loggedout";
 var userUrl = "/bff/user";
 var apiUrl = "/api";
 

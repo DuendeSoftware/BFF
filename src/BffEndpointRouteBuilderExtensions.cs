@@ -7,6 +7,8 @@ using System.Text.Json;
 using Duende.Bff;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,32 +24,44 @@ namespace Microsoft.AspNetCore.Builder
         {
             endpoints.MapGet(basePath + "/login", async context =>
             {
+                var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
+
+                // todo
+                // if (!url.IsLocalUrl(returnUrl))
+                // {
+                //     throw new Exception("returnUrl is not application local");
+                // }
+
                 var props = new AuthenticationProperties
                 {
-                    RedirectUri = $"{basePath}/login-callback"
+                    RedirectUri = returnUrl ?? "/"
                 };
 
                 await context.ChallengeAsync(props);
             });
-            
-            
-            endpoints.MapGet(basePath +"/login-callback", async context =>
-            {
-                context.Response.Redirect("/");
-            });
-            
+           
             endpoints.MapGet(basePath +"/logout", async context =>
             {
                 var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
                 
+                // get rid of local cookie first
                 var signInScheme = await schemes.GetDefaultSignInSchemeAsync();
                 await context.SignOutAsync(signInScheme.Name);
 
+                var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
+
+                // todo
+                // if (!url.IsLocalUrl(returnUrl))
+                // {
+                //     throw new Exception("returnUrl is not application local");
+                // }
+
                 var props = new AuthenticationProperties
                 {
-                    RedirectUri = $"{basePath}/logout-callback"
+                    RedirectUri = returnUrl ?? "/"
                 };
 
+                // trigger idp logout
                 await context.SignOutAsync(props);
             });
             
@@ -76,13 +90,13 @@ namespace Microsoft.AspNetCore.Builder
             });
         }
 
-        public static void MapBffApiEndpoint(
+        public static IEndpointConventionBuilder MapBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,
             string localPath, 
             string apiAddress, 
             AccessTokenRequirement accessTokenRequirement)
         {
-            endpoints.Map(localPath + "/{**catch-all}", async context =>
+            return endpoints.Map(localPath + "/{**catch-all}", async context =>
             {
                 var proxy = context.RequestServices.GetRequiredService<IHttpProxy>();
                 var httpClient = new HttpMessageInvoker(new SocketsHttpHandler()

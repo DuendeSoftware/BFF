@@ -73,7 +73,7 @@ namespace Host5
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBffSessionEndpoints("/bff");
-                
+
                 endpoints.MapBffApiEndpoint("/api", "https://localhost:5002", AccessTokenRequirement.RequireUserToken);
             });
         }
