@@ -1,3 +1,4 @@
+using Duende.Bff;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Builder
@@ -8,6 +9,8 @@ namespace Microsoft.AspNetCore.Builder
         {
             services.AddReverseProxy().LoadFromMemory();
             services.AddAccessTokenManagement();
+            
+            services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
 
             return services;
         }

@@ -99,13 +99,9 @@ namespace Microsoft.AspNetCore.Builder
             return endpoints.Map(localPath + "/{**catch-all}", async context =>
             {
                 var proxy = context.RequestServices.GetRequiredService<IHttpProxy>();
-                var httpClient = new HttpMessageInvoker(new SocketsHttpHandler()
-                {
-                    UseProxy = false,
-                    AllowAutoRedirect = false,
-                    AutomaticDecompression = DecompressionMethods.None,
-                    UseCookies = false
-                });
+                var clientFactory = context.RequestServices.GetRequiredService<IDefaultHttpMessageInvokerFactory>();
+
+                var httpClient = clientFactory.CreateClient(localPath);
                 
                 var result = await context.AuthenticateAsync();
                 if (!result.Succeeded && accessTokenRequirement == AccessTokenRequirement.RequireUserToken)
