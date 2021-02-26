@@ -23,6 +23,8 @@ namespace Host5
         {
             // plugin for server side sessions -> decompose, extract: sub, sid
             // add endoint for backchannel signout
+
+            services.AddMvc();
             
             services.AddBff();
             
@@ -66,8 +68,6 @@ namespace Host5
             app.UseStaticFiles();
 
             app.UseAuthentication();
-            //app.UseMiddleware<BffMiddleware>();
-
             app.UseRouting();
             
             app.UseEndpoints(endpoints =>
