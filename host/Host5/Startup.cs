@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
