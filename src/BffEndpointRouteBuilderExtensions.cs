@@ -37,7 +37,8 @@ namespace Microsoft.AspNetCore.Builder
         {
             return endpoints.Map(
                 localPath + "/{**catch-all}",
-                BffApiEndpoint.Map(localPath, apiAddress, AccessTokenRequirement.OptionalUserToken, requireAntiForgeryToken));
+                BffApiEndpoint.Map(localPath, apiAddress, AccessTokenRequirement.OptionalUserToken, requireAntiForgeryToken))
+                                    .WithMetadata(new BffApiEndoint());
         }
     }
 }
