@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Duende.Bff
 {
-    public class BffApiEndoint
+    public class BffApiEndointMetadata
     {
         public bool RequireAntiForgeryToken { get; set; }
 

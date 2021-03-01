@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Builder
             builder.Add(endpointBuilder =>
             {
                 var options =
-                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndoint)) as BffApiEndoint;
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndointMetadata)) as BffApiEndointMetadata;
                 
                 options.RequireAntiForgeryToken = true;
             });
@@ -24,7 +24,7 @@ namespace Microsoft.AspNetCore.Builder
             builder.Add(endpointBuilder =>
             {
                 var options =
-                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndoint)) as BffApiEndoint;
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndointMetadata)) as BffApiEndointMetadata;
 
                 if (type == TokenType.User)   options.AccessTokenRequirement = AccessTokenRequirement.RequireUserToken;
                 if (type == TokenType.Client) options.AccessTokenRequirement = AccessTokenRequirement.RequireClientToken;

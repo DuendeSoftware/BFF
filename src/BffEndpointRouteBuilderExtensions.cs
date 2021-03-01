@@ -36,8 +36,8 @@ namespace Microsoft.AspNetCore.Builder
             return endpoints.Map(
                     localPath + "/{**catch-all}",
                     BffApiEndpoint.Map(localPath, apiAddress))
-                .WithMetadata(new BffApiEndoint()).RequireAuthorization();
-            
+                .WithMetadata(new BffApiEndointMetadata());
+
         }
     }
 }

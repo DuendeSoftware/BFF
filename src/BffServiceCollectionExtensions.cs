@@ -1,4 +1,5 @@
 using Duende.Bff;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Builder
@@ -11,6 +12,7 @@ namespace Microsoft.AspNetCore.Builder
             services.AddAccessTokenManagement();
             
             services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
+            services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
 
             return services;
         }

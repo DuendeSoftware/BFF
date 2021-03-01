@@ -14,7 +14,7 @@ namespace Duende.Bff
             return async context =>
             {
                 var endpoint = context.GetEndpoint();
-                var options = endpoint.Metadata.GetMetadata<BffApiEndoint>();
+                var options = endpoint.Metadata.GetMetadata<BffApiEndointMetadata>();
                 
                 if (options.RequireAntiForgeryToken)
                 {
