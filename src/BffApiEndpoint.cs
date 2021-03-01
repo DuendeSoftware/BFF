@@ -9,11 +9,14 @@ namespace Duende.Bff
 {
     public static class BffApiEndpoint
     {
-        public static RequestDelegate Map(string localPath, string apiAddress, AccessTokenRequirement accessTokenRequirement, bool requireAntiForgeryToken = false)
+        public static RequestDelegate Map(string localPath, string apiAddress)
         {
             return async context =>
             {
-                if (requireAntiForgeryToken)
+                var endpoint = context.GetEndpoint();
+                var options = endpoint.Metadata.GetMetadata<BffApiEndoint>();
+                
+                if (options.RequireAntiForgeryToken)
                 {
                     var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
 
@@ -36,7 +39,7 @@ namespace Duende.Bff
                 var httpClient = clientFactory.CreateClient(localPath);
                 
                 var result = await context.AuthenticateAsync();
-                if (!result.Succeeded && accessTokenRequirement == AccessTokenRequirement.RequireUserToken)
+                if (!result.Succeeded && options.AccessTokenRequirement == AccessTokenRequirement.RequireUserToken)
                 {
                     context.Response.StatusCode = 401;
                     return;
@@ -44,7 +47,7 @@ namespace Duende.Bff
 
                 var token = await context.GetUserAccessTokenAsync();
                 if (string.IsNullOrWhiteSpace(token) &&
-                    accessTokenRequirement == AccessTokenRequirement.RequireUserToken)
+                    options.AccessTokenRequirement == AccessTokenRequirement.RequireUserToken)
                 {
                     context.Response.StatusCode = 401;
                     return;

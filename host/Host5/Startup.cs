@@ -74,16 +74,10 @@ namespace Host5
             
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapReverseProxy();
-                
-                endpoints.MapBffSessionEndpoints("/bff");
+                endpoints.MapBffManagementEndpoints("/bff");
 
-                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002", AccessTokenRequirement.RequireUserToken)
-                    .RequireAuthorization();
-
-                // endpoints.MapBffApiEndpoint(("/api2", "https://..."))
-                //     .RequireUserToken()
-                //     .RequireAntiForgeryToken();
+                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
+                    .RequireAccessToken();
             });
         }
     }

@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class BffEndpointRouteBuilderExtensions
     {
-        public static void MapBffSessionEndpoints(
+        public static void MapBffManagementEndpoints(
             this IEndpointRouteBuilder endpoints,
             string basePath)
         {
@@ -31,14 +31,13 @@ namespace Microsoft.AspNetCore.Builder
         public static IEndpointConventionBuilder MapBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,
             string localPath, 
-            string apiAddress, 
-            AccessTokenRequirement accessTokenRequirement,
-            bool requireAntiForgeryToken = false)
+            string apiAddress)
         {
             return endpoints.Map(
-                localPath + "/{**catch-all}",
-                BffApiEndpoint.Map(localPath, apiAddress, AccessTokenRequirement.OptionalUserToken, requireAntiForgeryToken))
-                                    .WithMetadata(new BffApiEndoint());
+                    localPath + "/{**catch-all}",
+                    BffApiEndpoint.Map(localPath, apiAddress))
+                .WithMetadata(new BffApiEndoint()).RequireAuthorization();
+            
         }
     }
 }
