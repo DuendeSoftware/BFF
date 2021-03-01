@@ -68,13 +68,22 @@ namespace Host5
             app.UseStaticFiles();
 
             app.UseAuthentication();
+            
             app.UseRouting();
+            app.UseAuthorization();
             
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapReverseProxy();
+                
                 endpoints.MapBffSessionEndpoints("/bff");
 
-                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002", AccessTokenRequirement.RequireUserToken);
+                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002", AccessTokenRequirement.RequireUserToken)
+                    .RequireAuthorization();
+
+                // endpoints.MapBffApiEndpoint(("/api2", "https://..."))
+                //     .RequireUserToken()
+                //     .RequireAntiForgeryToken();
             });
         }
     }

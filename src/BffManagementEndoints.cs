@@ -90,6 +90,8 @@ namespace Duende.Bff
         {
             return async context =>
             {
+                // todo: require authenticated user?
+                
                 var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
                 var tokens = antiforgery.GetAndStoreTokens(context);
 
