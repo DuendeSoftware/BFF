@@ -11,10 +11,13 @@ namespace Host5
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
+            _environment = environment;
+            
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
         
@@ -22,9 +25,6 @@ namespace Host5
         {
             // plugin for server side sessions -> decompose, extract: sub, sid
             // add endoint for backchannel signout
-
-            services.AddMvc();
-            
             services.AddBff();
             
             services.AddAuthentication(options =>
@@ -56,9 +56,9 @@ namespace Host5
                 });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -67,7 +67,6 @@ namespace Host5
             app.UseStaticFiles();
 
             app.UseAuthentication();
-            
             app.UseRouting();
             app.UseAuthorization();
             
