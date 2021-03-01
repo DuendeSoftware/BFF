@@ -13,6 +13,7 @@ namespace Microsoft.AspNetCore.Builder
             endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout());
             endpoints.MapGet(basePath + "/user", BffManagementEndoints.MapUser());
             endpoints.MapGet(basePath + "/xsrf", BffManagementEndoints.MapXsrfToken());
+            endpoints.MapPost(basePath + "/backchannel", BffManagementEndoints.BackchannelLogout);
         }
 
         public static IEndpointConventionBuilder MapBffApiEndpoint(

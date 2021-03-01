@@ -14,6 +14,8 @@ namespace Microsoft.AspNetCore.Builder
             services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
 
+            services.AddTransient<IBackchannelLogoutService, BackchannelLogoutService>();
+
             return services;
         }
     }

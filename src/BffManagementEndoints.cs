@@ -2,10 +2,13 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Duende.Bff
 {
@@ -107,6 +110,12 @@ namespace Duende.Bff
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(json, Encoding.UTF8);
             };
+        }
+
+        public static Task BackchannelLogout(HttpContext context)
+        {
+            var backchannel = context.RequestServices.GetRequiredService<IBackchannelLogoutService>();
+            return backchannel.ProcessRequequestAsync(context);
         }
 
         private static bool IsLocalUrl(string url)
