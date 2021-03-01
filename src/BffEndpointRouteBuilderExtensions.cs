@@ -25,17 +25,19 @@ namespace Microsoft.AspNetCore.Builder
             endpoints.MapGet(basePath + "/login", BffManagementEndoints.MapLogin());
             endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout());
             endpoints.MapGet(basePath + "/user", BffManagementEndoints.MapUser());
+            endpoints.MapGet(basePath + "/xsrf", BffManagementEndoints.MapXsrfToken());
         }
 
         public static IEndpointConventionBuilder MapBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,
             string localPath, 
             string apiAddress, 
-            AccessTokenRequirement accessTokenRequirement)
+            AccessTokenRequirement accessTokenRequirement,
+            bool requireAntiForgeryToken = false)
         {
             return endpoints.Map(
                 localPath + "/{**catch-all}",
-                BffApiEndpoint.Map(localPath, apiAddress, AccessTokenRequirement.OptionalUserToken));
+                BffApiEndpoint.Map(localPath, apiAddress, AccessTokenRequirement.OptionalUserToken, requireAntiForgeryToken));
         }
     }
 }

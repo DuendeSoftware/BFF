@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,6 +83,27 @@ namespace Duende.Bff
                     context.Response.ContentType = "application/json";
                     await context.Response.WriteAsync(json, Encoding.UTF8);
                 }
+            };
+        }
+
+        public static RequestDelegate MapXsrfToken()
+        {
+            return async context =>
+            {
+                var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+                var tokens = antiforgery.GetAndStoreTokens(context);
+
+                var result = new
+                {
+                    token = tokens.RequestToken,
+                    headerName = tokens.HeaderName
+                };
+
+                var json = JsonSerializer.Serialize(result);
+                
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(json, Encoding.UTF8);
             };
         }
 

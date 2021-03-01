@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +9,27 @@ namespace Duende.Bff
 {
     public static class BffApiEndpoint
     {
-        public static RequestDelegate Map(string localPath, string apiAddress, AccessTokenRequirement accessTokenRequirement)
+        public static RequestDelegate Map(string localPath, string apiAddress, AccessTokenRequirement accessTokenRequirement, bool requireAntiForgeryToken = false)
         {
             return async context =>
             {
+                if (requireAntiForgeryToken)
+                {
+                    var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+
+                    try
+                    {
+                        await antiforgery.ValidateRequestAsync(context);
+                    }
+                    catch (Exception e)
+                    {
+                        // logging
+                        
+                        context.Response.StatusCode = 401;
+                        return;
+                    }
+                }
+                
                 var proxy = context.RequestServices.GetRequiredService<IHttpProxy>();
                 var clientFactory = context.RequestServices.GetRequiredService<IDefaultHttpMessageInvokerFactory>();
 
