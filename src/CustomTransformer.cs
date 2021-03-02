@@ -6,11 +6,11 @@ using Microsoft.ReverseProxy.Service.Proxy;
 
 namespace Duende.Bff
 {
-    internal class ProxyApiTransformer : HttpTransformer
+    internal class AccessTokenTransformer : HttpTransformer
     {
         private readonly string _accessToken;
 
-        public ProxyApiTransformer(string accessToken)
+        public AccessTokenTransformer(string accessToken)
         {
             _accessToken = accessToken;
         }
@@ -23,7 +23,10 @@ namespace Duende.Bff
             await base.TransformRequestAsync(httpContext, proxyRequest, destinationPrefix);
             proxyRequest.Headers.Host = null;
 
-            proxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            if (!string.IsNullOrWhiteSpace(_accessToken))
+            {
+                proxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            }
         }
     }
 }

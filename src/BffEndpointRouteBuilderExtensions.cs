@@ -9,10 +9,11 @@ namespace Microsoft.AspNetCore.Builder
             this IEndpointRouteBuilder endpoints,
             string basePath)
         {
-            endpoints.MapGet(basePath + "/login", BffManagementEndoints.MapLogin());
-            endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout());
-            endpoints.MapGet(basePath + "/user", BffManagementEndoints.MapUser());
-            endpoints.MapGet(basePath + "/xsrf", BffManagementEndoints.MapXsrfToken());
+            endpoints.MapGet(basePath + "/login", BffManagementEndoints.MapLogin);
+            endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout);
+            endpoints.MapGet(basePath + "/user", BffManagementEndoints.MapUser);
+            
+            endpoints.MapPost(basePath + "/xsrf", BffManagementEndoints.MapXsrfToken);
             endpoints.MapPost(basePath + "/backchannel", BffManagementEndoints.BackchannelLogout);
         }
 

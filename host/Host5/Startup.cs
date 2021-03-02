@@ -76,10 +76,8 @@ namespace Host5
             {
                 endpoints.MapBffManagementEndpoints("/bff");
 
-                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002"); // this default assumes API will allow anon. 
-                    //.RequireAuthorization("fooey")
-                    //.RequireAccessToken(TokenType.UserOrClient) // this mode we expect all API calls to require some token. the flag indicates which tokens to consdier sending
-                    //.WithOptionalUserAccessToken(); // API will allow anon for some paths, so if we have a user token send it, if not don't send token but make API call
+                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
+                    .RequireAccessToken();
             });
         }
     }

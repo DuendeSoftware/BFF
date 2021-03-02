@@ -9,10 +9,10 @@ namespace Microsoft.AspNetCore.Builder
         {
             builder.Add(endpointBuilder =>
             {
-                var options =
+                var metadata =
                     endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndointMetadata)) as BffApiEndointMetadata;
                 
-                options.RequireAntiForgeryToken = true;
+                metadata.RequireAntiForgeryToken = true;
             });
 
             return builder;
@@ -22,21 +22,26 @@ namespace Microsoft.AspNetCore.Builder
         {
             builder.Add(endpointBuilder =>
             {
-                var options =
+                var metadata =
                     endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndointMetadata)) as BffApiEndointMetadata;
 
-                if (type == TokenType.User)   options.AccessTokenRequirement = AccessTokenRequirement.RequireUserToken;
-                if (type == TokenType.Client) options.AccessTokenRequirement = AccessTokenRequirement.RequireClientToken;
+                metadata.RequiredTokenType = type;
             });
 
             return builder;
         }
-    }
+        
+        public static TBuilder WithOptionalUserAccessToken<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
+        {
+            builder.Add(endpointBuilder =>
+            {
+                var metadata =
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndointMetadata)) as BffApiEndointMetadata;
 
-    public enum TokenType
-    {
-        User, 
-        Client,
-        //UserOrClient
+                metadata.OptionalUserToken = true;
+            });
+
+            return builder;
+        }
     }
 }

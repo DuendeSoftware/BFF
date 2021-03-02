@@ -14,102 +14,90 @@ namespace Duende.Bff
 {
     public static class BffManagementEndoints
     {
-        public static RequestDelegate MapLogin()
+        public static async Task MapLogin(HttpContext context)
         {
-            return async context =>
+            var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(returnUrl))
             {
-                var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
-
-                if (!string.IsNullOrWhiteSpace(returnUrl))
+                if (!IsLocalUrl(returnUrl))
                 {
-                    if (!IsLocalUrl(returnUrl))
-                    {
-                        throw new Exception("returnUrl is not application local");
-                    }
+                    throw new Exception("returnUrl is not application local");
                 }
+            }
 
-                var props = new AuthenticationProperties
-                {
-                    RedirectUri = returnUrl ?? "/"
-                };
-
-                await context.ChallengeAsync(props);
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = returnUrl ?? "/"
             };
+
+            await context.ChallengeAsync(props);
         }
 
-        public static RequestDelegate MapLogout()
+        public static async Task MapLogout(HttpContext context)
         {
-            return async context =>
+            var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
+
+            // get rid of local cookie first
+            var signInScheme = await schemes.GetDefaultSignInSchemeAsync();
+            await context.SignOutAsync(signInScheme.Name);
+
+            var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(returnUrl))
             {
-                var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
-
-                // get rid of local cookie first
-                var signInScheme = await schemes.GetDefaultSignInSchemeAsync();
-                await context.SignOutAsync(signInScheme.Name);
-
-                var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
-
-                if (!string.IsNullOrWhiteSpace(returnUrl))
+                if (!IsLocalUrl(returnUrl))
                 {
-                    if (!IsLocalUrl(returnUrl))
-                    {
-                        throw new Exception("returnUrl is not application local");
-                    }
+                    throw new Exception("returnUrl is not application local");
                 }
+            }
 
-                var props = new AuthenticationProperties
-                {
-                    RedirectUri = returnUrl ?? "/"
-                };
-
-                // trigger idp logout
-                await context.SignOutAsync(props);
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = returnUrl ?? "/"
             };
+
+            // trigger idp logout
+            await context.SignOutAsync(props);
         }
 
-        public static RequestDelegate MapUser()
+        public static async Task MapUser(HttpContext context)
         {
-            return async context =>
+            var result = await context.AuthenticateAsync();
+
+            if (!result.Succeeded)
             {
-                var result = await context.AuthenticateAsync();
-
-                if (!result.Succeeded)
-                {
-                    context.Response.StatusCode = 401;
-                }
-                else
-                {
-                    var claims = result.Principal.Claims.Select(x => new { x.Type, x.Value });
-                    var json = JsonSerializer.Serialize(claims);
-
-                    context.Response.StatusCode = 200;
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(json, Encoding.UTF8);
-                }
-            };
-        }
-
-        public static RequestDelegate MapXsrfToken()
-        {
-            return async context =>
+                context.Response.StatusCode = 401;
+            }
+            else
             {
-                // todo: require authenticated user?
-                
-                var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
-                var tokens = antiforgery.GetAndStoreTokens(context);
+                var claims = result.Principal.Claims.Select(x => new { x.Type, x.Value });
+                var json = JsonSerializer.Serialize(claims);
 
-                var result = new
-                {
-                    token = tokens.RequestToken,
-                    headerName = tokens.HeaderName
-                };
-
-                var json = JsonSerializer.Serialize(result);
-                
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(json, Encoding.UTF8);
+            }
+        }
+
+        public static async Task MapXsrfToken(HttpContext context)
+        {
+            // todo: require authenticated user?
+
+            var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+            var tokens = antiforgery.GetAndStoreTokens(context);
+
+            var result = new
+            {
+                token = tokens.RequestToken,
+                headerName = tokens.HeaderName
             };
+
+            var json = JsonSerializer.Serialize(result);
+
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(json, Encoding.UTF8);
         }
 
         public static Task BackchannelLogout(HttpContext context)
@@ -177,6 +165,5 @@ namespace Duende.Bff
                 return false;
             }
         }
-        
     }
 }
