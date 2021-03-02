@@ -3,7 +3,7 @@ using Duende.Bff;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class Foo
+    public static class BffApiEndpointExtensions
     {
         public static TBuilder RequireAntiforgeryToken<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
         {
