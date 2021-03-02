@@ -36,6 +36,7 @@ namespace Microsoft.AspNetCore.Builder
     public enum TokenType
     {
         User, 
-        Client
+        Client,
+        //UserOrClient
     }
 }
