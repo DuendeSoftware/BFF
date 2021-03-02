@@ -51,7 +51,9 @@ namespace Duende.Bff
                         token = await context.GetClientAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
-                            // return 401
+                            context.Response.StatusCode = 401;
+                            return;
+                            
                             // logging
                         }
                     }
@@ -60,7 +62,9 @@ namespace Duende.Bff
                         token = await context.GetUserAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
-                            // return 401
+                            context.Response.StatusCode = 401;
+                            return;
+                            
                             // logging
                         }
                     }
@@ -72,7 +76,9 @@ namespace Duende.Bff
                             token = await context.GetClientAccessTokenAsync();
                             if (string.IsNullOrWhiteSpace(token))
                             {
-                                // return 401
+                                context.Response.StatusCode = 401;
+                                return;
+                                
                                 // logging
                             }
                         }
