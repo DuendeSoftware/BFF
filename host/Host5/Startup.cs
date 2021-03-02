@@ -27,6 +27,8 @@ namespace Host5
             // add endoint for backchannel signout
             services.AddBff();
             
+            //services.AddCookieTicketStore();
+            
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "cookie";
