@@ -24,18 +24,18 @@ namespace Duende.Bff
     {
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IOptionsMonitor<OpenIdConnectOptions> _optionsMonitor;
-        private readonly IUserSessionStore _userSessionStore;
+        private readonly ISessionRevocationService _userSession;
         private readonly ILogger<BackchannelLogoutService> _logger;
 
         public BackchannelLogoutService(
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IOptionsMonitor<OpenIdConnectOptions> optionsMonitor,
-            IUserSessionStore userSessionStore,
+            ISessionRevocationService userSession,
             ILogger<BackchannelLogoutService> logger)
         {
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _optionsMonitor = optionsMonitor;
-            _userSessionStore = userSessionStore;
+            _userSession = userSession;
             _logger = logger;
         }
 
@@ -61,10 +61,12 @@ namespace Duende.Bff
                             // we would now delete the sub/sid from the user session DB
                             _logger.LogInformation("Backchannel logout for sub: {sub}, and sid: {sid}", sub, sid);
                             
-                            await _userSessionStore.DeleteUserSessionsAsync(new UserSessionsFilter { 
+                            await _userSession.DeleteUserSessionsAsync(new UserSessionsFilter { 
                                 SubjectId = sub,
                                 SessionId = sid,
                             });
+                            
+                            return;
                         }
                     }
                 }

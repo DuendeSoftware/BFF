@@ -16,9 +16,9 @@ namespace Microsoft.AspNetCore.Builder
             services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
 
-            services.AddSingleton<IUserSessionStore, InMemoryTicketStore>();
             services.AddTransient<IBackchannelLogoutService, BackchannelLogoutService>();
-
+            services.AddTransient<ISessionRevocationService, NopSessionRevocationService>();
+            
             return services;
         }
 
@@ -26,6 +26,9 @@ namespace Microsoft.AspNetCore.Builder
         {
             services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookie>();
             services.AddTransient<ITicketStore, CookieTicketStore>();
+            
+            services.AddSingleton<IUserSessionStore, InMemoryTicketStore>();
+            services.AddTransient<ISessionRevocationService>(x => x.GetRequiredService<IUserSessionStore>());
 
             return services;
         }

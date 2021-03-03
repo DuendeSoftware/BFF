@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +21,35 @@ namespace Duende.Bff
         }
     }
 
-    public interface IUserSessionStore
+    public interface ISessionRevocationService
+    {
+        Task DeleteUserSessionsAsync(UserSessionsFilter filter);
+    }
+
+    public class NopSessionRevocationService : ISessionRevocationService
+    {
+        private readonly ILogger<NopSessionRevocationService> _logger;
+
+        public NopSessionRevocationService(ILogger<NopSessionRevocationService> logger)
+        {
+            _logger = logger;
+        }
+
+        public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
+        {
+            _logger.LogInformation("Nop implementation of session revocation for sub: {sub}, and sid: {sid}", filter.SubjectId, filter.SessionId);
+            return Task.CompletedTask;
+        }
+    }
+
+    public interface IUserSessionStore : ISessionRevocationService
     {
         Task<UserSession> GetUserSessionAsync(string key);
         Task CreateUserSessionAsync(UserSession ticket);
         Task UpdateUserSessionAsync(UserSession ticket);
         Task DeleteUserSessionAsync(string key);
-        
+
         Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter);
-        Task DeleteUserSessionsAsync(UserSessionsFilter filter);
     }
 
     public class InMemoryTicketStore : IUserSessionStore
