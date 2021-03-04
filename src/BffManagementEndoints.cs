@@ -100,7 +100,7 @@ namespace Duende.Bff
             await context.Response.WriteAsync(json, Encoding.UTF8);
         }
 
-        public static Task BackchannelLogout(HttpContext context)
+        public static Task MapBackchannelLogout(HttpContext context)
         {
             var backchannel = context.RequestServices.GetRequiredService<IBackchannelLogoutService>();
             return backchannel.ProcessRequequestAsync(context);
