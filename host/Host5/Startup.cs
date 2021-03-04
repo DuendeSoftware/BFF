@@ -41,8 +41,8 @@ namespace Host5
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "https://demo.duendesoftware.com/";
-                    options.ClientId = "interactive.confidential";
+                    options.Authority = "https://localhost:5005";
+                    options.ClientId = "spa";
                     options.ClientSecret = "secret";
                     options.ResponseType = "code";
                     options.ResponseMode = "query";
@@ -53,7 +53,7 @@ namespace Host5
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
-                    options.Scope.Add("api");
+                    options.Scope.Add("scope1");
                     options.Scope.Add("offline_access");
                 });
         }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api
 {
@@ -23,8 +24,8 @@ namespace Api
             services.AddAuthentication("token")
                 .AddJwtBearer("token", options =>
                 {
-                    options.Authority = "https://demo.duendesoftware.com";
-                    options.Audience = "api";
+                    options.Authority = "https://localhost:5005";
+                    options.Audience = "https://localhost:5005/resources";
                 });
         }
 
