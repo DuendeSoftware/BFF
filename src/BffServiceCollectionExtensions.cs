@@ -2,6 +2,7 @@ using Duende.Bff;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder
@@ -17,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
 
             services.AddTransient<IBackchannelLogoutService, BackchannelLogoutService>();
-            services.AddTransient<ISessionRevocationService, NopSessionRevocationService>();
+            services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
             
             return services;
         }
@@ -26,8 +27,8 @@ namespace Microsoft.AspNetCore.Builder
         {
             services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookie>();
             services.AddTransient<ITicketStore, CookieTicketStore>();
-            
-            services.AddSingleton<IUserSessionStore, InMemoryTicketStore>();
+
+            services.TryAddSingleton<IUserSessionStore, InMemoryTicketStore>();
             services.AddTransient<ISessionRevocationService>(x => x.GetRequiredService<IUserSessionStore>());
 
             return services;
