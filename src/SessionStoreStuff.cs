@@ -37,7 +37,7 @@ namespace Duende.Bff
 
         public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
         {
-            _logger.LogInformation("Nop implementation of session revocation for sub: {sub}, and sid: {sid}", filter.SubjectId, filter.SessionId);
+            _logger.LogDebug("Nop implementation of session revocation for sub: {sub}, and sid: {sid}. Implement ISessionRevocationService to provide your own implementation.", filter.SubjectId, filter.SessionId);
             return Task.CompletedTask;
         }
     }
