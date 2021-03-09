@@ -1,17 +1,11 @@
 ﻿using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 
 namespace Duende.Bff
 {
@@ -29,11 +23,13 @@ namespace Duende.Bff
         {
             return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
         }
+        
         public static DateTime GetIssued(this AuthenticationTicket ticket)
         {
             return ticket.Properties.IssuedUtc.HasValue ?
                 ticket.Properties.IssuedUtc.Value.UtcDateTime : DateTime.UtcNow;
         }
+        
         public static DateTime? GetExpiration(this AuthenticationTicket ticket)
         {
             return ticket.Properties.ExpiresUtc.HasValue ?
@@ -62,7 +58,6 @@ namespace Duende.Bff
                 Claims = claims
             };
         }
-
         
         static JsonSerializerOptions __jsonOptions = new JsonSerializerOptions
         {
@@ -82,6 +77,7 @@ namespace Duende.Bff
             var value = JsonSerializer.Serialize(data, __jsonOptions);
             return value;
         }
+        
         public static AuthenticationTicket Deserialize(this UserSession session)
         {
             try
@@ -117,12 +113,14 @@ namespace Duende.Bff
             public ClaimsPrincipalLite User { get; set; }
             public IDictionary<string, string> Items { get; set; }
         }
+        
         public class ClaimLite
         {
             public string Type { get; set; }
             public string Value { get; set; }
             public string ValueType { get; set; }
         }
+        
         public class ClaimsPrincipalLite
         {
             public string AuthenticationType { get; set; }
