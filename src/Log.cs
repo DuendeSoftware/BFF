@@ -24,7 +24,7 @@ namespace Duende.Bff
             "Antiforgery validation failed. local path: '{localPath}'");
         
         private static readonly Action<ILogger, string, string, Exception> _proxyResponseError = LoggerMessage.Define<string, string>(
-            LogLevel.Error,
+            LogLevel.Information,
             EventIds.ProxyResponseError,
             "Proxy response error. local path: '{localPath}', error: '{error}'");
 

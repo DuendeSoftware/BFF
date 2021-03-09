@@ -109,7 +109,7 @@ namespace Duende.Bff
                     var error = errorFeature.Error;
                     var exception = errorFeature.Exception;
                     
-                    logger.ProxyResponseError(localPath, error.ToString());
+                    logger.ProxyResponseError(localPath, exception?.ToString() ?? error.ToString());
                 }
             };
         }
