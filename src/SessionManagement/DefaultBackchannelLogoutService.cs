@@ -15,23 +15,18 @@ using System.Threading.Tasks;
 
 namespace Duende.Bff
 {
-    public interface IBackchannelLogoutService
-    {
-        Task ProcessRequequestAsync(HttpContext context);
-    }
-
-    public class BackchannelLogoutService : IBackchannelLogoutService
+    public class DefaultBackchannelLogoutService : IBackchannelLogoutService
     {
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IOptionsMonitor<OpenIdConnectOptions> _optionsMonitor;
         private readonly ISessionRevocationService _userSession;
-        private readonly ILogger<BackchannelLogoutService> _logger;
+        private readonly ILogger<DefaultBackchannelLogoutService> _logger;
 
-        public BackchannelLogoutService(
+        public DefaultBackchannelLogoutService(
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IOptionsMonitor<OpenIdConnectOptions> optionsMonitor,
             ISessionRevocationService userSession,
-            ILogger<BackchannelLogoutService> logger)
+            ILogger<DefaultBackchannelLogoutService> logger)
         {
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _optionsMonitor = optionsMonitor;

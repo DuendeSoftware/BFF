@@ -1,12 +1,7 @@
 ﻿using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -17,88 +12,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Duende.Bff
 {
-    public class CookieTicketStore : ITicketStore
-    {
-        private readonly IUserSessionStore _store;
-        private readonly ILogger<CookieTicketStore> _logger;
-
-        public CookieTicketStore(
-            IUserSessionStore store,
-            ILogger<CookieTicketStore> logger)
-        {
-            _store = store;
-            _logger = logger;
-        }
-
-        public async Task<string> StoreAsync(AuthenticationTicket ticket)
-        {
-            var key = CryptoRandom.CreateUniqueId(format: CryptoRandom.OutputFormat.Hex);
-
-            var session = new UserSession
-            {
-                Key = key,
-                Created = ticket.GetIssued(),
-                Renewed = ticket.GetIssued(),
-                Expires = ticket.GetExpiration(),
-                SubjectId = ticket.GetSubjectId(),
-                SessionId = ticket.GetSessionId(),
-                Scheme = ticket.AuthenticationScheme,
-                Ticket = ticket.Serialize(),
-            };
-
-            await _store.CreateUserSessionAsync(session);
-
-            return key;
-        }
-
-        public async Task<AuthenticationTicket> RetrieveAsync(string key)
-        {
-            var session = await _store.GetUserSessionAsync(key);
-            if (session != null)
-            {
-                var ticket = session.Deserialize();
-                if (ticket == null)
-                {
-                    // if we failed to get a ticket, then remove DB record 
-                    _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
-                    await RemoveAsync(key);
-                }
-
-                return ticket;
-            }
-
-            return null;
-        }
-
-        public async Task RenewAsync(string key, AuthenticationTicket ticket)
-        {
-            var session = await _store.GetUserSessionAsync(key);
-            if (session != null)
-            {
-                session.Renewed = ticket.GetIssued();
-                session.Expires = ticket.GetExpiration();
-                session.Ticket = ticket.Serialize();
-
-                // todo: discuss updating sub and sid?
-                
-                await _store.UpdateUserSessionAsync(session);
-            }
-            else
-            {
-                _logger.LogWarning("No record found in user session store when trying to renew authentication ticket for key {key} and subject {subjectId}", key, ticket.GetSubjectId());
-            }
-        }
-
-        public Task RemoveAsync(string key)
-        {
-            return _store.DeleteUserSessionAsync(key);
-        }
-    }
-
     public static class AuthenticationTicketExtensions
     {
         public static string GetSubjectId(this AuthenticationTicket ticket)
@@ -211,62 +127,6 @@ namespace Duende.Bff
         {
             public string AuthenticationType { get; set; }
             public ClaimLite[] Claims { get; set; }
-        }
-    }
-
-    // this shim class is needed since ITicketStore is not configure in DI, rather it's a property 
-    // of the cookie options and coordinated with PostConfigureApplicationCookie. #lame
-    // https://github.com/aspnet/AspNetCore/issues/6946
-    public class TicketStoreShim : ITicketStore
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public TicketStoreShim(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public ITicketStore Inner
-        {
-            get
-            {
-                return _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ITicketStore>();
-            }
-        }
-
-        public Task RemoveAsync(string key)
-        {
-            return Inner.RemoveAsync(key);
-        }
-
-        public Task RenewAsync(string key, AuthenticationTicket ticket)
-        {
-            return Inner.RenewAsync(key, ticket);
-        }
-
-        public Task<AuthenticationTicket> RetrieveAsync(string key)
-        {
-            return Inner.RetrieveAsync(key);
-        }
-
-        public Task<string> StoreAsync(AuthenticationTicket ticket)
-        {
-            return Inner.StoreAsync(ticket);
-        }
-    }
-
-    public class PostConfigureApplicationCookie : IPostConfigureOptions<CookieAuthenticationOptions>
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public PostConfigureApplicationCookie(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public void PostConfigure(string name, CookieAuthenticationOptions options)
-        {
-            options.SessionStore = new TicketStoreShim(_httpContextAccessor);
         }
     }
 

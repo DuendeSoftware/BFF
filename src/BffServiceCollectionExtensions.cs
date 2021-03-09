@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Builder
             services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
             
 
-            services.AddTransient<IBackchannelLogoutService, BackchannelLogoutService>();
+            services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
             
             #if NET5_0
@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IServiceCollection AddCookieTicketStore(this IServiceCollection services)
         {
-            services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookie>();
+            services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureBffApplicationCookie>();
             services.AddTransient<ITicketStore, CookieTicketStore>();
 
             services.TryAddSingleton<IUserSessionStore, InMemoryTicketStore>();
