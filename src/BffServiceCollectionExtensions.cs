@@ -15,10 +15,14 @@ namespace Microsoft.AspNetCore.Builder
             services.AddAccessTokenManagement();
 
             services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
-            services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
+            
 
             services.AddTransient<IBackchannelLogoutService, BackchannelLogoutService>();
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
+            
+            #if NET5_0
+            services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
+            #endif
             
             return services;
         }

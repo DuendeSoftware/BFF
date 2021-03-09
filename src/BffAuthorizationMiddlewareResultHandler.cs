@@ -1,3 +1,5 @@
+#if NET5_0
+
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -39,3 +41,4 @@ namespace Duende.Bff
         }
     }
 }
+#endif

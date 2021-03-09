@@ -6,7 +6,8 @@ namespace Duende.Bff
 {
     public class DefaultHttpMessageInvokerFactory : IDefaultHttpMessageInvokerFactory
     {
-        private readonly ConcurrentDictionary<string, HttpMessageInvoker> _clients = new();
+        private readonly ConcurrentDictionary<string, HttpMessageInvoker> _clients =
+            new ConcurrentDictionary<string, HttpMessageInvoker>();
         
         public HttpMessageInvoker CreateClient(string localPath)
         {
