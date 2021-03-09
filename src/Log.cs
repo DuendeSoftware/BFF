@@ -2,8 +2,15 @@ using System;
 using Duende.Bff;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Duende.Bff
 {
+    internal static class EventIds
+    {
+        public static readonly EventId AccessTokenMissing = new EventId(1, "AccessTokenMissing");
+        public static readonly EventId AntiforgeryValidationFailed = new EventId(2, "AntiforgeryValidationFailed");
+        public static readonly EventId ProxyResponseError = new EventId(3, "ProxyResponseError");
+    }
+    
     internal static class Log
     {
         private static readonly Action<ILogger, string, string, Exception> _accessTokenMissing = LoggerMessage.Define<string, string>(
