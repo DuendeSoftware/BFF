@@ -1,5 +1,4 @@
 using System;
-using Duende.Bff;
 using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff
@@ -8,7 +7,7 @@ namespace Duende.Bff
     {
         public static readonly EventId AccessTokenMissing = new EventId(1, "AccessTokenMissing");
         public static readonly EventId AntiforgeryValidationFailed = new EventId(2, "AntiforgeryValidationFailed");
-        public static readonly EventId ProxyResponseError = new EventId(3, "ProxyResponseError");
+        public static readonly EventId ProxyError = new EventId(3, "ProxyError");
     }
     
     internal static class Log
@@ -25,7 +24,7 @@ namespace Duende.Bff
         
         private static readonly Action<ILogger, string, string, Exception> _proxyResponseError = LoggerMessage.Define<string, string>(
             LogLevel.Information,
-            EventIds.ProxyResponseError,
+            EventIds.ProxyError,
             "Proxy response error. local path: '{localPath}', error: '{error}'");
 
         public static void AccessTokenMissing(this ILogger logger, string localPath, TokenType tokenType)
