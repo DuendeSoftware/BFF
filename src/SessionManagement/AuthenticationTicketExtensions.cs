@@ -59,7 +59,7 @@ namespace Duende.Bff
             };
         }
         
-        static JsonSerializerOptions __jsonOptions = new JsonSerializerOptions
+        static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
@@ -74,7 +74,7 @@ namespace Duende.Bff
             };
             
             // todo: data protect? PII, etc?
-            var value = JsonSerializer.Serialize(data, __jsonOptions);
+            var value = JsonSerializer.Serialize(data, _jsonOptions);
             return value;
         }
         
@@ -82,7 +82,7 @@ namespace Duende.Bff
         {
             try
             {
-                var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(session.Ticket, __jsonOptions);
+                var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(session.Ticket, _jsonOptions);
 
                 var user = ticket.User.ToClaimsPrincipal();
                 var properties = new AuthenticationProperties(ticket.Items);

@@ -1,8 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.ReverseProxy.Service.Proxy;
 
 namespace Duende.Bff
@@ -13,6 +15,9 @@ namespace Duende.Bff
         {
             return async context =>
             {
+                var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
+                var logger = loggerFactory.CreateLogger("Duende.Bff.BffApiEndpoint");
+                
                 var endpoint = context.GetEndpoint();
                 if (endpoint == null)
                 {
@@ -33,9 +38,9 @@ namespace Duende.Bff
                     {
                         await antiforgery.ValidateRequestAsync(context);
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        // todo: logging
+                        logger.AntiforgeryValidationFailed(localPath);
                         
                         context.Response.StatusCode = 401;
                         return;
@@ -50,10 +55,10 @@ namespace Duende.Bff
                         token = await context.GetClientAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
+                            logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                            
                             context.Response.StatusCode = 401;
                             return;
-                            
-                            // logging
                         }
                     }
                     else if (metadata.RequiredTokenType == TokenType.User)
@@ -61,10 +66,10 @@ namespace Duende.Bff
                         token = await context.GetUserAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
+                            logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                            
                             context.Response.StatusCode = 401;
                             return;
-                            
-                            // logging
                         }
                     }
                     else if (metadata.RequiredTokenType == TokenType.UserOrClient)
@@ -75,10 +80,10 @@ namespace Duende.Bff
                             token = await context.GetClientAccessTokenAsync();
                             if (string.IsNullOrWhiteSpace(token))
                             {
+                                logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                                
                                 context.Response.StatusCode = 401;
                                 return;
-                                
-                                // logging
                             }
                         }
                     }
@@ -97,13 +102,14 @@ namespace Duende.Bff
                 var requestOptions = new RequestProxyOptions { Timeout = TimeSpan.FromSeconds(100) };
 
                 await proxy.ProxyAsync(context, apiAddress, httpClient, requestOptions, transformer);
-
-                // todo: logging
+                
                 var errorFeature = context.Features.Get<IProxyErrorFeature>();
                 if (errorFeature != null)
                 {
                     var error = errorFeature.Error;
                     var exception = errorFeature.Exception;
+                    
+                    logger.ProxyResponseError(localPath, error.ToString());
                 }
             };
         }
