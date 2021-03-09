@@ -9,14 +9,12 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class BffServiceCollectionExtensions
     {
-        public static IServiceCollection AddBff(this IServiceCollection services)
+        public static BffBuilder AddBff(this IServiceCollection services)
         {
             services.AddReverseProxy().LoadFromMemory();
             services.AddAccessTokenManagement();
 
-            services.AddSingleton<IDefaultHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
-            
-
+            services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
             services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
             
@@ -24,27 +22,7 @@ namespace Microsoft.AspNetCore.Builder
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
             #endif
             
-            return services;
-        }
-
-        public static IServiceCollection AddCookieTicketStore(this IServiceCollection services)
-        {
-            services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureBffApplicationCookie>();
-            services.AddTransient<ITicketStore, CookieTicketStore>();
-
-            services.TryAddSingleton<IUserSessionStore, InMemoryTicketStore>();
-            services.AddTransient<ISessionRevocationService>(x => x.GetRequiredService<IUserSessionStore>());
-
-            return services;
-        }
-
-        public static IServiceCollection AddCookieTicketStore<TUserSessionStore>(this IServiceCollection services)
-            where TUserSessionStore : class, IUserSessionStore
-        {
-            services.AddCookieTicketStore();
-            services.AddTransient<IUserSessionStore, TUserSessionStore>();
-
-            return services;
+            return new BffBuilder(services);
         }
     }
 }

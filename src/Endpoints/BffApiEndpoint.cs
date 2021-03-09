@@ -90,7 +90,7 @@ namespace Duende.Bff
                 }
                 
                 var proxy = context.RequestServices.GetRequiredService<IHttpProxy>();
-                var clientFactory = context.RequestServices.GetRequiredService<IDefaultHttpMessageInvokerFactory>();
+                var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
                 var httpClient = clientFactory.CreateClient(localPath);
                 
                 var transformer = new AccessTokenTransformer(token);

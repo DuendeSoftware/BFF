@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace Duende.Bff
 {
-    public class DefaultHttpMessageInvokerFactory : IDefaultHttpMessageInvokerFactory
+    public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
     {
         private readonly ConcurrentDictionary<string, HttpMessageInvoker> _clients =
             new ConcurrentDictionary<string, HttpMessageInvoker>();

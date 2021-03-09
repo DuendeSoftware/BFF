@@ -23,11 +23,8 @@ namespace Host5
         
         public void ConfigureServices(IServiceCollection services)
         {
-            // plugin for server side sessions -> decompose, extract: sub, sid
-            // add endoint for backchannel signout
-            services.AddBff();
-            
-            //services.AddCookieTicketStore();
+            services.AddBff()
+                .AddCookieTicketStore();
             
             services.AddAuthentication(options =>
                 {
