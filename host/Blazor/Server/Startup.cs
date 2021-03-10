@@ -26,7 +26,7 @@ namespace Blazor.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBff();
-            services.AddControllersWithViews();
+            services.AddControllers();
             services.AddRazorPages();
             
             services.AddAuthentication(options =>
@@ -88,7 +88,11 @@ namespace Blazor.Server
                     .RequireAccessToken();
                 
                 endpoints.MapRazorPages();
-                endpoints.MapControllers().RequireAuthorization().WithMetadata(new BffApiEndointMetadata());
+                
+                endpoints.MapControllers()
+                    .RequireAuthorization()
+                    .AsBffApiEndpoint();
+                
                 endpoints.MapFallbackToFile("index.html");
             });
         }

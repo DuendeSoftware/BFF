@@ -84,7 +84,7 @@ namespace Host5
                 // local APIs
                 endpoints.MapControllers()
                     .RequireAuthorization();
-                    //.WithMetadata(new BffApiEndointMetadata());
+                    //.AsBffApiEndpoint();
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
