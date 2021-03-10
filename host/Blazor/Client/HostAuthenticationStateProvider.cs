@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -65,36 +66,34 @@ namespace Blazor.Client.Services
 
         private async Task<ClaimsPrincipal> FetchUser()
         {
-            List<ClaimRecord> claims = null;
-
             try
             {
-                _logger.LogInformation(_client.BaseAddress.ToString());
-                claims = await _client.GetFromJsonAsync<List<ClaimRecord>>("bff/user");
+                _logger.LogInformation("Fetching user information.");
+                var response = await _client.GetAsync("bff/user");
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var claims = await response.Content.ReadFromJsonAsync<List<ClaimRecord>>();
+
+                    var identity = new ClaimsIdentity(
+                        nameof(HostAuthenticationStateProvider),
+                        "name",
+                        "role");
+                    
+                    foreach (var claim in claims)
+                    {
+                        identity.AddClaim(new Claim(claim.Type, claim.Value));
+                    }
+
+                    return new ClaimsPrincipal(identity);
+                }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                _logger.LogWarning(exc, "Fetching user failed.");
+                _logger.LogWarning(ex, "Fetching user failed.");
             }
 
-            if (claims == null)
-            {
-                return new ClaimsPrincipal(new ClaimsIdentity());
-            }
-
-            var identity = new ClaimsIdentity(
-                nameof(HostAuthenticationStateProvider),
-                "name",
-                "role");
-
-
-            foreach (var claim in claims)
-            {
-                identity.AddClaim(new Claim(claim.Type, claim.Value));
-            }
-
-
-            return new ClaimsPrincipal(identity);
+            return new ClaimsPrincipal(new ClaimsIdentity());
         }
     }
 }

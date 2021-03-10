@@ -84,6 +84,9 @@ namespace Blazor.Server
             {
                 endpoints.MapBffManagementEndpoints();
                 
+                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
+                    .RequireAccessToken();
+                
                 endpoints.MapRazorPages();
                 endpoints.MapControllers().RequireAuthorization().WithMetadata(new BffApiEndointMetadata());
                 endpoints.MapFallbackToFile("index.html");
