@@ -1,36 +1,33 @@
-using System.IdentityModel.Tokens.Jwt;
-using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Serilog;
 
-namespace Host5
+namespace Blazor.Server
 {
     public class Startup
     {
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
-            _configuration = configuration;
-            _environment = environment;
-
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+            Configuration = configuration;
         }
 
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBff()
-                .AddCookieTicketStore();
 
-            // local APIs
-            services.AddControllers();
-
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+            
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "cookie";
@@ -57,41 +54,38 @@ namespace Host5
                 });
         }
 
-        public void Configure(IApplicationBuilder app)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSerilogRequestLogging();
-            app.UseDeveloperExceptionPage();
+            
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
-            app.UseDefaultFiles();
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-            // app.Use(async (ctx, next) =>
-            // {
-            //     await next();
-            //
-            //     if (ctx.Response.StatusCode == 302)
-            //     {
-            //         var isAjax = ctx.Request.Headers["X-Requested-With"];
-            //     }
-            // });
-
-            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
-                // local APIs
-                endpoints.MapControllers()
-                    .RequireAuthorization();
-                    //.WithMetadata(new BffApiEndointMetadata());
-
-                // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
-
-                // proxy endpoint for cross-site APIs
-                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
-                    .RequireAccessToken();
+                
+                endpoints.MapRazorPages();
+                endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }
