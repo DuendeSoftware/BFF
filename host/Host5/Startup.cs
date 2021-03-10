@@ -1,10 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
+using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace Host5
 {
@@ -17,25 +19,25 @@ namespace Host5
         {
             _configuration = configuration;
             _environment = environment;
-            
+
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBff()
                 .AddCookieTicketStore();
-            
+
+            // local APIs
+            services.AddControllers();
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "cookie";
                     options.DefaultChallengeScheme = "oidc";
                     options.DefaultSignOutScheme = "oidc";
                 })
-                .AddCookie("cookie", options =>
-                {
-                    options.Cookie.SameSite = SameSiteMode.Strict;
-                })
+                .AddCookie("cookie", options => { options.Cookie.SameSite = SameSiteMode.Strict; })
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = "https://localhost:5005";
@@ -57,22 +59,37 @@ namespace Host5
 
         public void Configure(IApplicationBuilder app)
         {
-            if (_environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseSerilogRequestLogging();
+            app.UseDeveloperExceptionPage();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            // app.Use(async (ctx, next) =>
+            // {
+            //     await next();
+            //
+            //     if (ctx.Response.StatusCode == 302)
+            //     {
+            //         var isAjax = ctx.Request.Headers["X-Requested-With"];
+            //     }
+            // });
+
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
+                // local APIs
+                endpoints.MapControllers()
+                    .RequireAuthorization();
+                    //.WithMetadata(new BffApiEndointMetadata());
+
+                // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints("/bff");
 
+                // proxy endpoint for cross-site APIs
                 endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
                     .RequireAccessToken();
             });

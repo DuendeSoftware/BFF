@@ -22,8 +22,9 @@ namespace Duende.Bff
         {
             var endpoint = context.GetEndpoint();
             var md = endpoint.Metadata.GetMetadata<BffApiEndointMetadata>();
+            var bffAttribute = endpoint.Metadata.GetMetadata<BffApiEndpointAttribute>();
 
-            if (md != null)
+            if (md != null || bffAttribute != null)
             {
                 if (authorizeResult.Challenged)
                 {

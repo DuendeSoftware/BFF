@@ -23,7 +23,17 @@ function login() {
 function logout() {
     window.location = logoutUrl;
 }
-async function callApi() {
+
+async function callLocalApi() {
+    var req = new Request("/local", { credentials: 'include' })
+    var resp = await fetch(req);
+    log("API Result: " + resp.status);
+    if (resp.ok) {
+        showApi(await resp.json());
+    }
+}
+
+async function callCrossApi() {
     var req = new Request(apiUrl + "/foo", { credentials: 'include' })
     var resp = await fetch(req);
     log("API Result: " + resp.status);
@@ -32,8 +42,10 @@ async function callApi() {
     }
 }
 
+
 document.querySelector(".login").addEventListener("click", login, false);
-document.querySelector(".call").addEventListener("click", callApi, false);
+document.querySelector(".call_cross").addEventListener("click", callCrossApi, false);
+document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
 
 

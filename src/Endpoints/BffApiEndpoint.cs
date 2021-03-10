@@ -99,9 +99,7 @@ namespace Duende.Bff
                 var httpClient = clientFactory.CreateClient(localPath);
                 
                 var transformer = new AccessTokenTransformer(token);
-                var requestOptions = new RequestProxyOptions { Timeout = TimeSpan.FromSeconds(100) };
-
-                await proxy.ProxyAsync(context, apiAddress, httpClient, requestOptions, transformer);
+                await proxy.ProxyAsync(context, apiAddress, httpClient, new RequestProxyOptions(), transformer);
                 
                 var errorFeature = context.Features.Get<IProxyErrorFeature>();
                 if (errorFeature != null)
