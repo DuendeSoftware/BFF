@@ -1,5 +1,4 @@
 ﻿@page "/"
-@inherits LayoutComponentBase
 
 <h1>Hello, world!</h1>
 
@@ -9,7 +8,7 @@ Welcome to your new app.
 
 <AuthorizeView>
     <Authorized>
-        <strong>Hello, User!</strong>
+        <strong>Hello, @context.User.Identity.Name!</strong>
         <a href="bff/logout">Log out</a>
     </Authorized>
     <NotAuthorized>
