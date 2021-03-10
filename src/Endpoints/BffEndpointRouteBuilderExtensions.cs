@@ -7,7 +7,7 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static void MapBffManagementEndpoints(
             this IEndpointRouteBuilder endpoints,
-            string basePath)
+            string basePath = "/bff")
         {
             endpoints.MapGet(basePath + "/login", BffManagementEndoints.MapLogin);
             endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout);
