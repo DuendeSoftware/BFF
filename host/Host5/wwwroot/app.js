@@ -1,7 +1,7 @@
 ﻿var loginUrl = "/bff/login?returnUrl=/index.html?state=loggedin#foo";
 var logoutUrl = "/bff/logout?returnUrl=/index.html?state=loggedout#foo";
 var userUrl = "/bff/user";
-var apiUrl = "/api";
+var api1Url = "/api";
 
 async function onLoad() {
     var req = new Request(userUrl, { credentials: 'include' })
@@ -34,7 +34,7 @@ async function callLocalApi() {
 }
 
 async function callCrossApi() {
-    var req = new Request(apiUrl + "/foo", { credentials: 'include' })
+    var req = new Request(api1Url + "/foo", { credentials: 'include' })
     var resp = await fetch(req);
     log("API Result: " + resp.status);
     if (resp.ok) {

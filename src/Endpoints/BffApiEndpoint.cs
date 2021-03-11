@@ -98,7 +98,7 @@ namespace Duende.Bff
                 var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
                 var httpClient = clientFactory.CreateClient(localPath);
                 
-                var transformer = new AccessTokenTransformer(token);
+                var transformer = new BffHttpTransformer(token, context.Request.Path, new PathString(localPath), context.Request.QueryString);
                 await proxy.ProxyAsync(context, apiAddress, httpClient, new RequestProxyOptions(), transformer);
                 
                 var errorFeature = context.Features.Get<IProxyErrorFeature>();
