@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,13 +23,13 @@ namespace Duende.Bff
                     throw new InvalidOperationException("endoint not found");
                 }
                 
-                var metadata = endpoint.Metadata.GetMetadata<BffApiEndointMetadata>();
-                if (metadata == null)
+                var antiforgeryMetadata = endpoint.Metadata.GetMetadata<BffApiAntiforgeryMetadata>();
+                if (antiforgeryMetadata == null)
                 {
-                    throw new InvalidOperationException("API endoint is missing metadata");
+                    throw new InvalidOperationException("API endoint is missing anti-forgery metadata");
                 }
                 
-                if (metadata.RequireAntiForgeryHeader)
+                if (antiforgeryMetadata.RequireAntiForgeryHeader)
                 {
                     var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
                     if (antiForgeryHeader == null || antiForgeryHeader != "1")
@@ -42,33 +40,39 @@ namespace Duende.Bff
                         return;
                     }
                 }
-
-                string token = null;
-                if (metadata.RequiredTokenType.HasValue)
+                
+                var accessTokenMetadata = endpoint.Metadata.GetMetadata<BffApiAccessTokenMetadata>();
+                if (accessTokenMetadata == null)
                 {
-                    if (metadata.RequiredTokenType == TokenType.Client)
+                    throw new InvalidOperationException("API endoint is missing access token metadata");
+                }
+                
+                string token = null;
+                if (accessTokenMetadata.RequiredTokenType.HasValue)
+                {
+                    if (accessTokenMetadata.RequiredTokenType == TokenType.Client)
                     {
                         token = await context.GetClientAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
-                            logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                            logger.AccessTokenMissing(localPath, accessTokenMetadata.RequiredTokenType.Value);
                             
                             context.Response.StatusCode = 401;
                             return;
                         }
                     }
-                    else if (metadata.RequiredTokenType == TokenType.User)
+                    else if (accessTokenMetadata.RequiredTokenType == TokenType.User)
                     {
                         token = await context.GetUserAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
-                            logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                            logger.AccessTokenMissing(localPath, accessTokenMetadata.RequiredTokenType.Value);
                             
                             context.Response.StatusCode = 401;
                             return;
                         }
                     }
-                    else if (metadata.RequiredTokenType == TokenType.UserOrClient)
+                    else if (accessTokenMetadata.RequiredTokenType == TokenType.UserOrClient)
                     {
                         token = await context.GetUserAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
@@ -76,7 +80,7 @@ namespace Duende.Bff
                             token = await context.GetClientAccessTokenAsync();
                             if (string.IsNullOrWhiteSpace(token))
                             {
-                                logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                                logger.AccessTokenMissing(localPath, accessTokenMetadata.RequiredTokenType.Value);
                                 
                                 context.Response.StatusCode = 401;
                                 return;
@@ -85,7 +89,7 @@ namespace Duende.Bff
                     }
                 }
 
-                if (metadata.OptionalUserToken)
+                if (accessTokenMetadata.OptionalUserToken)
                 {
                     token = await context.GetUserAccessTokenAsync();
                 }

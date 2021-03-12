@@ -5,9 +5,9 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class EndpointConventionBuilderExtensions
     {
-        public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder)
+        public static IEndpointConventionBuilder AsBffApiEndpoints(this IEndpointConventionBuilder builder)
         {
-            return builder.WithMetadata(new BffApiEndointMetadata());
+            return builder.WithMetadata(new BffApiEndpointAttribute());
         }
     }
 }
