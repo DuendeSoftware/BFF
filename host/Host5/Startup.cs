@@ -37,7 +37,11 @@ namespace Host5
                     options.DefaultChallengeScheme = "oidc";
                     options.DefaultSignOutScheme = "oidc";
                 })
-                .AddCookie("cookie", options => { options.Cookie.SameSite = SameSiteMode.Strict; })
+                .AddCookie("cookie", options =>
+                {
+                    options.Cookie.Name = "__Host-spa5";
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                })
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = "https://localhost:5005";
@@ -64,16 +68,6 @@ namespace Host5
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            // app.Use(async (ctx, next) =>
-            // {
-            //     await next();
-            //
-            //     if (ctx.Response.StatusCode == 302)
-            //     {
-            //         var isAjax = ctx.Request.Headers["X-Requested-With"];
-            //     }
-            // });
 
             app.UseAuthentication();
             app.UseRouting();

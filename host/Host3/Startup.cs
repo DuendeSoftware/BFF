@@ -34,6 +34,7 @@ namespace Host5
                 })
                 .AddCookie("cookie", options =>
                 {
+                    options.Cookie.Name = "__Host-spa3";
                     options.Cookie.SameSite = SameSiteMode.Strict;
                 })
                 .AddOpenIdConnect("oidc", options =>

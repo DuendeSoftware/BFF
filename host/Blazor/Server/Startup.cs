@@ -35,7 +35,11 @@ namespace Blazor.Server
                     options.DefaultChallengeScheme = "oidc";
                     options.DefaultSignOutScheme = "oidc";
                 })
-                .AddCookie("cookie", options => { options.Cookie.SameSite = SameSiteMode.Strict; })
+                .AddCookie("cookie", options =>
+                {
+                    options.Cookie.Name = "__Host-blazor";
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                })
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = "https://localhost:5005";
