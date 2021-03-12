@@ -11,12 +11,11 @@ using System.Threading.Tasks;
 
 namespace Blazor.Client.Services
 {
+    // thanks to Bernd Hirschmann for this code
+    // https://github.com/berhir/BlazorWebAssemblyCookieAuth
     public class HostAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private static readonly TimeSpan _userCacheRefreshInterval = TimeSpan.FromSeconds(60);
-
-        private const string LogInPath = "bff/login";
-        private const string LogOutPath = "bff/logout";
+        private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
         private readonly NavigationManager _navigation;
         private readonly HttpClient _client;
@@ -38,18 +37,10 @@ namespace Blazor.Client.Services
             return new AuthenticationState(await GetUser(useCache: true));
         }
 
-        public void SignIn(string customReturnUrl = null)
-        {
-            var returnUrl = customReturnUrl != null ? _navigation.ToAbsoluteUri(customReturnUrl).ToString() : null;
-            var encodedReturnUrl = Uri.EscapeDataString(returnUrl ?? _navigation.Uri);
-            var logInUrl = _navigation.ToAbsoluteUri($"{LogInPath}?returnUrl={encodedReturnUrl}");
-            _navigation.NavigateTo(logInUrl.ToString(), true);
-        }
-
         private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
         {
             var now = DateTimeOffset.Now;
-            if (useCache && now < _userLastCheck + _userCacheRefreshInterval)
+            if (useCache && now < _userLastCheck + UserCacheRefreshInterval)
             {
                 _logger.LogDebug("Taking user from cache");
                 return _cachedUser;
