@@ -6,9 +6,4 @@ namespace Duende.Bff
         
         public bool OptionalUserToken { get; set; }
     }
-    
-    public class BffApiAntiforgeryMetadata
-    {
-        public bool RequireAntiForgeryHeader { get; set; } = true;
-    }
 }

@@ -80,7 +80,7 @@ namespace Host5
                 // local APIs
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsBffApiEndpoints();
+                    .AsLocalBffApiEndpoints();
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();

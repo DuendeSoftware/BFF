@@ -89,7 +89,7 @@ namespace Blazor.Server
                 
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsBffApiEndpoints();
+                    .AsLocalBffApiEndpoints();
                 
                 endpoints.MapFallbackToFile("index.html");
             });
