@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -30,15 +31,10 @@ namespace Duende.Bff
                     throw new InvalidOperationException("API endoint is missing metadata");
                 }
                 
-                if (metadata.RequireAntiForgeryToken)
+                if (metadata.RequireAntiForgeryHeader)
                 {
-                    var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
-
-                    try
-                    {
-                        await antiforgery.ValidateRequestAsync(context);
-                    }
-                    catch
+                    var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
+                    if (antiForgeryHeader == null || antiForgeryHeader != "1")
                     {
                         logger.AntiforgeryValidationFailed(localPath);
                         

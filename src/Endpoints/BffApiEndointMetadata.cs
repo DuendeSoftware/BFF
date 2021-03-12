@@ -4,7 +4,8 @@ namespace Duende.Bff
     {
         public TokenType? RequiredTokenType;
         
-        public bool RequireAntiForgeryToken { get; set; }
         public bool OptionalUserToken { get; set; }
+
+        public bool RequireAntiForgeryHeader { get; set; } = true;
     }
 }

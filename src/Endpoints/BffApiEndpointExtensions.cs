@@ -5,14 +5,14 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class BffApiEndpointExtensions
     {
-        public static TBuilder RequireAntiforgeryToken<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
+        public static TBuilder DisableAntiforgeryProtection<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
         {
             builder.Add(endpointBuilder =>
             {
                 var metadata =
                     endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiEndointMetadata)) as BffApiEndointMetadata;
                 
-                metadata.RequireAntiForgeryToken = true;
+                metadata.RequireAntiForgeryHeader = false;
             });
 
             return builder;
