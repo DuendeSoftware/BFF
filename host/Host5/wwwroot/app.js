@@ -25,7 +25,12 @@ function logout() {
 }
 
 async function callLocalApi() {
-    var req = new Request("/local", {credentials: 'include'})
+    var req = new Request("/local", {
+        credentials: 'include',
+        headers: new Headers({
+            'X-CSRF': '1'
+        })
+    })
     var resp = await fetch(req);
 
     log("API Result: " + resp.status);

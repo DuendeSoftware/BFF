@@ -1,11 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
-using Duende.Bff;
+using Duende.Bff.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace Host5
@@ -69,16 +68,19 @@ namespace Host5
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            
+            
             app.UseAuthentication();
             app.UseRouting();
+            app.UseMiddleware<BffApiAntiforgeryMiddleware>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 // local APIs
                 endpoints.MapControllers()
-                    .RequireAuthorization();
-                    //.AsBffApiEndpoint();
+                    .RequireAuthorization()
+                    .AsBffApiEndpoints();
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
