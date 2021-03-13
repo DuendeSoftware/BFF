@@ -72,7 +72,10 @@ namespace Host5
             
             app.UseAuthentication();
             app.UseRouting();
-            app.UseMiddleware<BffApiAntiforgeryMiddleware>();
+            
+            // adds antiforgery protection for local APIs
+            app.UseBff();
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -10,7 +10,7 @@ namespace Microsoft.AspNetCore.Builder
             builder.Add(endpointBuilder =>
             {
                 var metadata =
-                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiAntiforgeryMetadata)) as BffApiAntiforgeryMetadata;
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
                 
                 metadata.RequireAntiForgeryHeader = false;
             });
@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Builder
             builder.Add(endpointBuilder =>
             {
                 var metadata =
-                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiAccessTokenMetadata)) as BffApiAccessTokenMetadata;
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
 
                 metadata.RequiredTokenType = type;
             });
@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Builder
             builder.Add(endpointBuilder =>
             {
                 var metadata =
-                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffApiAccessTokenMetadata)) as BffApiAccessTokenMetadata;
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
 
                 metadata.OptionalUserToken = true;
             });

@@ -24,8 +24,7 @@ namespace Microsoft.AspNetCore.Builder
             return endpoints.Map(
                     localPath + "/{**catch-all}",
                     BffRemoteApiEndpoint.Map(localPath, apiAddress))
-                .WithMetadata(new BffApiAccessTokenMetadata())
-                .WithMetadata(new BffApiAntiforgeryMetadata());
+                .WithMetadata(new BffRemoteApiEndpointMetadata());
 
         }
     }

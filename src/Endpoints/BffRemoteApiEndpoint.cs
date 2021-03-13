@@ -23,13 +23,13 @@ namespace Duende.Bff
                     throw new InvalidOperationException("endoint not found");
                 }
 
-                var antiforgeryMetadata = endpoint.Metadata.GetMetadata<BffApiAntiforgeryMetadata>();
-                if (antiforgeryMetadata == null)
+                var metadata = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
+                if (metadata == null)
                 {
-                    throw new InvalidOperationException("API endoint is missing anti-forgery metadata");
+                    throw new InvalidOperationException("API endoint is missing BFF metadata");
                 }
 
-                if (antiforgeryMetadata.RequireAntiForgeryHeader)
+                if (metadata.RequireAntiForgeryHeader)
                 {
                     var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
                     if (antiForgeryHeader == null || antiForgeryHeader != "1")
@@ -41,38 +41,32 @@ namespace Duende.Bff
                     }
                 }
 
-                var accessTokenMetadata = endpoint.Metadata.GetMetadata<BffApiAccessTokenMetadata>();
-                if (accessTokenMetadata == null)
-                {
-                    throw new InvalidOperationException("API endoint is missing access token metadata");
-                }
-
                 string token = null;
-                if (accessTokenMetadata.RequiredTokenType.HasValue)
+                if (metadata.RequiredTokenType.HasValue)
                 {
-                    if (accessTokenMetadata.RequiredTokenType == TokenType.Client)
+                    if (metadata.RequiredTokenType == TokenType.Client)
                     {
                         token = await context.GetClientAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
-                            logger.AccessTokenMissing(localPath, accessTokenMetadata.RequiredTokenType.Value);
+                            logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
 
                             context.Response.StatusCode = 401;
                             return;
                         }
                     }
-                    else if (accessTokenMetadata.RequiredTokenType == TokenType.User)
+                    else if (metadata.RequiredTokenType == TokenType.User)
                     {
                         token = await context.GetUserAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
                         {
-                            logger.AccessTokenMissing(localPath, accessTokenMetadata.RequiredTokenType.Value);
+                            logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
 
                             context.Response.StatusCode = 401;
                             return;
                         }
                     }
-                    else if (accessTokenMetadata.RequiredTokenType == TokenType.UserOrClient)
+                    else if (metadata.RequiredTokenType == TokenType.UserOrClient)
                     {
                         token = await context.GetUserAccessTokenAsync();
                         if (string.IsNullOrWhiteSpace(token))
@@ -80,7 +74,7 @@ namespace Duende.Bff
                             token = await context.GetClientAccessTokenAsync();
                             if (string.IsNullOrWhiteSpace(token))
                             {
-                                logger.AccessTokenMissing(localPath, accessTokenMetadata.RequiredTokenType.Value);
+                                logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
 
                                 context.Response.StatusCode = 401;
                                 return;
@@ -91,7 +85,7 @@ namespace Duende.Bff
 
                 if (token == null)
                 {
-                    if (accessTokenMetadata.OptionalUserToken)
+                    if (metadata.OptionalUserToken)
                     {
                         token = await context.GetUserAccessTokenAsync();
                     }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Host5
 {
     [Route("local")]
-    [BffApiEndpoint]
     public class LocalApiController : ControllerBase
     {
         public IActionResult Get()
