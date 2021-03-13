@@ -1,7 +1,7 @@
 using Duende.Bff;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Host5
+namespace Host3
 {
     [Route("local")]
     public class LocalApiController : ControllerBase

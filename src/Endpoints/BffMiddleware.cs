@@ -61,6 +61,7 @@ namespace Duende.Bff.Endpoints
                 if (context.Response.StatusCode == 302)
                 {
                     context.Response.StatusCode = 401;
+                    context.Response.Headers["Location"] = "";
                 }
             }
 #endif

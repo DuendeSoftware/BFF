@@ -23,6 +23,8 @@ namespace Host5
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+            
             services.AddBff()
                 .AddCookieTicketStore();
             
@@ -68,10 +70,16 @@ namespace Host5
 
             app.UseAuthentication();
             app.UseRouting();
+
+            app.UseBff();
             app.UseAuthorization();
             
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers()
+                    .RequireAuthorization()
+                    .AsLocalBffApiEndpoints();
+                
                 endpoints.MapBffManagementEndpoints("/bff");
 
                 endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
