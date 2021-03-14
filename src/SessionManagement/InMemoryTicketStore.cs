@@ -1,4 +1,3 @@
-﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,51 +6,6 @@ using System.Threading.Tasks;
 
 namespace Duende.Bff
 {
-    public class UserSessionsFilter
-    {
-        public string SubjectId { get; set; }
-        public string SessionId { get; set; }
-
-        internal void Validate()
-        {
-            if (String.IsNullOrWhiteSpace(SubjectId) && String.IsNullOrWhiteSpace(SessionId))
-            {
-                throw new ArgumentNullException("SubjectId or SessionId is required.");
-            }
-        }
-    }
-
-    public interface ISessionRevocationService
-    {
-        Task DeleteUserSessionsAsync(UserSessionsFilter filter);
-    }
-
-    public class NopSessionRevocationService : ISessionRevocationService
-    {
-        private readonly ILogger<NopSessionRevocationService> _logger;
-
-        public NopSessionRevocationService(ILogger<NopSessionRevocationService> logger)
-        {
-            _logger = logger;
-        }
-
-        public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
-        {
-            _logger.LogDebug("Nop implementation of session revocation for sub: {sub}, and sid: {sid}. Implement ISessionRevocationService to provide your own implementation.", filter.SubjectId, filter.SessionId);
-            return Task.CompletedTask;
-        }
-    }
-
-    public interface IUserSessionStore : ISessionRevocationService
-    {
-        Task<UserSession> GetUserSessionAsync(string key);
-        Task CreateUserSessionAsync(UserSession ticket);
-        Task UpdateUserSessionAsync(UserSession ticket);
-        Task DeleteUserSessionAsync(string key);
-
-        Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter);
-    }
-
     public class InMemoryTicketStore : IUserSessionStore
     {
         ConcurrentDictionary<string, UserSession> _store = new ConcurrentDictionary<string, UserSession>();
@@ -124,36 +78,6 @@ namespace Duende.Bff
             }
 
             return Task.CompletedTask;
-        }
-    }
-
-    public class UserSession
-    {
-        public string Key { get; set; }
-
-        public string SubjectId { get; set; }
-        public string SessionId { get; set; }
-        public string Scheme { get; set; }
-
-        public DateTime Created { get; set; }
-        public DateTime Renewed { get; set; }
-        public DateTime? Expires { get; set; }
-
-        public string Ticket { get; set; }
-
-        internal UserSession Clone()
-        {
-            return new UserSession()
-            {
-                Key = this.Key,
-                SubjectId = this.SubjectId,
-                SessionId = this.SessionId,
-                Scheme = this.Scheme,
-                Created = this.Created,
-                Renewed = this.Renewed,
-                Expires = this.Expires,
-                Ticket = this.Ticket,
-            };
         }
     }
 }
