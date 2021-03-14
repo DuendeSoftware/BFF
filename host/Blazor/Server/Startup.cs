@@ -82,14 +82,14 @@ namespace Blazor.Server
             {
                 endpoints.MapBffManagementEndpoints();
                 
-                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5002")
                     .RequireAccessToken();
                 
                 endpoints.MapRazorPages();
                 
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsLocalBffApiEndpoints();
+                    .AsLocalBffApiEndpoint();
                 
                 endpoints.MapFallbackToFile("index.html");
             });

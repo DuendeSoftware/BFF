@@ -9,16 +9,30 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder
 {
+    /// <summary>
+    /// Encapsulates DI options for Duende.BFF
+    /// </summary>
     public class BffBuilder
     {
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="services"></param>
         public BffBuilder(IServiceCollection services)
         {
             Services = services;
         }
-        
+
+        /// <summary>
+        /// The service collection
+        /// </summary>
         public IServiceCollection Services { get; set; }
         
-        public BffBuilder AddCookieTicketStore()
+        /// <summary>
+        /// Adds a server-side session store using the in-memory store
+        /// </summary>
+        /// <returns></returns>
+        public BffBuilder AddServerSideSessions()
         {
             Services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureBffApplicationCookie>();
             Services.AddTransient<ITicketStore, CookieTicketStore>();
@@ -29,15 +43,25 @@ namespace Microsoft.AspNetCore.Builder
             return this;
         }
 
-        public BffBuilder AddCookieTicketStore<T>()
+        /// <summary>
+        /// Adds a server-side session store using the supplied session store implementation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public BffBuilder AddServerSideSessions<T>()
             where T : class, IUserSessionStore
         {
-            AddCookieTicketStore();
+            AddServerSideSessions();
             Services.AddTransient<IUserSessionStore, T>();
 
             return this;
         }
         
+        /// <summary>
+        /// Adds a custom factory to create HTTP clients for remote BFF API endpoints
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public BffBuilder AddHttpMessageInvokerFactory<T>()
             where T : class, IHttpMessageInvokerFactory
         {
@@ -46,6 +70,11 @@ namespace Microsoft.AspNetCore.Builder
             return this;
         }
         
+        /// <summary>
+        /// Configures the HTTP client used to do backchannel calls to the token service for token lifetime management
+        /// </summary>
+        /// <param name="configureClient"></param>
+        /// <returns></returns>
         public IHttpClientBuilder ConfigureTokenClient(Action<HttpClient> configureClient = null)
         {
             if (configureClient == null)

@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// Converts Challenge/Forbid to Ajax friendly status codes for BFF API endpoints
+    /// </summary>
     public class BffAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
     {
         private readonly AuthorizationMiddlewareResultHandler _handler;
@@ -19,6 +22,7 @@ namespace Duende.Bff
             _handler = new AuthorizationMiddlewareResultHandler();
         }
         
+        /// <inheritdoc />
         public Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy,
             PolicyAuthorizationResult authorizeResult)
         {

@@ -5,8 +5,16 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.AspNetCore.Builder
 {
+    /// <summary>
+    /// Extension methods for the BFF DI services
+    /// </summary>
     public static class BffServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds the Duende.BFF services to DI
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static BffBuilder AddBff(this IServiceCollection services)
         {
             services.AddReverseProxy().LoadFromMemory();

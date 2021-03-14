@@ -3,8 +3,17 @@ using Duende.Bff;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class BffApiEndpointExtensions
+    /// <summary>
+    /// Extension methods for BFF remote API endpoints
+    /// </summary>
+    public static class BffRemoteApiEndpointExtensions
     {
+        /// <summary>
+        /// Disables the antiforgery header check
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <typeparam name="TBuilder"></typeparam>
+        /// <returns></returns>
         public static TBuilder DisableAntiforgeryProtection<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
         {
             builder.Add(endpointBuilder =>
@@ -18,6 +27,13 @@ namespace Microsoft.AspNetCore.Builder
             return builder;
         }
         
+        /// <summary>
+        /// Specifies the access tokens requirements for an endpoint
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="type"></param>
+        /// <typeparam name="TBuilder"></typeparam>
+        /// <returns></returns>
         public static TBuilder RequireAccessToken<TBuilder>(this TBuilder builder, TokenType type = TokenType.User) where TBuilder : IEndpointConventionBuilder
         {
             builder.Add(endpointBuilder =>
@@ -31,6 +47,12 @@ namespace Microsoft.AspNetCore.Builder
             return builder;
         }
         
+        /// <summary>
+        /// Allows for anonymous access with an optional user token for an endpoint
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <typeparam name="TBuilder"></typeparam>
+        /// <returns></returns>
         public static TBuilder WithOptionalUserAccessToken<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
         {
             builder.Add(endpointBuilder =>

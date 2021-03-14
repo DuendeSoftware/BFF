@@ -17,10 +17,10 @@ namespace Duende.Bff
             EventIds.AccessTokenMissing,
             "Access token is missing. token type: '{tokenType}', local path: '{localpath}'.");
 
-        private static readonly Action<ILogger, string, Exception> _antiforgeryValidationFailed = LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, Exception> _antiForgeryValidationFailed = LoggerMessage.Define<string>(
             LogLevel.Error,
             EventIds.AntiforgeryValidationFailed,
-            "Antiforgery validation failed. local path: '{localPath}'");
+            "Anti-forgery validation failed. local path: '{localPath}'");
         
         private static readonly Action<ILogger, string, string, Exception> _proxyResponseError = LoggerMessage.Define<string, string>(
             LogLevel.Information,
@@ -32,9 +32,9 @@ namespace Duende.Bff
             _accessTokenMissing(logger, tokenType.ToString(), localPath, null);
         }
 
-        public static void AntiforgeryValidationFailed(this ILogger logger, string localPath)
+        public static void AntiForgeryValidationFailed(this ILogger logger, string localPath)
         {
-            _antiforgeryValidationFailed(logger, localPath, null);
+            _antiForgeryValidationFailed(logger, localPath, null);
         }
         
         public static void ProxyResponseError(this ILogger logger, string localPath, string error)

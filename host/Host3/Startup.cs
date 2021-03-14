@@ -26,7 +26,7 @@ namespace Host5
             services.AddControllers();
             
             services.AddBff()
-                .AddCookieTicketStore();
+                .AddServerSideSessions();
             
             services.AddAuthentication(options =>
                 {
@@ -78,11 +78,11 @@ namespace Host5
             {
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsLocalBffApiEndpoints();
+                    .AsLocalBffApiEndpoint();
                 
                 endpoints.MapBffManagementEndpoints("/bff");
 
-                endpoints.MapBffApiEndpoint("/api", "https://localhost:5002")
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5002")
                     .RequireAccessToken();
             });
         }

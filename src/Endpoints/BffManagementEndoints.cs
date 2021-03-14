@@ -78,26 +78,6 @@ namespace Duende.Bff
             }
         }
 
-        public static async Task MapXsrfToken(HttpContext context)
-        {
-            // todo: require authenticated user?
-
-            var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
-            var tokens = antiforgery.GetAndStoreTokens(context);
-
-            var result = new
-            {
-                token = tokens.RequestToken,
-                headerName = tokens.HeaderName
-            };
-
-            var json = JsonSerializer.Serialize(result);
-
-            context.Response.StatusCode = 200;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(json, Encoding.UTF8);
-        }
-
         public static Task MapBackchannelLogout(HttpContext context)
         {
             var backchannel = context.RequestServices.GetRequiredService<IBackchannelLogoutService>();

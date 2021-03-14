@@ -34,7 +34,7 @@ namespace Duende.Bff
                     var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
                     if (antiForgeryHeader == null || antiForgeryHeader != "1")
                     {
-                        logger.AntiforgeryValidationFailed(localPath);
+                        logger.AntiForgeryValidationFailed(localPath);
 
                         context.Response.StatusCode = 401;
                         return;

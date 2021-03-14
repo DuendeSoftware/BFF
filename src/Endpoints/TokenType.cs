@@ -1,9 +1,23 @@
 namespace Duende.Bff
 {
+    /// <summary>
+    /// Expresses allowed token types
+    /// </summary>
     public enum TokenType
     {
+        /// <summary>
+        /// User token
+        /// </summary>
         User, 
+        
+        /// <summary>
+        /// Client token
+        /// </summary>
         Client,
+        
+        /// <summary>
+        /// User or client token
+        /// </summary>
         UserOrClient
     }
 }

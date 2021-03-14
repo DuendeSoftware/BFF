@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Duende.Bff.Endpoints
 {
     /// <summary>
-    /// Middleware to provide antiforgery protection via a static header and 302 to 401 conversion
+    /// Middleware to provide anti-forgery protection via a static header and 302 to 401 conversion
     /// Must run *before* the authorization middleware
     /// </summary>
     public class BffMiddleware
@@ -34,12 +34,12 @@ namespace Duende.Bff.Endpoints
 
             if (localEndoint != null)
             {
-                if (localEndoint.DisableAntiforgeryCheck == false)
+                if (localEndoint.DisableAntiForgeryCheck == false)
                 {
                     var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
                     if (antiForgeryHeader == null || antiForgeryHeader != "1")
                     {
-                        _logger.AntiforgeryValidationFailed(context.Request.Path);
+                        _logger.AntiForgeryValidationFailed(context.Request.Path);
                         
                         context.Response.StatusCode = 401;
                         return;
