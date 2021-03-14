@@ -10,8 +10,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// BFF management endpoints
+    /// </summary>
     public static class BffManagementEndoints
     {
+        /// <summary>
+        /// Login endpoint
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task MapLogin(HttpContext context)
         {
             var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
@@ -32,6 +41,12 @@ namespace Duende.Bff
             await context.ChallengeAsync(props);
         }
 
+        /// <summary>
+        /// logout endpoint
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task MapLogout(HttpContext context)
         {
             var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
@@ -59,6 +74,11 @@ namespace Duende.Bff
             await context.SignOutAsync(props);
         }
 
+        /// <summary>
+        /// user endpoint
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static async Task MapUser(HttpContext context)
         {
             var result = await context.AuthenticateAsync();
@@ -78,6 +98,11 @@ namespace Duende.Bff
             }
         }
 
+        /// <summary>
+        /// back-channel logout endpoint
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static Task MapBackchannelLogout(HttpContext context)
         {
             var backchannel = context.RequestServices.GetRequiredService<IBackchannelLogoutService>();

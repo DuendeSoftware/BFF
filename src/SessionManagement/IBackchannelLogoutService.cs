@@ -3,8 +3,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// Service for handling back-channel logout notifications
+    /// </summary>
     public interface IBackchannelLogoutService
     {
+        /// <summary>
+        /// Process the back-channel logout notification
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         Task ProcessRequequestAsync(HttpContext context);
     }
 }

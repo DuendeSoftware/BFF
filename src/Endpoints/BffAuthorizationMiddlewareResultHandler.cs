@@ -17,6 +17,9 @@ namespace Duende.Bff
     {
         private readonly AuthorizationMiddlewareResultHandler _handler;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
         public BffAuthorizationMiddlewareResultHandler()
         {
             _handler = new AuthorizationMiddlewareResultHandler();

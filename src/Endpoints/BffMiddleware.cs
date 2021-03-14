@@ -14,11 +14,22 @@ namespace Duende.Bff.Endpoints
         private readonly RequestDelegate _next;
         private readonly ILogger<BffMiddleware> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="next"></param>
+        /// <param name="logger"></param>
         public BffMiddleware(RequestDelegate next, ILogger<BffMiddleware> logger)
         {
             _next = next;
             _logger = logger;
         }
+        
+        /// <summary>
+        /// Request processing
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext context)
         {
             // inbound: add CSRF check for local APIs 
@@ -36,8 +47,8 @@ namespace Duende.Bff.Endpoints
             {
                 if (localEndoint.DisableAntiForgeryCheck == false)
                 {
-                    var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
-                    if (antiForgeryHeader == null || antiForgeryHeader != "1")
+                    var antiForgeryHeader = context.Request.Headers[BffDefaults.AntiForgeryHeaderName].FirstOrDefault();
+                    if (antiForgeryHeader == null || antiForgeryHeader != BffDefaults.AntiForgeryHeaderValue)
                     {
                         _logger.AntiForgeryValidationFailed(context.Request.Path);
                         
@@ -52,6 +63,7 @@ namespace Duende.Bff.Endpoints
             // outbound: for .NET Core 3.1 - we assume that an API will never return a 302
             // if a 302 is returned, that must be the challenge to the OIDC provider
             // we convert this to a 401
+            // in .NET 5 we can use the AuthorizationMiddlewareResultHandler for this logic
             
 #if NETCOREAPP3_1
             var remoteEndoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();

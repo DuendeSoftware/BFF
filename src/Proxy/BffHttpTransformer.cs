@@ -25,10 +25,6 @@ namespace Duende.Bff
         public override async Task TransformRequestAsync(HttpContext httpContext,
             HttpRequestMessage proxyRequest, string destinationPrefix)
         {
-            // context.Path = context.Path.StartsWithSegments(Value, out var remainder) ? remainder : context.Path;
-            
-            // Copy headers normally and then remove the original host.
-            // Use the destination host from proxyRequest.RequestUri instead.
             await base.TransformRequestAsync(httpContext, proxyRequest, destinationPrefix);
             proxyRequest.Headers.Host = null;
 
