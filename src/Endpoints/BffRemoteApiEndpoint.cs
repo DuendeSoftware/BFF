@@ -8,8 +8,18 @@ using Microsoft.ReverseProxy.Service.Proxy;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// Remote BFF API endpoint
+    /// </summary>
     public static class BffRemoteApiEndpoint
     {
+        /// <summary>
+        /// Endpoint logic
+        /// </summary>
+        /// <param name="localPath">The local path (e.g. /api)</param>
+        /// <param name="apiAddress">The remote address (e.g. https://api.myapp.com/foo)</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public static RequestDelegate Map(string localPath, string apiAddress)
         {
             return async context =>
@@ -31,8 +41,8 @@ namespace Duende.Bff
 
                 if (metadata.RequireAntiForgeryHeader)
                 {
-                    var antiForgeryHeader = context.Request.Headers["X-CSRF"].FirstOrDefault();
-                    if (antiForgeryHeader == null || antiForgeryHeader != "1")
+                    var antiForgeryHeader = context.Request.Headers[BffDefaults.AntiForgeryHeaderName].FirstOrDefault();
+                    if (antiForgeryHeader == null || antiForgeryHeader != BffDefaults.AntiForgeryHeaderValue)
                     {
                         logger.AntiForgeryValidationFailed(localPath);
 
