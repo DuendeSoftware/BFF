@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// Default back-channel logout notification service implementation
+    /// </summary>
     public class DefaultBackchannelLogoutService : IBackchannelLogoutService
     {
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -22,6 +25,13 @@ namespace Duende.Bff
         private readonly ISessionRevocationService _userSession;
         private readonly ILogger<DefaultBackchannelLogoutService> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="authenticationSchemeProvider"></param>
+        /// <param name="optionsMonitor"></param>
+        /// <param name="userSession"></param>
+        /// <param name="logger"></param>
         public DefaultBackchannelLogoutService(
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IOptionsMonitor<OpenIdConnectOptions> optionsMonitor,
@@ -34,6 +44,7 @@ namespace Duende.Bff
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public async Task ProcessRequequestAsync(HttpContext context)
         {
             context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
@@ -43,20 +54,21 @@ namespace Duende.Bff
             {
                 if (context.Request.HasFormContentType)
                 {
-                    var logout_token = context.Request.Form["logout_token"].FirstOrDefault();
-                    if (!String.IsNullOrWhiteSpace(logout_token))
+                    var logoutToken = context.Request.Form[OidcConstants.BackChannelLogoutRequest.LogoutToken].FirstOrDefault();
+                    
+                    if (!String.IsNullOrWhiteSpace(logoutToken))
                     {
-                        var user = await ValidateLogoutTokenAsync(logout_token);
+                        var user = await ValidateLogoutTokenAsync(logoutToken);
                         if (user != null)
                         {
                             // these are the sub & sid to signout
-                            var sub = user.FindFirst("sub")?.Value;
-                            var sid = user.FindFirst("sid")?.Value;
+                            var sub = user.FindFirst("sub")?.Value ?? "missing";
+                            var sid = user.FindFirst("sid")?.Value ?? "missing";
 
-                            // we would now delete the sub/sid from the user session DB
-                            _logger.LogInformation("Backchannel logout for sub: {sub}, and sid: {sid}", sub, sid);
+                            _logger.BackChannelLogout(sub, sid);
                             
-                            await _userSession.DeleteUserSessionsAsync(new UserSessionsFilter { 
+                            await _userSession.DeleteUserSessionsAsync(new UserSessionsFilter 
+                            { 
                                 SubjectId = sub,
                                 SessionId = sid,
                             });
@@ -68,7 +80,7 @@ namespace Duende.Bff
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to process backchannel logout request.");
+                _logger.BackChannelLogoutError($"Failed to process backchannel logout request. {ex.Message}'");
             }
 
             context.Response.StatusCode = 400;
@@ -84,21 +96,21 @@ namespace Duende.Bff
 
             if (claims.FindFirst("sub") == null && claims.FindFirst("sid") == null)
             {
-                _logger.LogError("Logout token missing sub or sid claims.");
+                _logger.BackChannelLogoutError("Logout token missing sub or sid claims.");
                 return null;
             }
 
             var nonce = claims.FindFirst("nonce")?.Value;
             if (!String.IsNullOrWhiteSpace(nonce))
             {
-                _logger.LogError("Logout token should not contain nonce claim.");
+                _logger.BackChannelLogoutError("Logout token should not contain nonce claim.");
                 return null;
             }
 
             var eventsJson = claims.FindFirst("events")?.Value;
             if (String.IsNullOrWhiteSpace(eventsJson))
             {
-                _logger.LogError("Logout token missing events claim.");
+                _logger.BackChannelLogoutError("Logout token missing events claim.");
                 return null;
             }
 
@@ -107,13 +119,13 @@ namespace Duende.Bff
                 var events = JsonDocument.Parse(eventsJson);
                 if (!events.RootElement.TryGetProperty("http://schemas.openid.net/event/backchannel-logout", out _))
                 {
-                    _logger.LogError("Logout token contains missing http://schemas.openid.net/event/backchannel-logout value.");
+                    _logger.BackChannelLogoutError("Logout token contains missing http://schemas.openid.net/event/backchannel-logout value.");
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Logout token contains invalid JSON in events claim value.");
+                _logger.BackChannelLogoutError($"Logout token contains invalid JSON in events claim value. {ex.Message}");
                 return null;
             }
 
@@ -132,7 +144,7 @@ namespace Duende.Bff
             }
             else
             {
-                _logger.LogError(result.Exception, "Logout token validation failed.");
+                _logger.BackChannelLogoutError(result.Exception.ToString());
             }
 
             return null;
