@@ -62,10 +62,10 @@ namespace Duende.Bff
                         if (user != null)
                         {
                             // these are the sub & sid to signout
-                            var sub = user.FindFirst("sub")?.Value ?? "missing";
-                            var sid = user.FindFirst("sid")?.Value ?? "missing";
+                            var sub = user.FindFirst("sub")?.Value;
+                            var sid = user.FindFirst("sid")?.Value;
 
-                            _logger.BackChannelLogout(sub, sid);
+                            _logger.BackChannelLogout(sub ?? "missing", sid ?? "missing");
                             
                             await _userSession.DeleteUserSessionsAsync(new UserSessionsFilter 
                             { 
