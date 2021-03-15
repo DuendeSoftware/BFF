@@ -6,18 +6,27 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Duende.Bff
 {
-    // this shim class is needed since ITicketStore is not configured in DI, rather it's a property 
-    // of the cookie options and coordinated with PostConfigureApplicationCookie. #lame
-    // https://github.com/aspnet/AspNetCore/issues/6946
+    /// <summary>
+    /// this shim class is needed since ITicketStore is not configured in DI, rather it's a property 
+    /// of the cookie options and coordinated with PostConfigureApplicationCookie. #lame
+    /// https://github.com/aspnet/AspNetCore/issues/6946 
+    /// </summary>
     public class TicketStoreShim : ITicketStore
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="httpContextAccessor"></param>
         public TicketStoreShim(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// The inner
+        /// </summary>
         public ITicketStore Inner
         {
             get
@@ -26,21 +35,25 @@ namespace Duende.Bff
             }
         }
 
+        /// <inheritdoc />
         public Task RemoveAsync(string key)
         {
             return Inner.RemoveAsync(key);
         }
 
+        /// <inheritdoc />
         public Task RenewAsync(string key, AuthenticationTicket ticket)
         {
             return Inner.RenewAsync(key, ticket);
         }
 
+        /// <inheritdoc />
         public Task<AuthenticationTicket> RetrieveAsync(string key)
         {
             return Inner.RetrieveAsync(key);
         }
 
+        /// <inheritdoc />
         public Task<string> StoreAsync(AuthenticationTicket ticket)
         {
             return Inner.StoreAsync(ticket);

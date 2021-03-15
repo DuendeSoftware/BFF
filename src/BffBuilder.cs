@@ -37,7 +37,7 @@ namespace Microsoft.AspNetCore.Builder
             Services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureBffApplicationCookie>();
             Services.AddTransient<ITicketStore, CookieTicketStore>();
 
-            Services.TryAddSingleton<IUserSessionStore, InMemoryTicketStore>();
+            Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
             Services.AddTransient<ISessionRevocationService>(x => x.GetRequiredService<IUserSessionStore>());
 
             return this;

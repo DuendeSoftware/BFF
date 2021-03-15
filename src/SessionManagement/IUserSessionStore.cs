@@ -3,13 +3,44 @@ using System.Threading.Tasks;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// User session store
+    /// </summary>
     public interface IUserSessionStore : ISessionRevocationService
     {
+        /// <summary>
+        /// Retrieves a user session
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         Task<UserSession> GetUserSessionAsync(string key);
-        Task CreateUserSessionAsync(UserSession ticket);
-        Task UpdateUserSessionAsync(UserSession ticket);
+        
+        /// <summary>
+        /// Creates a user session
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        Task CreateUserSessionAsync(UserSession session);
+        
+        /// <summary>
+        /// Updates a user session
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        Task UpdateUserSessionAsync(UserSession session);
+        
+        /// <summary>
+        /// Deletes a user session
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         Task DeleteUserSessionAsync(string key);
 
+        /// <summary>
+        /// Queries user sessions
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter);
     }
 }

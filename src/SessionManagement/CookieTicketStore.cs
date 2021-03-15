@@ -6,11 +6,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// IUserSession-backed ticket store
+    /// </summary>
     public class CookieTicketStore : ITicketStore
     {
         private readonly IUserSessionStore _store;
         private readonly ILogger<CookieTicketStore> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="store"></param>
+        /// <param name="logger"></param>
         public CookieTicketStore(
             IUserSessionStore store,
             ILogger<CookieTicketStore> logger)
@@ -19,6 +27,7 @@ namespace Duende.Bff
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public async Task<string> StoreAsync(AuthenticationTicket ticket)
         {
             var key = CryptoRandom.CreateUniqueId(format: CryptoRandom.OutputFormat.Hex);
@@ -40,6 +49,7 @@ namespace Duende.Bff
             return key;
         }
 
+        /// <inheritdoc />
         public async Task<AuthenticationTicket> RetrieveAsync(string key)
         {
             var session = await _store.GetUserSessionAsync(key);
@@ -59,6 +69,7 @@ namespace Duende.Bff
             return null;
         }
 
+        /// <inheritdoc />
         public async Task RenewAsync(string key, AuthenticationTicket ticket)
         {
             var session = await _store.GetUserSessionAsync(key);
@@ -78,6 +89,7 @@ namespace Duende.Bff
             }
         }
 
+        /// <inheritdoc />
         public Task RemoveAsync(string key)
         {
             return _store.DeleteUserSessionAsync(key);

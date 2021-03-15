@@ -6,38 +6,45 @@ using System.Threading.Tasks;
 
 namespace Duende.Bff
 {
-    public class InMemoryTicketStore : IUserSessionStore
+    /// <summary>
+    /// In-memory user session store
+    /// </summary>
+    public class InMemoryUserSessionStore : IUserSessionStore
     {
-        ConcurrentDictionary<string, UserSession> _store = new ConcurrentDictionary<string, UserSession>();
+        private readonly ConcurrentDictionary<string, UserSession> _store = new ConcurrentDictionary<string, UserSession>();
 
-        public Task CreateUserSessionAsync(UserSession ticket)
+        /// <inheritdoc />
+        public Task CreateUserSessionAsync(UserSession session)
         {
-            if (!_store.TryAdd(ticket.Key, ticket.Clone()))
+            if (!_store.TryAdd(session.Key, session.Clone()))
             {
                 throw new Exception("Key already exists");
             }
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task<UserSession> GetUserSessionAsync(string key)
         {
             _store.TryGetValue(key, out var item);
             return Task.FromResult(item?.Clone());
         }
 
-        public Task UpdateUserSessionAsync(UserSession ticket)
+        /// <inheritdoc />
+        public Task UpdateUserSessionAsync(UserSession session)
         {
-            _store[ticket.Key] = ticket.Clone();
+            _store[session.Key] = session.Clone();
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task DeleteUserSessionAsync(string key)
         {
             _store.TryRemove(key, out _);
             return Task.CompletedTask;
         }
-
-
+        
+        /// <inheritdoc />
         public Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter)
         {
             filter.Validate();
@@ -56,6 +63,7 @@ namespace Duende.Bff
             return Task.FromResult(results);
         }
 
+        /// <inheritdoc />
         public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
         {
             filter.Validate();

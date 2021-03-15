@@ -9,8 +9,21 @@ using System.Text.Json.Serialization;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    ///  Extension methods for AuthenticationTicket
+    /// </summary>
     public static class AuthenticationTicketExtensions
     {
+        static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+        
+        /// <summary>
+        /// Extracts a subject identifier
+        /// </summary>
+        /// <param name="ticket"></param>
+        /// <returns></returns>
         public static string GetSubjectId(this AuthenticationTicket ticket)
         {
             return ticket.Principal.FindFirst(JwtClaimTypes.Subject)?.Value ??
@@ -19,29 +32,55 @@ namespace Duende.Bff
                    ticket.Principal.FindFirst(ClaimTypes.Name)?.Value;
         }
 
+        /// <summary>
+        /// Extracts the session ID
+        /// </summary>
+        /// <param name="ticket"></param>
+        /// <returns></returns>
         public static string GetSessionId(this AuthenticationTicket ticket)
         {
             return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
         }
         
+        /// <summary>
+        /// Extracts the issuance time
+        /// </summary>
+        /// <param name="ticket"></param>
+        /// <returns></returns>
         public static DateTime GetIssued(this AuthenticationTicket ticket)
         {
             return ticket.Properties.IssuedUtc.HasValue ?
                 ticket.Properties.IssuedUtc.Value.UtcDateTime : DateTime.UtcNow;
         }
         
+        /// <summary>
+        /// Extracts the expiration time
+        /// </summary>
+        /// <param name="ticket"></param>
+        /// <returns></returns>
         public static DateTime? GetExpiration(this AuthenticationTicket ticket)
         {
             return ticket.Properties.ExpiresUtc.HasValue ?
                 ticket.Properties.ExpiresUtc.Value.UtcDateTime : default(DateTime?);
         }
 
+        /// <summary>
+        /// Converts a ClaimsPrincipalLite to ClaimsPrincipal
+        /// </summary>
+        /// <param name="principal"></param>
+        /// <returns></returns>
         public static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
         {
             var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
             var id = new ClaimsIdentity(claims, principal.AuthenticationType);
             return new ClaimsPrincipal(id);
         }
+        
+        /// <summary>
+        /// Converts a ClaimsPrincipal to ClaimsPrincipalLite
+        /// </summary>
+        /// <param name="principal"></param>
+        /// <returns></returns>
         public static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
         {
             var claims = principal.Claims.Select(
@@ -59,11 +98,11 @@ namespace Duende.Bff
             };
         }
         
-        static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
+        /// <summary>
+        /// Serializes and AuthenticationTicket to a string
+        /// </summary>
+        /// <param name="ticket"></param>
+        /// <returns></returns>
         public static string Serialize(this AuthenticationTicket ticket)
         {
             var data = new AuthenticationTicketLite
@@ -78,6 +117,11 @@ namespace Duende.Bff
             return value;
         }
         
+        /// <summary>
+        /// Deserializes a UserSession to an AuthenticationTicket
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         public static AuthenticationTicket Deserialize(this UserSession session)
         {
             try
@@ -107,28 +151,67 @@ namespace Duende.Bff
             return null;
         }
 
+        /// <summary>
+        /// Serialization friendly AuthenticationTicket
+        /// </summary>
         public class AuthenticationTicketLite
         {
+            /// <summary>
+            /// The scheme
+            /// </summary>
             public string Scheme { get; set; }
+            
+            /// <summary>
+            /// The user
+            /// </summary>
             public ClaimsPrincipalLite User { get; set; }
+            
+            /// <summary>
+            /// The items
+            /// </summary>
             public IDictionary<string, string> Items { get; set; }
         }
         
+        /// <summary>
+        /// Serialization friendly claim
+        /// </summary>
         public class ClaimLite
         {
+            /// <summary>
+            /// The type
+            /// </summary>
             public string Type { get; set; }
+            
+            /// <summary>
+            /// The value
+            /// </summary>
             public string Value { get; set; }
+            
+            /// <summary>
+            /// The value type
+            /// </summary>
             public string ValueType { get; set; }
         }
         
+        /// <summary>
+        /// Serialization friendly ClaimsPrincipal
+        /// </summary>
         public class ClaimsPrincipalLite
         {
+            /// <summary>
+            /// The authentication type
+            /// </summary>
             public string AuthenticationType { get; set; }
+            
+            /// <summary>
+            /// The claims
+            /// </summary>
             public ClaimLite[] Claims { get; set; }
         }
     }
 
 
+    // todo
     //public class TicketCleanupService : IHostedService
     //{
     //    private readonly IServiceProvider _serviceProvider;
