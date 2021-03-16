@@ -37,7 +37,7 @@ namespace Duende.Bff
         private static readonly Action<ILogger, string, Exception> _backChannelLogoutError = LoggerMessage.Define<string>(
             LogLevel.Information,
             EventIds.BackChannelLogoutError,
-            "Back-channel logout error. error: '{error'");
+            "Back-channel logout error. error: '{error}'");
 
         public static void AccessTokenMissing(this ILogger logger, string localPath, TokenType tokenType)
         {
