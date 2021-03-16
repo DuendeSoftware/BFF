@@ -19,8 +19,8 @@ namespace IdentityServerHost
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("scope1"),
-                new ApiScope("scope2"),
+                new ApiScope("scope1", new[]{ "name" }),
+                new ApiScope("scope2", new[]{ "name" }),
             };
 
         public static IEnumerable<Client> Clients =>
