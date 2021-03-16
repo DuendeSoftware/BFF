@@ -1,9 +1,5 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,11 +7,6 @@ namespace Api
 {
     public class Startup
     {
-        public Startup()
-        {
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-        }
-        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -25,6 +16,7 @@ namespace Api
                 {
                     options.Authority = "https://localhost:5005";
                     options.Audience = "https://localhost:5005/resources";
+                    options.MapInboundClaims = false;
                 });
         }
 
@@ -42,21 +34,8 @@ namespace Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/{**catch-all}", async context =>
-                {
-                    var sub = context.User.FindFirst(("sub"));
-                    if (sub == null) throw new Exception("sub is missing");
-
-                    var response = new
-                    {
-                        path = context.Request.Path.Value,
-                        message = $"Hello, {sub.Value}!"
-                    };
-
-                    context.Response.StatusCode = 200;
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                }).RequireAuthorization();
+                endpoints.MapControllers()
+                    .RequireAuthorization();
             });
         }
     }
