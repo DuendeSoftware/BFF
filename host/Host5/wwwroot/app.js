@@ -4,7 +4,13 @@ var userUrl = "/bff/user";
 var api1Url = "/api";
 
 async function onLoad() {
-    var req = new Request(userUrl, {credentials: 'include'})
+    var req = new Request(userUrl, {
+        credentials: 'include',
+        headers: new Headers({
+            'X-CSRF': '1'
+        })
+    })
+        
     var resp = await fetch(req);
     if (resp.ok) {
         log("user logged in");

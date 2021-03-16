@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff
 {
@@ -81,6 +82,18 @@ namespace Duende.Bff
         /// <returns></returns>
         public static async Task MapUser(HttpContext context)
         {
+            var antiForgeryHeader = context.Request.Headers[BffDefaults.AntiForgeryHeaderName].FirstOrDefault();
+            if (antiForgeryHeader == null || antiForgeryHeader != BffDefaults.AntiForgeryHeaderValue)
+            {
+                var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
+                var logger = loggerFactory.CreateLogger("Duende.Bff.BffApiEndpoint");
+                
+                logger.AntiForgeryValidationFailed("user");
+
+                context.Response.StatusCode = 401;
+                return;
+            }
+            
             var result = await context.AuthenticateAsync();
 
             if (!result.Succeeded)
