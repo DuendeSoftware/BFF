@@ -1,5 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using Duende.Bff.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,8 +16,6 @@ namespace Host5
         {
             _configuration = configuration;
             _environment = environment;
-
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -49,6 +45,7 @@ namespace Host5
                     options.ResponseType = "code";
                     options.ResponseMode = "query";
 
+                    options.MapInboundClaims = false;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
 
