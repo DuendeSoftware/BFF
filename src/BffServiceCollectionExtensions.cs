@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static BffBuilder AddBff(this IServiceCollection services)
         {
-            services.AddReverseProxy().LoadFromMemory();
+            services.AddHttpProxy();
             services.AddAccessTokenManagement();
 
             services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
