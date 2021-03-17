@@ -15,7 +15,7 @@ async function onLoad() {
     if (resp.ok) {
         log("user logged in");
         showUser(await resp.json());
-    } else if (resp.status === 404) {
+    } else if (resp.status === 401) {
         log("user not logged in");
     }
 }
