@@ -20,12 +20,14 @@ namespace Host5
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add BFF services to DI - also add server-side session management
             services.AddBff()
                 .AddServerSideSessions();
 
             // local APIs
             services.AddControllers();
 
+            // cookie options
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "cookie";
@@ -34,12 +36,17 @@ namespace Host5
                 })
                 .AddCookie("cookie", options =>
                 {
+                    // host prefixed cookie name
                     options.Cookie.Name = "__Host-spa5";
+                    
+                    // strict SameSite handling
                     options.Cookie.SameSite = SameSiteMode.Strict;
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = "https://localhost:5001";
+                    
+                    // confidential client using code flow + PKCE
                     options.ClientId = "spa";
                     options.ClientSecret = "secret";
                     options.ResponseType = "code";
@@ -49,6 +56,7 @@ namespace Host5
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
 
+                    // request scopes + refresh tokens
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
@@ -71,6 +79,7 @@ namespace Host5
             // adds antiforgery protection for local APIs
             app.UseBff();
             
+            // adds authorization for local and remote API endpoints
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -84,6 +93,9 @@ namespace Host5
                 endpoints.MapBffManagementEndpoints();
 
                 // proxy endpoint for cross-site APIs
+                // all calls to /api/* will be forwarded to the remote API
+                // user access token will be attached in API call
+                // user access token will be managed automatically using the refresh token
                 endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken();
             });
