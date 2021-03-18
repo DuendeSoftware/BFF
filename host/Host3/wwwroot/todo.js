@@ -10,7 +10,7 @@ async function addNew() {
         method: "POST",
         headers: {
             "content-type": "application/json",
-            'x-csrf': '1'
+            'x-csrf':'1'
         },
         body: JSON.stringify({
             name: name.value,

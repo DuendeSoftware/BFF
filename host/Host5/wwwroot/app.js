@@ -1,7 +1,8 @@
 ﻿var loginUrl = "/bff/login";
 var logoutUrl = "/bff/logout";
 var userUrl = "/bff/user";
-var api1Url = "/api";
+var localApiUrl = "/local";
+var remoteApiUrl = "/api";
 
 async function onLoad() {
     var req = new Request(userUrl, {
@@ -9,13 +10,18 @@ async function onLoad() {
             'X-CSRF': '1'
         })
     })
-        
-    var resp = await fetch(req);
-    if (resp.ok) {
-        log("user logged in");
-        showUser(await resp.json());
-    } else if (resp.status === 401) {
-        log("user not logged in");
+
+    try {
+        var resp = await fetch(req);
+        if (resp.ok) {
+            log("user logged in");
+            showUser(await resp.json());
+        } else if (resp.status === 401) {
+            log("user not logged in");
+        }
+    }
+    catch (e) {
+        log("error checking user status");
     }
 }
 
@@ -30,7 +36,7 @@ function logout() {
 }
 
 async function callLocalApi() {
-    var req = new Request("/local", {
+    var req = new Request(localApiUrl, {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -44,7 +50,7 @@ async function callLocalApi() {
 }
 
 async function callCrossApi() {
-    var req = new Request(api1Url + "/foo", {
+    var req = new Request(remoteApiUrl + "/foo", {
         headers: new Headers({
             'X-CSRF': '1'
         })

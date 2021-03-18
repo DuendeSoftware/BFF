@@ -1,16 +1,27 @@
-﻿var loginUrl = "/bff/login?returnUrl=/index.html?state=loggedin#foo";
-var logoutUrl = "/bff/logout?returnUrl=/index.html?state=loggedout#foo";
+﻿var loginUrl = "/bff/login";
+var logoutUrl = "/bff/logout";
 var userUrl = "/bff/user";
-var api1Url = "/api";
+var localApiUrl = "/local";
+var remoteApiUrl = "/api";
 
 async function onLoad() {
-    var req = new Request(userUrl, {credentials: 'include'})
-    var resp = await fetch(req);
-    if (resp.ok) {
-        log("user logged in");
-        showUser(await resp.json());
-    } else if (resp.status === 404) {
-        log("user not logged in");
+    var req = new Request(userUrl, {
+        headers: new Headers({
+            'X-CSRF': '1'
+        })
+    })
+
+    try {
+        var resp = await fetch(req);
+        if (resp.ok) {
+            log("user logged in");
+            showUser(await resp.json());
+        } else if (resp.status === 401) {
+            log("user not logged in");
+        }
+    }
+    catch (e) {
+        log("error checking user status");
     }
 }
 
@@ -25,8 +36,7 @@ function logout() {
 }
 
 async function callLocalApi() {
-    var req = new Request("/local", {
-        credentials: 'include',
+    var req = new Request(localApiUrl, {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -40,8 +50,7 @@ async function callLocalApi() {
 }
 
 async function callCrossApi() {
-    var req = new Request(api1Url + "/foo", {
-        credentials: 'include',
+    var req = new Request(remoteApiUrl + "/foo", {
         headers: new Headers({
             'X-CSRF': '1'
         })

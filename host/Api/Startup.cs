@@ -14,8 +14,8 @@ namespace Api
             services.AddAuthentication("token")
                 .AddJwtBearer("token", options =>
                 {
-                    options.Authority = "https://localhost:5005";
-                    options.Audience = "https://localhost:5005/resources";
+                    options.Authority = "https://localhost:5001";
+                    options.Audience = "https://localhost:5001/resources";
                     options.MapInboundClaims = false;
                 });
         }

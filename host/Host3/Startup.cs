@@ -41,7 +41,7 @@ namespace Host5
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "https://localhost:5005";
+                    options.Authority = "https://localhost:5001";
                     options.ClientId = "spa";
                     options.ClientSecret = "secret";
                     options.ResponseType = "code";
@@ -82,7 +82,7 @@ namespace Host5
                 
                 endpoints.MapBffManagementEndpoints("/bff");
 
-                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5002")
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken();
             });
         }
