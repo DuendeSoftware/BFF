@@ -5,7 +5,6 @@ var api1Url = "/api";
 
 async function onLoad() {
     var req = new Request(userUrl, {
-        credentials: 'include',
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -32,7 +31,6 @@ function logout() {
 
 async function callLocalApi() {
     var req = new Request("/local", {
-        credentials: 'include',
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -47,7 +45,6 @@ async function callLocalApi() {
 
 async function callCrossApi() {
     var req = new Request(api1Url + "/foo", {
-        credentials: 'include',
         headers: new Headers({
             'X-CSRF': '1'
         })
