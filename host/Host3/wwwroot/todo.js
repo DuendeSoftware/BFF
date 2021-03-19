@@ -1,16 +1,17 @@
 ﻿const todoUrl = "/api/todos";
 const todos = document.getElementById("todos");
 
-document.getElementById("createNewButton").addEventListener("click", addNew);
+document.getElementById("createNewButton").addEventListener("click", createTodo);
 const name = document.getElementById("name");
 const date = document.getElementById("date");
 
-async function addNew() {
+
+async function createTodo() {
     let request = new Request(todoUrl, {
         method: "POST",
         headers: {
             "content-type": "application/json",
-            'x-csrf':'1'
+            'x-csrf': '1'
         },
         body: JSON.stringify({
             name: name.value,
@@ -20,8 +21,8 @@ async function addNew() {
 
     let result = await fetch(request);
     if (result.ok) {
-        todos.innerHTML = "";
-        showTodos();
+        var item = await result.json();
+        addRow(item);
     }
 }
 
@@ -34,27 +35,13 @@ async function showTodos() {
 
     if (result.ok) {
         let data = await result.json();
-        data.forEach(item => addTodo(item));
+        data.forEach(item => addRow(item));
     }
 }
 
-async function deleteTodo(id) {
-    let request = new Request(todoUrl + "/" + id, {
-        headers: {
-            'x-csrf': '1'
-        },
-        method: "DELETE"
-    });
-
-    let result = await fetch(request);
-    if (result.ok) {
-        todos.innerHTML = "";
-        showTodos();
-    }
-}
-
-function addTodo(item) {
+function addRow(item) {
     let row = document.createElement("tr");
+    row.dataset.id = item.id;
     todos.appendChild(row);
 
     function addCell(row, text) {
@@ -77,6 +64,28 @@ function addTodo(item) {
     addCell(row, item.date);
     addCell(row, item.name);
     addCell(row, item.user);
+}
+
+
+async function deleteRow(id) {
+    let row = todos.querySelector(`tr[data-id='${id}']`);
+    if (row) {
+        todos.removeChild(row);
+    }
+}
+
+async function deleteTodo(id) {
+    let request = new Request(todoUrl + "/" + id, {
+        headers: {
+            'x-csrf': '1'
+        },
+        method: "DELETE"
+    });
+
+    let result = await fetch(request);
+    if (result.ok) {
+        deleteRow(id);
+    }
 }
 
 
