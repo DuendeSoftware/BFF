@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Primitives;
-using Microsoft.ReverseProxy.Abstractions;
 using Microsoft.ReverseProxy.Configuration;
-using Microsoft.ReverseProxy.Service;
+using Yarp.ReverseProxy.Abstractions;
+using Yarp.ReverseProxy.Service;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

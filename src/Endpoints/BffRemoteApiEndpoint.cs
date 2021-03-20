@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.ReverseProxy.Service.Proxy;
+using Yarp.ReverseProxy.Service.Proxy;
 
 namespace Duende.Bff
 {
