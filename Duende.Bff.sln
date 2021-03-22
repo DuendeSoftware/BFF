@@ -1,29 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duende.Bff", "src\Duende.Bff.csproj", "{63FD9C99-C538-44BF-9AD4-D892775E336B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duende.Bff", "src\Duende.Bff.csproj", "{63FD9C99-C538-44BF-9AD4-D892775E336B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C549079-A502-4B40-B051-5278915AE91B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "host", "host", "{E14F66D1-EA3E-40C6-835A-91A4382D4646}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host5", "host\Host5\Host5.csproj", "{8850BAB7-F536-4860-9CD3-A760FEDF8F66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host5", "host\Host5\Host5.csproj", "{8850BAB7-F536-4860-9CD3-A760FEDF8F66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "host\Api\Api.csproj", "{887A9E11-12C3-4EB9-81CB-EB11EE27860B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "host\Api\Api.csproj", "{887A9E11-12C3-4EB9-81CB-EB11EE27860B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "host\IdentityServer\IdentityServer.csproj", "{CE1159B9-F763-4C32-828A-77529A820415}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "host\IdentityServer\IdentityServer.csproj", "{CE1159B9-F763-4C32-828A-77529A820415}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host3", "host\Host3\Host3.csproj", "{4C3F1C17-2B87-4A12-B46F-657DE0079172}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host3", "host\Host3\Host3.csproj", "{4C3F1C17-2B87-4A12-B46F-657DE0079172}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{3E17088E-56DA-42CB-97CE-E5E683B14D92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Shared", "host\Blazor\Shared\Blazor.Shared.csproj", "{0084741A-23E4-4AF7-BB4F-112F17D54C42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Shared", "host\Blazor\Shared\Blazor.Shared.csproj", "{0084741A-23E4-4AF7-BB4F-112F17D54C42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Client", "host\Blazor\Client\Blazor.Client.csproj", "{856A4A2A-E045-4AC4-A14B-B99E8BE1EE98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Client", "host\Blazor\Client\Blazor.Client.csproj", "{856A4A2A-E045-4AC4-A14B-B99E8BE1EE98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Server", "host\Blazor\Server\Blazor.Server.csproj", "{06018433-2F98-4238-B1CF-673117FEDAD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Server", "host\Blazor\Server\Blazor.Server.csproj", "{06018433-2F98-4238-B1CF-673117FEDAD4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B2A776DB-385B-4AD4-96A5-61746FD909C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duende.Bff.Tests", "test\Duende.Bff.Tests\Duende.Bff.Tests.csproj", "{FB30F557-D861-428B-A05D-49AE57F00EA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{63FD9C99-C538-44BF-9AD4-D892775E336B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -134,6 +135,21 @@ Global
 		{06018433-2F98-4238-B1CF-673117FEDAD4}.Release|x64.Build.0 = Release|Any CPU
 		{06018433-2F98-4238-B1CF-673117FEDAD4}.Release|x86.ActiveCfg = Release|Any CPU
 		{06018433-2F98-4238-B1CF-673117FEDAD4}.Release|x86.Build.0 = Release|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Debug|x64.Build.0 = Debug|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Release|x64.ActiveCfg = Release|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Release|x64.Build.0 = Release|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB30F557-D861-428B-A05D-49AE57F00EA4}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{63FD9C99-C538-44BF-9AD4-D892775E336B} = {3C549079-A502-4B40-B051-5278915AE91B}
@@ -145,5 +161,9 @@ Global
 		{0084741A-23E4-4AF7-BB4F-112F17D54C42} = {3E17088E-56DA-42CB-97CE-E5E683B14D92}
 		{856A4A2A-E045-4AC4-A14B-B99E8BE1EE98} = {3E17088E-56DA-42CB-97CE-E5E683B14D92}
 		{06018433-2F98-4238-B1CF-673117FEDAD4} = {3E17088E-56DA-42CB-97CE-E5E683B14D92}
+		{FB30F557-D861-428B-A05D-49AE57F00EA4} = {B2A776DB-385B-4AD4-96A5-61746FD909C3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3DAD5980-4688-4794-9CF0-6F3CB67194E7}
 	EndGlobalSection
 EndGlobal
