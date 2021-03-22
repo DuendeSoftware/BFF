@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Duende.Bff.Tests.TestFramework
@@ -98,7 +101,34 @@ namespace Duende.Bff.Tests.TestFramework
         {
             _appServices = app.ApplicationServices;
 
+            app.Map("/__signin", ConfigureSignin);
+
             OnConfigure(app);
+        }
+
+        void ConfigureSignin(IApplicationBuilder app)
+        {
+            app.Run(async ctx => 
+            {
+                ctx.Request.PathBase = "/";
+                if (_userToSignIn is not object)
+                {
+                    throw new Exception("No User Configured for SignIn");
+                }
+
+                await ctx.SignInAsync(_userToSignIn);
+                _userToSignIn = null;
+
+                ctx.Response.StatusCode = 204;
+            });
+        }
+
+        ClaimsPrincipal _userToSignIn;
+        public async Task SignInAsync(params Claim[] claims)
+        {
+            _userToSignIn = new ClaimsPrincipal(new ClaimsIdentity(claims, "test", "name", "role"));
+            var response = await BrowserClient.GetAsync(Url("__signin"));
+            response.StatusCode.Should().Be(204);
         }
     }
 }

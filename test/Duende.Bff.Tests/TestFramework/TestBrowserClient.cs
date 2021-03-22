@@ -13,45 +13,64 @@ namespace Duende.Bff.Tests.TestFramework
 {
     public class TestBrowserClient : HttpClient
     {
+        class CookieHandler : DelegatingHandler
+        {
+            public readonly CookieContainer CookieContainer = new CookieContainer();
+            public Uri CurrentUri { get; private set; }
+            public HttpResponseMessage LastResponse { get; private set; }
+
+            public CookieHandler(HttpMessageHandler next)
+                : base(next)
+            {
+            }
+
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                CurrentUri = request.RequestUri;
+                string cookieHeader = CookieContainer.GetCookieHeader(request.RequestUri);
+                if (!string.IsNullOrEmpty(cookieHeader))
+                {
+                    request.Headers.Add("Cookie", cookieHeader);
+                }
+
+                var response = await base.SendAsync(request, cancellationToken);
+
+                if (response.Headers.Contains("Set-Cookie"))
+                {
+                    var responseCookieHeader = string.Join(",", response.Headers.GetValues("Set-Cookie"));
+                    CookieContainer.SetCookies(request.RequestUri, responseCookieHeader);
+                }
+
+                LastResponse = response;
+
+                return response;
+            }
+        }
+
+        private CookieHandler _handler;
+        private CookieContainer CookieContainer => _handler.CookieContainer;
+        
+        public Uri CurrentUri => _handler.CurrentUri;
+        public HttpResponseMessage LastResponse => _handler.LastResponse;
+
         public TestBrowserClient(HttpMessageHandler handler)
-            : base(handler)
+            : this(new CookieHandler(handler))
         {
         }
 
-        readonly CookieContainer _cookieContainer = new CookieContainer();
-
-        public Uri CurrentUri { get; private set; }
-        public HttpResponseMessage LastResponse { get; private set; }
-
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        private TestBrowserClient(CookieHandler handler)
+            : base(handler)
         {
-            CurrentUri = request.RequestUri;
-            string cookieHeader = _cookieContainer.GetCookieHeader(request.RequestUri);
-            if (!string.IsNullOrEmpty(cookieHeader))
-            {
-                request.Headers.Add("Cookie", cookieHeader);
-            }
-
-            var response = await base.SendAsync(request, cancellationToken);
-
-            if (response.Headers.Contains("Set-Cookie"))
-            {
-                var responseCookieHeader = string.Join(",", response.Headers.GetValues("Set-Cookie"));
-                _cookieContainer.SetCookies(request.RequestUri, responseCookieHeader);
-            }
-            
-            LastResponse = response;
-
-            return response;
+            _handler = handler;
         }
 
         public Cookie GetCookie(string name)
         {
-            return GetCookie(CurrentUri.ToString(), name);
+            return GetCookie(_handler.CurrentUri.ToString(), name);
         }
         public Cookie GetCookie(string uri, string name)
         {
-            return _cookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x => x.Name == name).FirstOrDefault();
+            return _handler.CookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x => x.Name == name).FirstOrDefault();
         }
 
         public void RemoveCookie(string name)
@@ -60,7 +79,7 @@ namespace Duende.Bff.Tests.TestFramework
         }
         public void RemoveCookie(string uri, string name)
         {
-            var cookie = _cookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x => x.Name == name).FirstOrDefault();
+            var cookie = CookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x => x.Name == name).FirstOrDefault();
             if (cookie != null)
             {
                 cookie.Expired = true;

@@ -13,14 +13,14 @@ namespace Duende.Bff.Tests
         public async Task Test1()
         {
             var host = new TestHost();
-            host.OnConfigure += app => app.Run(ctx => { 
+            host.OnConfigure += app => app.Run(ctx => {
                 ctx.Response.StatusCode = 204;
                 return Task.CompletedTask;
             });
             await host.InitializeAsync();
-            
+
             var response = await host.HttpClient.GetAsync("/test");
-            
+
             response.StatusCode.Should().Be(204);
         }
     }
