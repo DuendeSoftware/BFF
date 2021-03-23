@@ -2,12 +2,8 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -47,25 +43,42 @@ namespace Duende.Bff.Tests.Endpoints.Management
         }
 
         [Fact]
-        public async Task test()
+        public async Task user_endpoint_for_authenticated_user_should_return_claims()
         {
             await _host.SignInAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
-
 
             var req = new HttpRequestMessage(HttpMethod.Get, _host.Url("/bff/user"));
             req.Headers.Add("x-csrf", "1");
             var response = await _host.BrowserClient.SendAsync(req);
-            
-            response.StatusCode.Should().Be(200);
-            var json = await response.Content.ReadAsStringAsync();
-            var doc = JsonDocument.Parse(json);
-            doc.RootElement.ValueKind.Should().Be(JsonValueKind.Array);
-            foreach (var item in doc.RootElement.EnumerateArray())
-            {
-                item.ValueKind.Should().Be(JsonValueKind.Object);
-                //var type = item.GetProperty("type").GetString();
-                //var value = item.GetProperty("value").GetString();
-            }
+
+            var claims = await response.ReadUserClaimsAsync();
+
+            claims.Length.Should().Be(3);
+            claims.Should().Contain(new ClaimRecord("sub", "alice"));
+            claims.Should().Contain(new ClaimRecord("foo", "foo1"));
+            claims.Should().Contain(new ClaimRecord("foo", "foo2"));
         }
+
+        [Fact]
+        public async Task user_endpoint_for_authenticated_user_without_csrf_header_should_fail()
+        {
+            await _host.SignInAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
+
+            var req = new HttpRequestMessage(HttpMethod.Get, _host.Url("/bff/user"));
+            var response = await _host.BrowserClient.SendAsync(req);
+            
+            response.StatusCode.Should().Be(401);
+        }
+        
+        [Fact]
+        public async Task user_endpoint_for_unauthenticated_user_should_fail()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, _host.Url("/bff/user"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await _host.BrowserClient.SendAsync(req);
+
+            response.StatusCode.Should().Be(401);
+        }
+
     }
 }

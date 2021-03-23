@@ -101,7 +101,7 @@ namespace Duende.Bff
             }
             else
             {
-                var claims = result.Principal.Claims.Select(x => new { x.Type, x.Value });
+                var claims = result.Principal.Claims.Select(x => new { type = x.Type, value = x.Value });
                 var json = JsonSerializer.Serialize(claims);
 
                 context.Response.StatusCode = 200;
