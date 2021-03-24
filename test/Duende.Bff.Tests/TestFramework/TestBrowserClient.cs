@@ -15,13 +15,14 @@ namespace Duende.Bff.Tests.TestFramework
     {
         class CookieHandler : DelegatingHandler
         {
-            public readonly CookieContainer CookieContainer = new CookieContainer();
+            public CookieContainer CookieContainer { get; }
             public Uri CurrentUri { get; private set; }
             public HttpResponseMessage LastResponse { get; private set; }
 
-            public CookieHandler(HttpMessageHandler next)
+            public CookieHandler(HttpMessageHandler next, CookieContainer cookieContainer = null)
                 : base(next)
             {
+                CookieContainer = cookieContainer ?? new CookieContainer();
             }
 
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -48,13 +49,13 @@ namespace Duende.Bff.Tests.TestFramework
         }
 
         private CookieHandler _handler;
-        private CookieContainer CookieContainer => _handler.CookieContainer;
         
+        public CookieContainer CookieContainer => _handler.CookieContainer;
         public Uri CurrentUri => _handler.CurrentUri;
         public HttpResponseMessage LastResponse => _handler.LastResponse;
 
-        public TestBrowserClient(HttpMessageHandler handler)
-            : this(new CookieHandler(handler))
+        public TestBrowserClient(HttpMessageHandler handler, CookieContainer cookieContainer = null)
+            : this(new CookieHandler(handler, cookieContainer))
         {
         }
 
@@ -86,6 +87,12 @@ namespace Duende.Bff.Tests.TestFramework
             }
         }
 
+        public async Task FollowRedirectAsync()
+        {
+            LastResponse.StatusCode.Should().Be(302);
+            var location = LastResponse.Headers.Location.ToString();
+            await GetAsync(location);
+        }
 
         public Task<HttpResponseMessage> PostFormAsync(HtmlForm form)
         {
@@ -179,6 +186,7 @@ namespace Duende.Bff.Tests.TestFramework
         {
             return AssertExistsAsync(LastResponse, selector);
         }
+
         public async Task AssertExistsAsync(HttpResponseMessage response, string selector)
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);

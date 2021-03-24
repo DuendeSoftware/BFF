@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Claims;
@@ -14,9 +15,9 @@ using System.Threading.Tasks;
 
 namespace Duende.Bff.Tests.TestFramework
 {
-    public class TestHost
+    public class GenericHost
     {
-        public TestHost(string baseAddress = "https://server")
+        public GenericHost(string baseAddress = "https://server")
         {
             if (baseAddress.EndsWith("/")) baseAddress = baseAddress.Substring(0, baseAddress.Length - 1);
             _baseAddress = baseAddress;
@@ -43,11 +44,12 @@ namespace Duende.Bff.Tests.TestFramework
 
         public string Url(string path = null)
         {
+            path = path ?? String.Empty;
             if (!path.StartsWith("/")) path = "/" + path;
             return _baseAddress + path;
         }
 
-        public async Task InitializeAsync()
+        public async Task InitializeAsync(CookieContainer cookieContainer = null)
         {
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(builder =>
@@ -79,14 +81,14 @@ namespace Duende.Bff.Tests.TestFramework
             var host = await hostBuilder.StartAsync();
 
             Server = host.GetTestServer();
-            BrowserClient = new TestBrowserClient(Server.CreateHandler());
+            BrowserClient = new TestBrowserClient(Server.CreateHandler(), cookieContainer);
             HttpClient = Server.CreateClient();
         }
 
         public event Action<IServiceCollection> OnConfigureServices = services => { };
         public event Action<IApplicationBuilder> OnConfigure = app => { };
 
-        public void ConfigureServices(IServiceCollection services)
+        void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging(options =>
             {
@@ -97,18 +99,42 @@ namespace Duende.Bff.Tests.TestFramework
             OnConfigureServices(services);
         }
 
-        public void ConfigureApp(IApplicationBuilder app)
+        void ConfigureApp(IApplicationBuilder app)
         {
             _appServices = app.ApplicationServices;
+            
+            OnConfigure(app);
 
             ConfigureSignin(app);
-
-            OnConfigure(app);
+            ConfigureSignout(app);
         }
+
+
+
+        void ConfigureSignout(IApplicationBuilder app)
+        {
+            app.Use(async (ctx, next) =>
+            {
+                if (ctx.Request.Path == "/__signout")
+                {
+                    await ctx.SignOutAsync();
+                    ctx.Response.StatusCode = 204;
+                    return;
+                }
+
+                await next();
+            });
+        }
+        public async Task RevokeSessionCookieAsync()
+        {
+            var response = await BrowserClient.GetAsync(Url("__signout"));
+            response.StatusCode.Should().Be(204);
+        }
+
 
         void ConfigureSignin(IApplicationBuilder app)
         {
-            app.Use(async (ctx, next) => 
+            app.Use(async (ctx, next) =>
             {
                 if (ctx.Request.Path == "/__signin")
                 {
@@ -127,9 +153,8 @@ namespace Duende.Bff.Tests.TestFramework
                 await next();
             });
         }
-
         ClaimsPrincipal _userToSignIn;
-        public async Task SignInAsync(params Claim[] claims)
+        public async Task IssueSessionCookieAsync(params Claim[] claims)
         {
             _userToSignIn = new ClaimsPrincipal(new ClaimsIdentity(claims, "test", "name", "role"));
             var response = await BrowserClient.GetAsync(Url("__signin"));

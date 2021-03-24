@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,11 +12,11 @@ namespace Duende.Bff.Tests.Endpoints.Management
 {
     public class UserEndpointTests
     {
-        private readonly TestHost _host;
+        private readonly GenericHost _host;
 
         public UserEndpointTests()
         {
-            _host = new TestHost();
+            _host = new GenericHost();
             _host.OnConfigureServices += ConfigureServices;
             _host.OnConfigure += Configure;
             _host.InitializeAsync().Wait();
@@ -45,13 +46,14 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task user_endpoint_for_authenticated_user_should_return_claims()
         {
-            await _host.SignInAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
+            await _host.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
 
             var req = new HttpRequestMessage(HttpMethod.Get, _host.Url("/bff/user"));
             req.Headers.Add("x-csrf", "1");
             var response = await _host.BrowserClient.SendAsync(req);
 
-            var claims = await response.ReadUserClaimsAsync();
+            var json = await response.Content.ReadAsStringAsync();
+            var claims = JsonSerializer.Deserialize<ClaimRecord[]>(json);
 
             claims.Length.Should().Be(3);
             claims.Should().Contain(new ClaimRecord("sub", "alice"));
@@ -62,7 +64,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task user_endpoint_for_authenticated_user_without_csrf_header_should_fail()
         {
-            await _host.SignInAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
+            await _host.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
 
             var req = new HttpRequestMessage(HttpMethod.Get, _host.Url("/bff/user"));
             var response = await _host.BrowserClient.SendAsync(req);
