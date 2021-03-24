@@ -101,25 +101,30 @@ namespace Duende.Bff.Tests.TestFramework
         {
             _appServices = app.ApplicationServices;
 
-            app.Map("/__signin", ConfigureSignin);
+            ConfigureSignin(app);
 
             OnConfigure(app);
         }
 
         void ConfigureSignin(IApplicationBuilder app)
         {
-            app.Run(async ctx => 
+            app.Use(async (ctx, next) => 
             {
-                ctx.Request.PathBase = "/";
-                if (_userToSignIn is not object)
+                if (ctx.Request.Path == "/__signin")
                 {
-                    throw new Exception("No User Configured for SignIn");
+                    if (_userToSignIn is not object)
+                    {
+                        throw new Exception("No User Configured for SignIn");
+                    }
+
+                    await ctx.SignInAsync(_userToSignIn);
+                    _userToSignIn = null;
+
+                    ctx.Response.StatusCode = 204;
+                    return;
                 }
 
-                await ctx.SignInAsync(_userToSignIn);
-                _userToSignIn = null;
-
-                ctx.Response.StatusCode = 204;
+                await next();
             });
         }
 
