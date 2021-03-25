@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -154,14 +152,10 @@ namespace Duende.Bff.Tests.TestFramework
         }
 
         
-        public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = "sid123")
+        public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = null)
         {
-            var claims = new List<Claim>
-            {
-                new Claim("sub", sub),
-                new Claim("sid", sid)
-            };
-            await _identityServerHost.IssueSessionCookieAsync(claims.ToArray());
+            await _identityServerHost.CreateIdentityServerSessionCookieAsync(sub, sid);
+
             var response = await BrowserClient.GetAsync(Url("/bff/login"));
             response.StatusCode.Should().Be(302); // authorize
             response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/authorize"));

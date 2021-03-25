@@ -143,8 +143,11 @@ namespace Duende.Bff.Tests.TestFramework
                         throw new Exception("No User Configured for SignIn");
                     }
 
-                    await ctx.SignInAsync(_userToSignIn);
+                    var props = _propsToSignIn ?? new AuthenticationProperties();
+                    await ctx.SignInAsync(_userToSignIn, props);
+                    
                     _userToSignIn = null;
+                    _propsToSignIn = null;
 
                     ctx.Response.StatusCode = 204;
                     return;
@@ -154,11 +157,17 @@ namespace Duende.Bff.Tests.TestFramework
             });
         }
         ClaimsPrincipal _userToSignIn;
+        AuthenticationProperties _propsToSignIn;
         public async Task IssueSessionCookieAsync(params Claim[] claims)
         {
             _userToSignIn = new ClaimsPrincipal(new ClaimsIdentity(claims, "test", "name", "role"));
             var response = await BrowserClient.GetAsync(Url("__signin"));
             response.StatusCode.Should().Be(204);
+        }
+        public Task IssueSessionCookieAsync(AuthenticationProperties props, params Claim[] claims)
+        {
+            _propsToSignIn = props;
+            return IssueSessionCookieAsync(claims);
         }
         public Task IssueSessionCookieAsync(string sub, params Claim[] claims)
         {

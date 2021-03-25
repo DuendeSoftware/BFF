@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Duende.Bff.Tests.TestFramework
@@ -68,6 +70,18 @@ namespace Duende.Bff.Tests.TestFramework
                     context.Response.Redirect(signOutContext.PostLogoutRedirectUri);
                 });
             });
+        }
+
+        public async Task CreateIdentityServerSessionCookieAsync(string sub, string sid = null)
+        {
+            var props = new AuthenticationProperties();
+            
+            if (!String.IsNullOrWhiteSpace(sid))
+            {
+                props.Items.Add("session_id", sid);
+            }
+            
+            await IssueSessionCookieAsync(props, new Claim("sub", sub));
         }
     }
 }

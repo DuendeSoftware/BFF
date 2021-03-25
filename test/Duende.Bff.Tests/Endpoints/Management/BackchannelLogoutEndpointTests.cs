@@ -12,14 +12,37 @@ namespace Duende.Bff.Tests.Endpoints.Management
         }
 
         [Fact]
-        public async Task backchannellogout_endpoint_should_signout()
+        public async Task backchannel_logout_endpoint_should_signout()
         {
-            await _bffHost.BffLoginAsync("alice");
-            (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
+            await _bffHost.BffLoginAsync("alice", "sid123");
 
             await _identityServerHost.RevokeSessionCookieAsync();
 
             (await _bffHost.GetIsUserLoggedInAsync()).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task backchannel_logout_endpoint_for_incorrect_sub_should_not_logout_user()
+        {
+            await _bffHost.BffLoginAsync("alice", "sid123");
+
+            await _identityServerHost.CreateIdentityServerSessionCookieAsync("bob", "sid123");
+
+            await _identityServerHost.RevokeSessionCookieAsync();
+
+            (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task backchannel_logout_endpoint_for_incorrect_sid_should_not_logout_user()
+        {
+            await _bffHost.BffLoginAsync("alice", "sid123");
+
+            await _identityServerHost.CreateIdentityServerSessionCookieAsync("alice", "sid999");
+
+            await _identityServerHost.RevokeSessionCookieAsync();
+
+            (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
         }
 
     }
