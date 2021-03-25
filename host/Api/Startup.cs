@@ -36,6 +36,11 @@ namespace Api
                 {
                     policy.RequireClaim("scope", "api");
                 });
+                
+                options.AddPolicy("RequireInteractiveUser", policy =>
+                {
+                    policy.RequireClaim("sub");
+                });
             });
         }
 

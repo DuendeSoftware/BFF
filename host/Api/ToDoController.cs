@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api
 {
@@ -19,9 +20,10 @@ namespace Api
         public string User { get; set; }
     }
 
+    [Authorize("RequireInteractiveUser")]
     public class ToDoController : ControllerBase
     {
-        static List<ToDo> __data = new List<ToDo>()
+        private static readonly List<ToDo> __data = new List<ToDo>()
         {
             new ToDo { Id = ToDo.NewId(), Date = DateTimeOffset.UtcNow, Name = "Demo ToDo API", User = "bob" },
             new ToDo { Id = ToDo.NewId(), Date = DateTimeOffset.UtcNow.AddHours(1), Name = "Stop Demo", User = "bob" },
