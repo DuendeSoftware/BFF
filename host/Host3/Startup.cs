@@ -53,7 +53,7 @@ namespace Host5
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
-                    options.Scope.Add("scope1");
+                    options.Scope.Add("api");
                     options.Scope.Add("offline_access");
                 });
         }

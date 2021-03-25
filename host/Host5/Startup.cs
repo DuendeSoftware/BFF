@@ -1,3 +1,4 @@
+using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -60,7 +61,7 @@ namespace Host5
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
-                    options.Scope.Add("scope1");
+                    options.Scope.Add("api");
                     options.Scope.Add("offline_access");
                 });
         }
@@ -97,7 +98,7 @@ namespace Host5
                 // user access token will be attached in API call
                 // user access token will be managed automatically using the refresh token
                 endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                    .RequireAccessToken();
+                    .RequireAccessToken(TokenType.UserOrClient);
             });
         }
     }

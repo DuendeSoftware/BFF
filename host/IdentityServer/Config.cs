@@ -19,8 +19,7 @@ namespace IdentityServerHost
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("scope1", new[]{ "name" }),
-                new ApiScope("scope2", new[]{ "name" }),
+                new ApiScope("api", new[] { "name" }),
             };
 
         public static IEnumerable<Client> Clients =>
@@ -41,7 +40,7 @@ namespace IdentityServerHost
                     PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "scope1" }
+                    AllowedScopes = { "openid", "profile", "api" }
                 },
             };
     }

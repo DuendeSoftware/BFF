@@ -1,3 +1,4 @@
+using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,9 @@ namespace Blazor.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBff();
+            services.AddBff()
+                .AddServerSideSessions();
+            
             services.AddControllers();
             services.AddRazorPages();
             
@@ -36,19 +39,23 @@ namespace Blazor.Server
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "https://localhost:5005";
+                    options.Authority = "https://localhost:5001";
+                    
+                    // confidential client using code flow + PKCE
                     options.ClientId = "spa";
                     options.ClientSecret = "secret";
                     options.ResponseType = "code";
                     options.ResponseMode = "query";
 
+                    options.MapInboundClaims = false;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
 
+                    // request scopes + refresh tokens
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
-                    options.Scope.Add("scope1");
+                    options.Scope.Add("api");
                     options.Scope.Add("offline_access");
                 });
         }
@@ -66,8 +73,6 @@ namespace Blazor.Server
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
@@ -82,8 +87,8 @@ namespace Blazor.Server
             {
                 endpoints.MapBffManagementEndpoints();
                 
-                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5002")
-                    .RequireAccessToken();
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
+                    .RequireAccessToken(TokenType.UserOrClient);
                 
                 endpoints.MapRazorPages();
                 

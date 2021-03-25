@@ -9,6 +9,7 @@
 @if (forecasts == null)
 {
     <p><em>Loading...</em></p>
+    <p>@error</p>
 }
 else
 {
@@ -37,10 +38,20 @@ else
 
 @code {
     private WeatherForecast[] forecasts;
+    private string error;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        var response = await Http.GetAsync("WeatherForecast");
+        if (response.IsSuccessStatusCode)
+        {
+            forecasts = await response.Content.ReadFromJsonAsync<WeatherForecast[]>();
+        }
+        else
+        {
+            error = "Error contacting API: " + response.StatusCode.ToString();
+        }
+        
     }
 
 }
