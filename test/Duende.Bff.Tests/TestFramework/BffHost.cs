@@ -1,9 +1,9 @@
-﻿using Duende.IdentityServer.Models;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -21,18 +21,15 @@ namespace Duende.Bff.Tests.TestFramework
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
 
-        public BffHost(string baseAddress = "https://app") : base(baseAddress)
-        {
-            OnConfigureServices += ConfigureServices;
-            OnConfigure += Configure;
-        }
-
         public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app") 
-            : this(baseAddress)
+            : base(baseAddress)
         {
             _identityServerHost = identityServerHost;
             _apiHost = apiHost;
             _clientId = clientId;
+
+            OnConfigureServices += ConfigureServices;
+            OnConfigure += Configure;
         }
 
         private void ConfigureServices(IServiceCollection services)
@@ -157,20 +154,54 @@ namespace Duende.Bff.Tests.TestFramework
         }
 
         
-        public async Task BffLoginInAsync(string sub)
+        public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = "sid123")
         {
-            await _identityServerHost.IssueSessionCookieAsync(new Claim("sub", sub));
+            var claims = new List<Claim>
+            {
+                new Claim("sub", sub),
+                new Claim("sid", sid)
+            };
+            await _identityServerHost.IssueSessionCookieAsync(claims.ToArray());
             var response = await BrowserClient.GetAsync(Url("/bff/login"));
             response.StatusCode.Should().Be(302); // authorize
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/authorize"));
 
             response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
             response.StatusCode.Should().Be(302); // client callback
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(Url("/signin-oidc"));
 
             response = await BrowserClient.GetAsync(response.Headers.Location.ToString());
             response.StatusCode.Should().Be(302); // root
-            response.Headers.Location.ToString().Should().Be("/");
+            response.Headers.Location.ToString().ToLowerInvariant().Should().Be("/");
 
             (await GetIsUserLoggedInAsync()).Should().BeTrue();
+
+            response = await BrowserClient.GetAsync(Url(response.Headers.Location.ToString()));
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> BffLogoutAsync(string sid = null)
+        {
+            var response = await BrowserClient.GetAsync(Url("/bff/logout") + "?sid=" + sid);
+            response.StatusCode.Should().Be(302); // endsession
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/endsession"));
+
+            response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(302); // logout
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/account/logout"));
+
+            response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(302); // post logout redirect uri
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(Url("/signout-callback-oidc"));
+
+            response = await BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(302); // root
+            response.Headers.Location.ToString().ToLowerInvariant().Should().Be("/");
+
+            (await GetIsUserLoggedInAsync()).Should().BeFalse();
+
+            response = await BrowserClient.GetAsync(Url(response.Headers.Location.ToString()));
+            return response;
         }
 
     }

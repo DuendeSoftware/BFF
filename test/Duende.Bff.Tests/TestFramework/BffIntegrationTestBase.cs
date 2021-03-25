@@ -1,17 +1,7 @@
 ﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
-using FluentAssertions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Net.Http;
-using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -19,14 +9,14 @@ namespace Duende.Bff.Tests.TestFramework
 {
     public class BffIntegrationTestBase
     {
-        protected readonly IdentityServerHost _isHost;
+        protected readonly IdentityServerHost _identityServerHost;
         protected readonly ApiHost _apiHost;
-        protected readonly BffHost _host;
+        protected readonly BffHost _bffHost;
 
         public BffIntegrationTestBase()
         {
-            _isHost = new IdentityServerHost();
-            _isHost.Clients.Add(new Client
+            _identityServerHost = new IdentityServerHost();
+            _identityServerHost.Clients.Add(new Client
             {
                 ClientId = "spa",
                 ClientSecrets = { new Secret("secret".Sha256()) },
@@ -37,22 +27,22 @@ namespace Duende.Bff.Tests.TestFramework
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "scope1" }
             });
-            _isHost.OnConfigureServices += services => {
+            _identityServerHost.OnConfigureServices += services => {
                 services.AddTransient<IBackChannelLogoutHttpClient>(provider => 
-                    new DefaultBackChannelLogoutHttpClient(_host.HttpClient, provider.GetRequiredService<ILoggerFactory>()));
+                    new DefaultBackChannelLogoutHttpClient(_bffHost.HttpClient, provider.GetRequiredService<ILoggerFactory>()));
             };
-            _isHost.InitializeAsync().Wait();
+            _identityServerHost.InitializeAsync().Wait();
 
-            _apiHost = new ApiHost(_isHost, "scope1");
-            _apiHost.InitializeAsync(_isHost.BrowserClient.CookieContainer).Wait();
+            _apiHost = new ApiHost(_identityServerHost, "scope1");
+            _apiHost.InitializeAsync().Wait();
 
-            _host = new BffHost(_isHost, _apiHost, "spa");
-            _host.InitializeAsync(_isHost.BrowserClient.CookieContainer).Wait();
+            _bffHost = new BffHost(_identityServerHost, _apiHost, "spa");
+            _bffHost.InitializeAsync().Wait();
         }
 
         public async Task Login(string sub)
         {
-            await _isHost.IssueSessionCookieAsync(new Claim("sub", sub));
+            await _identityServerHost.IssueSessionCookieAsync(new Claim("sub", sub));
         }
     }
 }

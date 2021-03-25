@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Net;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Claims;
@@ -49,7 +49,7 @@ namespace Duende.Bff.Tests.TestFramework
             return _baseAddress + path;
         }
 
-        public async Task InitializeAsync(CookieContainer cookieContainer = null)
+        public async Task InitializeAsync()
         {
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(builder =>
@@ -81,7 +81,7 @@ namespace Duende.Bff.Tests.TestFramework
             var host = await hostBuilder.StartAsync();
 
             Server = host.GetTestServer();
-            BrowserClient = new TestBrowserClient(Server.CreateHandler(), cookieContainer);
+            BrowserClient = new TestBrowserClient(Server.CreateHandler());
             HttpClient = Server.CreateClient();
         }
 
@@ -159,6 +159,10 @@ namespace Duende.Bff.Tests.TestFramework
             _userToSignIn = new ClaimsPrincipal(new ClaimsIdentity(claims, "test", "name", "role"));
             var response = await BrowserClient.GetAsync(Url("__signin"));
             response.StatusCode.Should().Be(204);
+        }
+        public Task IssueSessionCookieAsync(string sub, params Claim[] claims)
+        {
+            return IssueSessionCookieAsync(claims.Append(new Claim("sub", sub)).ToArray());
         }
     }
 }

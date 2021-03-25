@@ -1,7 +1,6 @@
 using Duende.Bff.Tests.TestFramework;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 

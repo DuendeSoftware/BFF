@@ -1,4 +1,6 @@
 ﻿using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -53,9 +55,17 @@ namespace Duende.Bff.Tests.TestFramework
                 {
                     return Task.CompletedTask;
                 });
-                endpoints.MapGet("/account/logout", context =>
+                endpoints.MapGet("/account/logout", async context =>
                 {
-                    return Task.CompletedTask;
+                    // signout as if the user were prompted
+                    await context.SignOutAsync();
+
+                    var logoutId = context.Request.Query["logoutId"];
+                    var interaction = context.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
+
+                    var signOutContext = await interaction.GetLogoutContextAsync(logoutId);
+                    
+                    context.Response.Redirect(signOutContext.PostLogoutRedirectUri);
                 });
             });
         }

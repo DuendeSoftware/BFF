@@ -1,9 +1,5 @@
 ﻿using Duende.Bff.Tests.TestFramework;
 using FluentAssertions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,12 +14,12 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task backchannellogout_endpoint_should_signout()
         {
-            await _host.BffLoginInAsync("alice");
-            (await _host.GetIsUserLoggedInAsync()).Should().BeTrue();
+            await _bffHost.BffLoginAsync("alice");
+            (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
 
-            await _isHost.RevokeSessionCookieAsync();
+            await _identityServerHost.RevokeSessionCookieAsync();
 
-            (await _host.GetIsUserLoggedInAsync()).Should().BeFalse();
+            (await _bffHost.GetIsUserLoggedInAsync()).Should().BeFalse();
         }
 
     }

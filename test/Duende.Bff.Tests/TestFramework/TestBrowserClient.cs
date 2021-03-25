@@ -15,14 +15,13 @@ namespace Duende.Bff.Tests.TestFramework
     {
         class CookieHandler : DelegatingHandler
         {
-            public CookieContainer CookieContainer { get; }
+            public CookieContainer CookieContainer { get; } = new CookieContainer();
             public Uri CurrentUri { get; private set; }
             public HttpResponseMessage LastResponse { get; private set; }
 
-            public CookieHandler(HttpMessageHandler next, CookieContainer cookieContainer = null)
+            public CookieHandler(HttpMessageHandler next)
                 : base(next)
             {
-                CookieContainer = cookieContainer ?? new CookieContainer();
             }
 
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -54,8 +53,8 @@ namespace Duende.Bff.Tests.TestFramework
         public Uri CurrentUri => _handler.CurrentUri;
         public HttpResponseMessage LastResponse => _handler.LastResponse;
 
-        public TestBrowserClient(HttpMessageHandler handler, CookieContainer cookieContainer = null)
-            : this(new CookieHandler(handler, cookieContainer))
+        public TestBrowserClient(HttpMessageHandler handler)
+            : this(new CookieHandler(handler))
         {
         }
 
