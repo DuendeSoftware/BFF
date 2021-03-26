@@ -9,21 +9,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C549079-A50
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{E14F66D1-EA3E-40C6-835A-91A4382D4646}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host5", "host\Host5\Host5.csproj", "{8850BAB7-F536-4860-9CD3-A760FEDF8F66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host5", "samples\Host5\Host5.csproj", "{8850BAB7-F536-4860-9CD3-A760FEDF8F66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "host\Api\Api.csproj", "{887A9E11-12C3-4EB9-81CB-EB11EE27860B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "samples\Api\Api.csproj", "{887A9E11-12C3-4EB9-81CB-EB11EE27860B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "host\IdentityServer\IdentityServer.csproj", "{CE1159B9-F763-4C32-828A-77529A820415}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "samples\IdentityServer\IdentityServer.csproj", "{CE1159B9-F763-4C32-828A-77529A820415}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host3", "host\Host3\Host3.csproj", "{4C3F1C17-2B87-4A12-B46F-657DE0079172}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host3", "samples\Host3\Host3.csproj", "{4C3F1C17-2B87-4A12-B46F-657DE0079172}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{3E17088E-56DA-42CB-97CE-E5E683B14D92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Shared", "host\Blazor\Shared\Blazor.Shared.csproj", "{0084741A-23E4-4AF7-BB4F-112F17D54C42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Shared", "samples\Blazor\Shared\Blazor.Shared.csproj", "{0084741A-23E4-4AF7-BB4F-112F17D54C42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Client", "host\Blazor\Client\Blazor.Client.csproj", "{856A4A2A-E045-4AC4-A14B-B99E8BE1EE98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Client", "samples\Blazor\Client\Blazor.Client.csproj", "{856A4A2A-E045-4AC4-A14B-B99E8BE1EE98}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Server", "host\Blazor\Server\Blazor.Server.csproj", "{06018433-2F98-4238-B1CF-673117FEDAD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Server", "samples\Blazor\Server\Blazor.Server.csproj", "{06018433-2F98-4238-B1CF-673117FEDAD4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B2A776DB-385B-4AD4-96A5-61746FD909C3}"
 EndProject
