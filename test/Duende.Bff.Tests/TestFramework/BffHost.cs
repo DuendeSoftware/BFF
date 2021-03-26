@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -108,15 +109,26 @@ namespace Duende.Bff.Tests.TestFramework
             {
                 endpoints.MapBffManagementEndpoints();
                 
-                endpoints.MapGet("/local", async context =>
+                endpoints.Map("/local", async context =>
                 {
                     var sub = context.User.FindFirst(("sub"))?.Value;
                     if (sub == null) throw new Exception("sub is missing");
 
+                    var body = default(string);
+                    if (context.Request.HasJsonContentType())
+                    {
+                        using (var sr = new StreamReader(context.Request.Body))
+                        {
+                            body = await sr.ReadToEndAsync();
+                        }
+                    }
+                    
                     var response = new ApiResponse(
+                        context.Request.Method,
                         context.Request.Path.Value,
                         sub,
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray()
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
+                        body
                     );
 
                     context.Response.StatusCode = 200;

@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 
 namespace Duende.Bff.Tests.TestFramework
 {
-    public record ApiResponse(string path, string sub, IEnumerable<ClaimRecord> claims);
+    public record ApiResponse(string method, string path, string sub, IEnumerable<ClaimRecord> claims, string body = null);
 
     public class ApiHost : GenericHost
     {
@@ -50,15 +51,26 @@ namespace Duende.Bff.Tests.TestFramework
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/{**catch-all}", async context =>
+                endpoints.Map("/{**catch-all}", async context =>
                 {
                     var sub = context.User.FindFirst(("sub"))?.Value;
                     if (sub == null) throw new Exception("sub is missing");
 
+                    var body = default(string);
+                    if (context.Request.HasJsonContentType())
+                    {
+                        using (var sr = new StreamReader(context.Request.Body))
+                        {
+                            body = await sr.ReadToEndAsync();
+                        }
+                    }
+
                     var response = new ApiResponse(
+                        context.Request.Method,
                         context.Request.Path.Value,
                         sub,
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray()
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
+                        body
                     );
 
                     context.Response.StatusCode = 200;

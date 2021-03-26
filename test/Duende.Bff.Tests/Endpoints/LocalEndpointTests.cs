@@ -8,14 +8,14 @@ using Xunit;
 
 namespace Duende.Bff.Tests.Endpoints
 {
-    public class LocalEndpointTests : BffIntegrationTestBase
+    public class RemoteEndpointTests : BffIntegrationTestBase
     {
         [Fact]
-        public async Task calls_to_remote_endpoint_should_forward_to_api()
+        public async Task calls_to_local_endpoint_should_succeed()
         {
             await _bffHost.BffLoginAsync("alice");
 
-            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api/test"));
+            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/local"));
             req.Headers.Add("x-csrf", "1");
             var response = await _bffHost.BrowserClient.SendAsync(req);
 
@@ -24,16 +24,16 @@ namespace Duende.Bff.Tests.Endpoints
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
             apiResult.method.Should().Be("GET");
-            apiResult.path.Should().Be("/test");
+            apiResult.path.Should().Be("/local");
             apiResult.sub.Should().Be("alice");
         }
 
         [Fact]
-        public async Task put_to_remote_endpoint_should_forward_to_api()
+        public async Task put_to_local_endpoint_should_succeed()
         {
             await _bffHost.BffLoginAsync("alice");
 
-            var req = new HttpRequestMessage(HttpMethod.Put, _bffHost.Url("/api/test"));
+            var req = new HttpRequestMessage(HttpMethod.Put, _bffHost.Url("/local"));
             req.Headers.Add("x-csrf", "1");
             req.Content = new StringContent(JsonSerializer.Serialize(new TestPayload("hello test api")), Encoding.UTF8, "application/json");
             var response = await _bffHost.BrowserClient.SendAsync(req);
@@ -43,7 +43,7 @@ namespace Duende.Bff.Tests.Endpoints
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
             apiResult.method.Should().Be("PUT");
-            apiResult.path.Should().Be("/test");
+            apiResult.path.Should().Be("/local");
             apiResult.sub.Should().Be("alice");
             var body = JsonSerializer.Deserialize<TestPayload>(apiResult.body);
             body.message.Should().Be("hello test api");

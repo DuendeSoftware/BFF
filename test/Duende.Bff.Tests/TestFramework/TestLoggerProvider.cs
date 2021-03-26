@@ -6,7 +6,6 @@ namespace Duende.Bff.Tests.TestFramework
 {
     public class TestLoggerProvider : ILoggerProvider
     {
-
         public class DebugLogger : ILogger, IDisposable
         {
             private readonly TestLoggerProvider _parent;
