@@ -38,7 +38,10 @@ namespace Duende.Bff.Tests.TestFramework
                 logging.AddFilter("Duende", LogLevel.Debug);
             });
 
-            services.AddIdentityServer()
+            services.AddIdentityServer(options=> 
+            {
+                options.EmitStaticAudienceClaim = true;
+            })
                 .AddInMemoryClients(Clients)
                 .AddInMemoryIdentityResources(IdentityResources)
                 .AddInMemoryApiScopes(ApiScopes);

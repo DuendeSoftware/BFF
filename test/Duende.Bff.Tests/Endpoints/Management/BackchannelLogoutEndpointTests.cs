@@ -7,10 +7,6 @@ namespace Duende.Bff.Tests.Endpoints.Management
 {
     public class BackchannelLogoutEndpointTests : BffIntegrationTestBase
     {
-        public BackchannelLogoutEndpointTests()
-        {
-        }
-
         [Fact]
         public async Task backchannel_logout_endpoint_should_signout()
         {

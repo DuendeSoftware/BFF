@@ -13,13 +13,26 @@ namespace Duende.Bff.Tests.TestFramework
 {
     public record ClaimRecord(string type, string value);
 
+    public class CallbackHttpMessageInvokerFactory : IHttpMessageInvokerFactory
+    {
+        public CallbackHttpMessageInvokerFactory(Func<string, HttpMessageInvoker> callback)
+        {
+            CreateInvoker = callback;
+        }
+        public Func<string, HttpMessageInvoker> CreateInvoker { get; set; }
+        public HttpMessageInvoker CreateClient(string localPath)
+        {
+            return CreateInvoker.Invoke(localPath);
+        }
+    }
+
     public class BffHost : GenericHost
     {
         private readonly IdentityServerHost _identityServerHost;
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
 
-        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app") 
+        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app")
             : base(baseAddress)
         {
             _identityServerHost = identityServerHost;
@@ -37,57 +50,55 @@ namespace Duende.Bff.Tests.TestFramework
 
             var bff = services.AddBff();
 
-            if (_apiHost is object)
-            {
-                bff.ConfigureTokenClient()
-                    .ConfigurePrimaryHttpMessageHandler(() => _apiHost.Server.CreateHandler());
-            }
+            bff.ConfigureTokenClient()
+                .ConfigurePrimaryHttpMessageHandler(() => _identityServerHost.Server.CreateHandler());
+            
+            services.AddSingleton<IHttpMessageInvokerFactory>(
+                new CallbackHttpMessageInvokerFactory(
+                    path => new HttpMessageInvoker(_apiHost.Server.CreateHandler())));
 
             services.AddAuthentication("cookie")
                 .AddCookie("cookie");
 
-            if (_identityServerHost is object)
+            bff.AddServerSideSessions();
+
+            services.AddAuthentication(options =>
             {
-                bff.AddServerSideSessions();
-
-                services.AddAuthentication(options =>
+                options.DefaultChallengeScheme = "oidc";
+                options.DefaultSignOutScheme = "oidc";
+            })
+                .AddOpenIdConnect("oidc", options =>
                 {
-                    options.DefaultChallengeScheme = "oidc";
-                    options.DefaultSignOutScheme = "oidc";
-                })
-                    .AddOpenIdConnect("oidc", options =>
+                    options.Authority = _identityServerHost.Url();
+
+                    options.ClientId = _clientId;
+                    options.ClientSecret = "secret";
+                    options.ResponseType = "code";
+                    options.ResponseMode = "query";
+
+                    options.MapInboundClaims = false;
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.SaveTokens = true;
+
+                    options.Scope.Clear();
+                    var client = _identityServerHost.Clients.Single(x => x.ClientId == _clientId);
+                    foreach (var scope in client.AllowedScopes)
                     {
-                        options.Authority = _identityServerHost.Url();
+                        options.Scope.Add(scope);
+                    }
+                    if (client.AllowOfflineAccess)
+                    {
+                        options.Scope.Add("offline_access");
+                    }
 
-                        options.ClientId = _clientId;
-                        options.ClientSecret = "secret";
-                        options.ResponseType = "code";
-                        options.ResponseMode = "query";
-
-                        options.MapInboundClaims = false;
-                        options.GetClaimsFromUserInfoEndpoint = true;
-                        options.SaveTokens = true;
-
-                        options.Scope.Clear();
-                        var client = _identityServerHost.Clients.Single(x => x.ClientId == _clientId);
-                        foreach (var scope in client.AllowedScopes)
-                        {
-                            options.Scope.Add(scope);
-                        }
-                        if (client.AllowOfflineAccess)
-                        {
-                            options.Scope.Add("offline_access");
-                        }
-
-                        options.BackchannelHttpHandler = _identityServerHost.Server.CreateHandler();
-                    });
-            }
+                    options.BackchannelHttpHandler = _identityServerHost.Server.CreateHandler();
+                });
         }
 
         private void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
-            
+
             app.UseRouting();
 
             app.UseBff();
@@ -95,32 +106,28 @@ namespace Duende.Bff.Tests.TestFramework
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/local", async context=> 
+                endpoints.MapBffManagementEndpoints();
+                
+                endpoints.MapGet("/local", async context =>
                 {
-                    var sub = context.User.FindFirst(("sub"));
+                    var sub = context.User.FindFirst(("sub"))?.Value;
                     if (sub == null) throw new Exception("sub is missing");
 
-                    var response = new
-                    {
-                        path = context.Request.Path.Value,
-                        sub = sub,
-                        claims = context.User.Claims.Select(x => new { x.Type, x.Value }).ToArray()
-                    };
+                    var response = new ApiResponse(
+                        context.Request.Path.Value,
+                        sub,
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray()
+                    );
 
                     context.Response.StatusCode = 200;
                     context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(response)); 
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                 })
                     .RequireAuthorization()
                     .AsLocalBffApiEndpoint();
 
-                endpoints.MapBffManagementEndpoints();
-
-                if (_apiHost is object)
-                {
-                    endpoints.MapRemoteBffApiEndpoint("/api", _apiHost.Url())
-                        .RequireAccessToken();
-                }
+                endpoints.MapRemoteBffApiEndpoint("/api", _apiHost.Url())
+                    .RequireAccessToken();
             });
         }
 
@@ -151,7 +158,7 @@ namespace Duende.Bff.Tests.TestFramework
             return claims;
         }
 
-        
+
         public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = null)
         {
             await _identityServerHost.CreateIdentityServerSessionCookieAsync(sub, sid);

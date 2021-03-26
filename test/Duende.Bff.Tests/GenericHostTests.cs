@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Duende.Bff.Tests
 {
-    public class UnitTest1
+    public class GenericHostTests
     {
         [Fact]
         public async Task Test1()

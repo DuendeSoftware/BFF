@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
 namespace Duende.Bff.Tests.TestFramework
 {
+    public record ApiResponse(string path, string sub, IEnumerable<ClaimRecord> claims);
+
     public class ApiHost : GenericHost
     {
         private readonly IdentityServerHost _identityServerHost;
@@ -49,15 +52,14 @@ namespace Duende.Bff.Tests.TestFramework
             {
                 endpoints.MapGet("/{**catch-all}", async context =>
                 {
-                    var sub = context.User.FindFirst(("sub"));
+                    var sub = context.User.FindFirst(("sub"))?.Value;
                     if (sub == null) throw new Exception("sub is missing");
 
-                    var response = new
-                    {
-                        path = context.Request.Path.Value,
-                        sub = sub,
-                        claims = context.User.Claims.Select(x=>new { x.Type, x.Value }).ToArray()
-                    };
+                    var response = new ApiResponse(
+                        context.Request.Path.Value,
+                        sub,
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray()
+                    );
 
                     context.Response.StatusCode = 200;
                     context.Response.ContentType = "application/json";
