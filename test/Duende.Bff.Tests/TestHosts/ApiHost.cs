@@ -1,19 +1,19 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.Bff.Tests.TestFramework;
+using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 
-namespace Duende.Bff.Tests.TestFramework
+namespace Duende.Bff.Tests.TestHosts
 {
-    public record ApiResponse(string method, string path, string sub, IEnumerable<ClaimRecord> claims, string body = null);
-
     public class ApiHost : GenericHost
     {
+        public int? ApiStatusCodeToReturn { get; set; }
+
         private readonly IdentityServerHost _identityServerHost;
 
         public ApiHost(IdentityServerHost identityServerHost, string scope, string baseAddress = "https://api") 
@@ -53,9 +53,6 @@ namespace Duende.Bff.Tests.TestFramework
             {
                 endpoints.Map("/{**catch-all}", async context =>
                 {
-                    var sub = context.User.FindFirst(("sub"))?.Value;
-                    if (sub == null) throw new Exception("sub is missing");
-
                     var body = default(string);
                     if (context.Request.HasJsonContentType())
                     {
@@ -68,16 +65,18 @@ namespace Duende.Bff.Tests.TestFramework
                     var response = new ApiResponse(
                         context.Request.Method,
                         context.Request.Path.Value,
-                        sub,
+                        context.User.FindFirst(("sub"))?.Value,
+                        context.User.FindFirst(("client_id"))?.Value,
                         context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
                         body
                     );
 
-                    context.Response.StatusCode = 200;
+                    context.Response.StatusCode = ApiStatusCodeToReturn ?? 200;
+                    ApiStatusCodeToReturn = null;
+
                     context.Response.ContentType = "application/json";
                     await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                })
-                .RequireAuthorization();
+                });
             });
         }
     }

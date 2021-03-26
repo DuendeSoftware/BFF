@@ -1,4 +1,5 @@
 ﻿using Duende.Bff.Tests.TestFramework;
+using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
 using System;
 using System.Threading.Tasks;

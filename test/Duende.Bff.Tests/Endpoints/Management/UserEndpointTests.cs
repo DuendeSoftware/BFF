@@ -1,4 +1,5 @@
 ﻿using Duende.Bff.Tests.TestFramework;
+using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
 using System.Net.Http;
 using System.Security.Claims;
@@ -15,12 +16,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
         {
             await _bffHost.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
 
-            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/bff/user"));
-            req.Headers.Add("x-csrf", "1");
-            var response = await _bffHost.BrowserClient.SendAsync(req);
-
-            var json = await response.Content.ReadAsStringAsync();
-            var claims = JsonSerializer.Deserialize<ClaimRecord[]>(json);
+            var claims = await _bffHost.GetUserClaimsAsync();
 
             claims.Length.Should().Be(3);
             claims.Should().Contain(new ClaimRecord("sub", "alice"));

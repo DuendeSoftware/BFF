@@ -1,11 +1,12 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.Bff.Tests.TestHosts;
+using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Duende.Bff.Tests.TestFramework
+namespace Duende.Bff.Tests.TestHosts
 {
     public class BffIntegrationTestBase
     {

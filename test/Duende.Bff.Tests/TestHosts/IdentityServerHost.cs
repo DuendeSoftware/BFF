@@ -1,4 +1,5 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.Bff.Tests.TestFramework;
+using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Duende.Bff.Tests.TestFramework
+namespace Duende.Bff.Tests.TestHosts
 {
     public class IdentityServerHost : GenericHost
     {

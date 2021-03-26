@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Duende.Bff.Tests.TestFramework;
+using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,25 +11,12 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Duende.Bff.Tests.TestFramework
+namespace Duende.Bff.Tests.TestHosts
 {
-    public record ClaimRecord(string type, string value);
-
-    public class CallbackHttpMessageInvokerFactory : IHttpMessageInvokerFactory
-    {
-        public CallbackHttpMessageInvokerFactory(Func<string, HttpMessageInvoker> callback)
-        {
-            CreateInvoker = callback;
-        }
-        public Func<string, HttpMessageInvoker> CreateInvoker { get; set; }
-        public HttpMessageInvoker CreateClient(string localPath)
-        {
-            return CreateInvoker.Invoke(localPath);
-        }
-    }
-
     public class BffHost : GenericHost
     {
+        public int? LocalApiStatusCodeToReturn { get; set; }
+
         private readonly IdentityServerHost _identityServerHost;
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
@@ -53,7 +41,7 @@ namespace Duende.Bff.Tests.TestFramework
 
             bff.ConfigureTokenClient()
                 .ConfigurePrimaryHttpMessageHandler(() => _identityServerHost.Server.CreateHandler());
-            
+
             services.AddSingleton<IHttpMessageInvokerFactory>(
                 new CallbackHttpMessageInvokerFactory(
                     path => new HttpMessageInvoker(_apiHost.Server.CreateHandler())));
@@ -94,6 +82,12 @@ namespace Duende.Bff.Tests.TestFramework
 
                     options.BackchannelHttpHandler = _identityServerHost.Server.CreateHandler();
                 });
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("AlwaysFail", policy => {
+                    policy.RequireAssertion(ctx => false);
+                });
+            });
         }
 
         private void Configure(IApplicationBuilder app)
@@ -108,8 +102,37 @@ namespace Duende.Bff.Tests.TestFramework
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBffManagementEndpoints();
-                
-                endpoints.Map("/local", async context =>
+
+
+                endpoints.Map("/local_anon", async context =>
+                {
+                    var body = default(string);
+                    if (context.Request.HasJsonContentType())
+                    {
+                        using (var sr = new StreamReader(context.Request.Body))
+                        {
+                            body = await sr.ReadToEndAsync();
+                        }
+                    }
+
+                    var response = new ApiResponse(
+                        context.Request.Method,
+                        context.Request.Path.Value,
+                        context.User.FindFirst(("sub"))?.Value,
+                        context.User.FindFirst(("client_id"))?.Value,
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
+                        body
+                    );
+
+                    context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
+                    LocalApiStatusCodeToReturn = null;
+
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                })
+                    .AsLocalBffApiEndpoint();
+
+                endpoints.Map("/local_authz", async context =>
                 {
                     var sub = context.User.FindFirst(("sub"))?.Value;
                     if (sub == null) throw new Exception("sub is missing");
@@ -122,24 +145,57 @@ namespace Duende.Bff.Tests.TestFramework
                             body = await sr.ReadToEndAsync();
                         }
                     }
-                    
+
                     var response = new ApiResponse(
                         context.Request.Method,
                         context.Request.Path.Value,
                         sub,
+                        context.User.FindFirst(("client_id"))?.Value, 
                         context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
                         body
                     );
 
-                    context.Response.StatusCode = 200;
+                    context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
+                    LocalApiStatusCodeToReturn = null;
+
                     context.Response.ContentType = "application/json";
                     await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                 })
                     .RequireAuthorization()
                     .AsLocalBffApiEndpoint();
 
-                endpoints.MapRemoteBffApiEndpoint("/api", _apiHost.Url())
+
+                endpoints.Map("/always_fail_authz_non_bff_endpoint", context =>
+                {
+                    return Task.CompletedTask;
+                })
+                    .RequireAuthorization("AlwaysFail");
+
+                endpoints.Map("/always_fail_authz", context =>
+                {
+                    return Task.CompletedTask;
+                })
+                    .AsLocalBffApiEndpoint()
+                    .RequireAuthorization("AlwaysFail");
+
+
+                endpoints.MapRemoteBffApiEndpoint("/api_user", _apiHost.Url())
                     .RequireAccessToken();
+
+                endpoints.MapRemoteBffApiEndpoint("/api_user_no_csrf", _apiHost.Url())
+                    .RequireAccessToken()
+                    .DisableAntiforgeryProtection();
+
+                endpoints.MapRemoteBffApiEndpoint("/api_client", _apiHost.Url())
+                    .RequireAccessToken(TokenType.Client);
+
+                endpoints.MapRemoteBffApiEndpoint("/api_user_or_client", _apiHost.Url())
+                    .RequireAccessToken(TokenType.UserOrClient);
+
+                endpoints.MapRemoteBffApiEndpoint("/api_user_or_anon", _apiHost.Url())
+                    .WithOptionalUserAccessToken();
+
+                endpoints.MapRemoteBffApiEndpoint("/api_user_notokentype", _apiHost.Url());
             });
         }
 
@@ -217,5 +273,17 @@ namespace Duende.Bff.Tests.TestFramework
             return response;
         }
 
+        public class CallbackHttpMessageInvokerFactory : IHttpMessageInvokerFactory
+        {
+            public CallbackHttpMessageInvokerFactory(Func<string, HttpMessageInvoker> callback)
+            {
+                CreateInvoker = callback;
+            }
+            public Func<string, HttpMessageInvoker> CreateInvoker { get; set; }
+            public HttpMessageInvoker CreateClient(string localPath)
+            {
+                return CreateInvoker.Invoke(localPath);
+            }
+        }
     }
 }
