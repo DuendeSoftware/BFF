@@ -1,3 +1,6 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 // .NET 5+ version of converting the 302 of the OIDC challenge to an Ajax friendly 401/403
 // for earlier .NET versions, we need to do that in the middleware
 #if NET5_0
