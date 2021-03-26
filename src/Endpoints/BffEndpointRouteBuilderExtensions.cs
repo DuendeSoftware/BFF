@@ -1,3 +1,6 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 using Duende.Bff;
 using Microsoft.AspNetCore.Routing;
 
@@ -15,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="basePath"></param>
         public static void MapBffManagementEndpoints(
             this IEndpointRouteBuilder endpoints,
-            string basePath = "/bff")
+            string basePath = BffDefaults.ManagementBasePath)
         {
             endpoints.MapGet(basePath + "/login", BffManagementEndoints.MapLogin);
             endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout);

@@ -1,34 +1,34 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 using Serilog;
 
-namespace Host5
+namespace Blazor.Server
 {
     public class Startup
     {
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
-            _configuration = configuration;
-            _environment = environment;
+            Configuration = configuration;
         }
+
+        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add BFF services to DI - also add server-side session management
             services.AddBff()
                 .AddServerSideSessions();
-
-            // local APIs
+            
             services.AddControllers();
-
-            // cookie options
+            services.AddRazorPages();
+            
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "cookie";
@@ -37,10 +37,7 @@ namespace Host5
                 })
                 .AddCookie("cookie", options =>
                 {
-                    // host prefixed cookie name
-                    options.Cookie.Name = "__Host-spa5";
-                    
-                    // strict SameSite handling
+                    options.Cookie.Name = "__Host-blazor";
                     options.Cookie.SameSite = SameSiteMode.Strict;
                 })
                 .AddOpenIdConnect("oidc", options =>
@@ -66,39 +63,43 @@ namespace Host5
                 });
         }
 
-        public void Configure(IApplicationBuilder app)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSerilogRequestLogging();
-            app.UseDeveloperExceptionPage();
+            
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
 
-            app.UseDefaultFiles();
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-            app.UseAuthentication();
             app.UseRouting();
-            
-            // adds antiforgery protection for local APIs
-            app.UseBff();
-            
-            // adds authorization for local and remote API endpoints
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
-                // local APIs
+                endpoints.MapBffManagementEndpoints();
+                
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
+                    .RequireAccessToken(TokenType.UserOrClient);
+                
+                endpoints.MapRazorPages();
+                
                 endpoints.MapControllers()
                     .RequireAuthorization()
                     .AsLocalBffApiEndpoint();
-
-                // login, logout, user, backchannel logout...
-                endpoints.MapBffManagementEndpoints();
-
-                // proxy endpoint for cross-site APIs
-                // all calls to /api/* will be forwarded to the remote API
-                // user or client access token will be attached in API call
-                // user access token will be managed automatically using the refresh token
-                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                    .RequireAccessToken(TokenType.UserOrClient);
+                
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }
