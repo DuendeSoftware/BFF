@@ -156,25 +156,39 @@ namespace Duende.Bff.Tests.Endpoints
             }
         }
 
-        [Fact(Skip = "Unclear: Is RequireAccessToken optional?")]
-        public async Task calls_to_remote_endpoint_with_no_token_type_configured_should_fail()
+        [Fact]
+        public async Task calls_to_remote_endpoint_with_anon_should_be_anon()
         {
             {
-                var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_user_notokentype/test"));
+                var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_anon_only/test"));
                 req.Headers.Add("x-csrf", "1");
                 var response = await _bffHost.BrowserClient.SendAsync(req);
 
-                response.IsSuccessStatusCode.Should().BeFalse();
+                response.IsSuccessStatusCode.Should().BeTrue();
+                response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+                apiResult.method.Should().Be("GET");
+                apiResult.path.Should().Be("/test");
+                apiResult.sub.Should().BeNull();
+                apiResult.clientId.Should().BeNull();
             }
 
             {
                 await _bffHost.BffLoginAsync("alice");
 
-                var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_user_notokentype/test"));
+                var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_anon_only/test"));
                 req.Headers.Add("x-csrf", "1");
                 var response = await _bffHost.BrowserClient.SendAsync(req);
-
-                response.IsSuccessStatusCode.Should().BeFalse();
+                
+                response.IsSuccessStatusCode.Should().BeTrue();
+                response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+                apiResult.method.Should().Be("GET");
+                apiResult.path.Should().Be("/test");
+                apiResult.sub.Should().BeNull();
+                apiResult.clientId.Should().BeNull();
             }
         }
 

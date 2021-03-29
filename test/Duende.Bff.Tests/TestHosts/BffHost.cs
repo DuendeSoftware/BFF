@@ -195,7 +195,7 @@ namespace Duende.Bff.Tests.TestHosts
                 endpoints.MapRemoteBffApiEndpoint("/api_user_or_anon", _apiHost.Url())
                     .WithOptionalUserAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint("/api_user_notokentype", _apiHost.Url());
+                endpoints.MapRemoteBffApiEndpoint("/api_anon_only", _apiHost.Url());
             });
         }
 
