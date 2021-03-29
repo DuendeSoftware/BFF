@@ -196,7 +196,11 @@ namespace Duende.Bff.Tests.TestHosts
                     .WithOptionalUserAccessToken();
 
                 endpoints.MapRemoteBffApiEndpoint("/api_anon_only", _apiHost.Url());
+
+                endpoints.Map("/not_bff_endpoint", BffRemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
             });
+
+            app.Map("/invalid_endpoint", invalid => invalid.Use(next => BffRemoteApiEndpoint.Map("/invalid_endpoint", _apiHost.Url())));
         }
 
         public async Task<bool> GetIsUserLoggedInAsync()

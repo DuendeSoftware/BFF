@@ -1,6 +1,9 @@
 ﻿using Duende.Bff.Tests.TestFramework;
 using Duende.Bff.Tests.TestHosts;
+using Duende.IdentityServer.Models;
 using FluentAssertions;
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -119,7 +122,7 @@ namespace Duende.Bff.Tests.Endpoints
             apiResult.sub.Should().BeNull();
             apiResult.clientId.Should().Be("spa");
         }
-        
+
         [Fact]
         public async Task calls_to_remote_endpoint_should_forward_user_or_client_to_api()
         {
@@ -180,7 +183,7 @@ namespace Duende.Bff.Tests.Endpoints
                 var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_anon_only/test"));
                 req.Headers.Add("x-csrf", "1");
                 var response = await _bffHost.BrowserClient.SendAsync(req);
-                
+
                 response.IsSuccessStatusCode.Should().BeTrue();
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
@@ -192,6 +195,29 @@ namespace Duende.Bff.Tests.Endpoints
             }
         }
 
+
+        [Fact]
+        public async Task calls_to_remote_endpoint_expecting_token_but_without_token_should_fail()
+        {
+            var client = _identityServerHost.Clients.Single(x => x.ClientId == "spa");
+            client.Enabled = false;
+
+            {
+                var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_user_or_client/test"));
+                req.Headers.Add("x-csrf", "1");
+                var response = await _bffHost.BrowserClient.SendAsync(req);
+
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            }
+
+            {
+                var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/api_client/test"));
+                req.Headers.Add("x-csrf", "1");
+                var response = await _bffHost.BrowserClient.SendAsync(req);
+
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            }
+        }
 
 
         [Fact]
@@ -206,7 +232,7 @@ namespace Duende.Bff.Tests.Endpoints
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
-        
+
         [Fact]
         public async Task response_status_403_from_remote_endpoint_should_return_403_from_bff()
         {
@@ -247,6 +273,24 @@ namespace Duende.Bff.Tests.Endpoints
             apiResult.path.Should().Be("/test");
             apiResult.sub.Should().Be("alice");
             apiResult.clientId.Should().Be("spa");
+        }
+
+        [Fact]
+        public void calls_to_endpoint_without_bff_metadata_should_fail()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/not_bff_endpoint"));
+
+            Func<Task> f = () => _bffHost.BrowserClient.SendAsync(req);
+            f.Should().Throw<Exception>();
+        }
+        
+        [Fact]
+        public void calls_to_bff_not_in_endpoint_routing_should_fail()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/invalid_endpoint/test"));
+
+            Func<Task> f = () => _bffHost.BrowserClient.SendAsync(req);
+            f.Should().Throw<Exception>();
         }
     }
 }
