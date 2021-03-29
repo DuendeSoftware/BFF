@@ -3,7 +3,6 @@
 
 using Duende.Bff.Tests.TestFramework;
 using Duende.Bff.Tests.TestHosts;
-using Duende.IdentityServer.Models;
 using FluentAssertions;
 using System;
 using System.Linq;
