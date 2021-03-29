@@ -22,22 +22,33 @@ namespace Duende.Bff.Tests.Endpoints.Management
             (await _bffHost.GetIsUserLoggedInAsync()).Should().BeFalse();
         }
 
-        [Fact(Skip = "need to implement")]
-        public async Task logout_endpoint_without_sid_should_fail()
+        [Fact]
+        public async Task logout_endpoint_for_authenticated_should_require_sid()
         {
             await _bffHost.BffLoginAsync("alice", "sid123");
 
-            await _bffHost.BffLogoutAsync();
+            Func<Task> f = () => _bffHost.BffLogoutAsync();
+            f.Should().Throw<Exception>();
 
             (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
         }
-
-        [Fact(Skip = "need to implement")]
-        public async Task logout_endpoint_without_session_should_fail()
+        
+        [Fact]
+        public async Task logout_endpoint_for_authenticated_user_without_sid_should_succeed()
         {
-            await _bffHost.BffLogoutAsync("sid123");
+            await _bffHost.IssueSessionCookieAsync("alice");
 
-            (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
+            var response = await _bffHost.BrowserClient.GetAsync(_bffHost.Url("/bff/logout"));
+            response.StatusCode.Should().Be(302); // endsession
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/endsession"));
+        }
+
+        [Fact]
+        public async Task logout_endpoint_for_anonymous_user_without_sid_should_succeed()
+        {
+            var response = await _bffHost.BrowserClient.GetAsync(_bffHost.Url("/bff/logout"));
+            response.StatusCode.Should().Be(302); // endsession
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/endsession"));
         }
 
         [Fact]

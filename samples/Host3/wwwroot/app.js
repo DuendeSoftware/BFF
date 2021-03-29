@@ -1,8 +1,8 @@
-﻿var loginUrl = "/bff/login";
-var logoutUrl = "/bff/logout";
-var userUrl = "/bff/user";
-var localApiUrl = "/local";
-var remoteApiUrl = "/api";
+﻿const loginUrl = "/bff/login";
+const userUrl = "/bff/user";
+const localApiUrl = "/local";
+const remoteApiUrl = "/api";
+let logoutUrl = "/bff/logout";
 
 async function onLoad() {
     var req = new Request(userUrl, {
@@ -15,7 +15,14 @@ async function onLoad() {
         var resp = await fetch(req);
         if (resp.ok) {
             log("user logged in");
-            showUser(await resp.json());
+
+            let claims = await resp.json();
+            showUser(claims);
+
+            let logoutUrlClaim = claims.find(claim => claim.type === 'logoutUrl');
+            if (logoutUrlClaim) {
+                logoutUrl = logoutUrlClaim.value;
+            }
         } else if (resp.status === 401) {
             log("user not logged in");
         }

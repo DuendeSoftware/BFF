@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -48,6 +51,16 @@ namespace Duende.Bff
             else
             {
                 var claims = result.Principal.Claims.Select(x => new { type = x.Type, value = x.Value });
+                
+                var sessionId = result.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
+                if (!String.IsNullOrWhiteSpace(sessionId))
+                {
+                    var list = claims.ToList();
+                    // todo: if they change the base path, then the /bff prefix is broken
+                    list.Add(new { type = "logoutUrl", value = "/bff/logout?sid=" + UrlEncoder.Default.Encode(sessionId) });
+                    claims = list;
+                }
+
                 var json = JsonSerializer.Serialize(claims);
 
                 context.Response.StatusCode = 200;
