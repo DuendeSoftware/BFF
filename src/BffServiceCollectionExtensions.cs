@@ -24,6 +24,9 @@ namespace Microsoft.AspNetCore.Builder
             services.AddAccessTokenManagement();
 
             services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
+            services.AddTransient<ILoginService, DefaultLoginService>();
+            services.AddTransient<ILogoutService, DefaultLogoutService>();
+            services.AddTransient<IUserService, DefaultUserService>();
             services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
             

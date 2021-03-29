@@ -1,4 +1,7 @@
-﻿using Duende.Bff.Tests.TestFramework;
+﻿// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
+using Duende.Bff.Tests.TestFramework;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

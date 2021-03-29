@@ -2,7 +2,10 @@
 // See LICENSE in the project root for license information.
 
 using Duende.Bff;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -11,6 +14,13 @@ namespace Microsoft.AspNetCore.Builder
     /// </summary>
     public static class BffEndpointRouteBuilderExtensions
     {
+        static Task ProcessWith<T>(HttpContext context)
+            where T : IBffEndpointService
+        {
+            var service = context.RequestServices.GetRequiredService<T>();
+            return service.ProcessRequequestAsync(context);
+        }
+
         /// <summary>
         /// Adds the BFF management endpoints (login, logout, logout notifications)
         /// </summary>
@@ -20,11 +30,10 @@ namespace Microsoft.AspNetCore.Builder
             this IEndpointRouteBuilder endpoints,
             string basePath = BffDefaults.ManagementBasePath)
         {
-            endpoints.MapGet(basePath + "/login", BffManagementEndoints.MapLogin);
-            endpoints.MapGet(basePath + "/logout", BffManagementEndoints.MapLogout);
-            endpoints.MapGet(basePath + "/user", BffManagementEndoints.MapUser);
-            
-            endpoints.MapPost(basePath + "/backchannel", BffManagementEndoints.MapBackchannelLogout);
+            endpoints.MapGet(basePath + "/login", ProcessWith<ILoginService>);
+            endpoints.MapGet(basePath + "/logout", ProcessWith<ILogoutService>);
+            endpoints.MapGet(basePath + "/user", ProcessWith<IUserService>);
+            endpoints.MapPost(basePath + "/backchannel", ProcessWith<IBackchannelLogoutService>);
         }
 
         /// <summary>

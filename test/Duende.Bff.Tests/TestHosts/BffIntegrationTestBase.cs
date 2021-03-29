@@ -1,4 +1,7 @@
-﻿using Duende.Bff.Tests.TestHosts;
+﻿// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
+using Duende.Bff.Tests.TestHosts;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Microsoft.Extensions.DependencyInjection;
