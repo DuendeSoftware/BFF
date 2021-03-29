@@ -12,19 +12,19 @@ namespace Duende.Bff
     /// <summary>
     /// IUserSession-backed ticket store
     /// </summary>
-    public class CookieTicketStore : ITicketStore
+    public class ServerSideTicketStore : ITicketStore
     {
         private readonly IUserSessionStore _store;
-        private readonly ILogger<CookieTicketStore> _logger;
+        private readonly ILogger<ServerSideTicketStore> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="store"></param>
         /// <param name="logger"></param>
-        public CookieTicketStore(
+        public ServerSideTicketStore(
             IUserSessionStore store,
-            ILogger<CookieTicketStore> logger)
+            ILogger<ServerSideTicketStore> logger)
         {
             _store = store;
             _logger = logger;

@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Builder
         public BffBuilder AddServerSideSessions()
         {
             Services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureBffApplicationCookie>();
-            Services.AddTransient<ITicketStore, CookieTicketStore>();
+            Services.AddTransient<ITicketStore, ServerSideTicketStore>();
 
             Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
             Services.AddTransient<ISessionRevocationService>(x => x.GetRequiredService<IUserSessionStore>());
