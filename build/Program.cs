@@ -55,6 +55,7 @@ namespace build
             Target(Targets.Pack, DependsOn(Targets.Build, Targets.CleanPackOutput), () =>
             {
                 Run("dotnet", $"pack ./src/Duende.Bff/Duende.Bff.csproj -c Release -o {Directory.CreateDirectory(packOutput).FullName} --no-build --nologo");
+                Run("dotnet", $"pack ./src/Duende.Bff.EntityFramework/Duende.Bff.EntityFramework.csproj -c Release -o {Directory.CreateDirectory(packOutput).FullName} --no-build --nologo");
             });
 
             Target(Targets.SignPackage, DependsOn(Targets.Pack, Targets.RestoreTools), () =>

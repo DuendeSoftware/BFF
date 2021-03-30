@@ -20,7 +20,10 @@ namespace Duende.Bff
         /// </summary>
         public string SessionId { get; set; }
 
-        internal void Validate()
+        /// <summary>
+        /// Validates
+        /// </summary>
+        public void Validate()
         {
             if (String.IsNullOrWhiteSpace(SubjectId) && String.IsNullOrWhiteSpace(SessionId))
             {

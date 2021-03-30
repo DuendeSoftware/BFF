@@ -6,9 +6,42 @@ using System;
 namespace Duende.Bff
 {
     /// <summary>
+    /// The data that can be updated for a user session
+    /// </summary>
+    public class UserSessionUpdate
+    {
+        /// <summary>
+        /// The renewal time
+        /// </summary>
+        public DateTime Renewed { get; set; }
+
+        /// <summary>
+        /// The expiration time
+        /// </summary>
+        public DateTime? Expires { get; set; }
+
+        /// <summary>
+        /// The ticket
+        /// </summary>
+        public string Ticket { get; set; }
+
+        /// <summary>
+        /// Copies this instance into another
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public void CopyTo(UserSessionUpdate other)
+        {
+            other.Renewed = Renewed;
+            other.Expires = Expires;
+            other.Ticket = Ticket;
+        }
+    }
+
+    /// <summary>
     /// A user session
     /// </summary>
-    public class UserSession
+    public class UserSession : UserSessionUpdate
     {
         /// <summary>
         /// The key
@@ -36,33 +69,31 @@ namespace Duende.Bff
         public DateTime Created { get; set; }
         
         /// <summary>
-        /// The renewal time
+        /// Clones the instance
         /// </summary>
-        public DateTime Renewed { get; set; }
+        /// <returns></returns>
+        public UserSession Clone()
+        {
+            var other = new UserSession();
+            CopyTo(other);
+            return other;
+        }
         
         /// <summary>
-        /// The expiration time
+        /// Copies this instance into another
         /// </summary>
-        public DateTime? Expires { get; set; }
-
-        /// <summary>
-        /// The ticket
-        /// </summary>
-        public string Ticket { get; set; }
-
-        internal UserSession Clone()
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public void CopyTo(UserSession other)
         {
-            return new UserSession()
-            {
-                Key = this.Key,
-                SubjectId = this.SubjectId,
-                SessionId = this.SessionId,
-                Scheme = this.Scheme,
-                Created = this.Created,
-                Renewed = this.Renewed,
-                Expires = this.Expires,
-                Ticket = this.Ticket,
-            };
+            other.Key = Key;
+            other.SubjectId = SubjectId;
+            other.SessionId = SessionId;
+            other.Scheme = Scheme;
+            other.Created = Created;
+            other.Renewed = Renewed;
+            other.Expires = Expires;
+            other.Ticket = Ticket;
         }
     }
 }

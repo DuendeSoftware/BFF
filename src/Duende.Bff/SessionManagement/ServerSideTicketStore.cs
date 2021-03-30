@@ -73,23 +73,14 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public async Task RenewAsync(string key, AuthenticationTicket ticket)
+        public Task RenewAsync(string key, AuthenticationTicket ticket)
         {
-            var session = await _store.GetUserSessionAsync(key);
-            if (session != null)
-            {
-                session.Renewed = ticket.GetIssued();
-                session.Expires = ticket.GetExpiration();
-                session.Ticket = ticket.Serialize();
-
-                // todo: discuss updating sub and sid?
-                
-                await _store.UpdateUserSessionAsync(session);
-            }
-            else
-            {
-                _logger.LogWarning("No record found in user session store when trying to renew authentication ticket for key {key} and subject {subjectId}", key, ticket.GetSubjectId());
-            }
+            // todo: discuss updating sub and sid?
+            return _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
+                Renewed = ticket.GetIssued(),
+                Expires = ticket.GetExpiration(),
+                Ticket = ticket.Serialize(),
+            });
         }
 
         /// <inheritdoc />

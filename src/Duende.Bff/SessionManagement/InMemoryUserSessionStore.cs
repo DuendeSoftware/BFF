@@ -34,9 +34,11 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public Task UpdateUserSessionAsync(UserSession session)
+        public Task UpdateUserSessionAsync(string key, UserSessionUpdate session)
         {
-            _store[session.Key] = session.Clone();
+            var item = _store[key].Clone();
+            session.CopyTo(item);
+            _store[key] = item;
             return Task.CompletedTask;
         }
 

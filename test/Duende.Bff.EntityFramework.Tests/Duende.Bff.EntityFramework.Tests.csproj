@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Duende.IdentityServer" Version="5.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
-    
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0" />
+
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -19,13 +20,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.4" />
-    <PackageReference Include="CsQuery.NETStandard" Version="1.3.6.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Duende.Bff\Duende.Bff.csproj" />
+    <ProjectReference Include="..\..\src\Duende.Bff.EntityFramework\Duende.Bff.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

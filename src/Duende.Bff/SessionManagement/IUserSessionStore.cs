@@ -24,13 +24,14 @@ namespace Duende.Bff
         /// <param name="session"></param>
         /// <returns></returns>
         Task CreateUserSessionAsync(UserSession session);
-        
+
         /// <summary>
         /// Updates a user session
         /// </summary>
+        /// <param name="key"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        Task UpdateUserSessionAsync(UserSession session);
+        Task UpdateUserSessionAsync(string key, UserSessionUpdate session);
         
         /// <summary>
         /// Deletes a user session
