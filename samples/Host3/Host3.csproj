@@ -10,7 +10,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Duende.Bff.csproj" />
+      <ProjectReference Include="..\..\src\Duende.Bff\Duende.Bff.csproj" />
     </ItemGroup>
     
     <ItemGroup>

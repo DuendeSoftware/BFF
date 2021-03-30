@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duende.Bff", "src\Duende.Bff.csproj", "{63FD9C99-C538-44BF-9AD4-D892775E336B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duende.Bff", "src\Duende.Bff\Duende.Bff.csproj", "{63FD9C99-C538-44BF-9AD4-D892775E336B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C549079-A502-4B40-B051-5278915AE91B}"
 EndProject
