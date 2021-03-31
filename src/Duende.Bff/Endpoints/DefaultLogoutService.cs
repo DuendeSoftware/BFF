@@ -15,14 +15,17 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultLogoutService : ILogoutService
     {
+        private readonly BffOptions _options;
         private readonly IAuthenticationSchemeProvider _schemes;
 
         /// <summary>
         /// Ctor
         /// </summary>
+        /// <param name="options"></param>
         /// <param name="authenticationSchemeProvider"></param>
-        public DefaultLogoutService(IAuthenticationSchemeProvider authenticationSchemeProvider)
+        public DefaultLogoutService(BffOptions options, IAuthenticationSchemeProvider authenticationSchemeProvider)
         {
+            _options = options;
             _schemes = authenticationSchemeProvider;
         }
 
@@ -39,7 +42,7 @@ namespace Duende.Bff
                     // for an authenticated user, if they have a sesison id claim,
                     // we require the logout request to pass that same value to
                     // prevent unauthenticated logout requests (similar to OIDC front channel)
-                    if (String.IsNullOrWhiteSpace(passedSessionId) || userSessionId != passedSessionId)
+                    if (_options.RequireLogoutSessionId && userSessionId != passedSessionId)
                     {
                         throw new Exception("Invalid Session Id");
                     }

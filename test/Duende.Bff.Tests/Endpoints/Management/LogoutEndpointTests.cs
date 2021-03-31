@@ -4,6 +4,7 @@
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,6 +33,18 @@ namespace Duende.Bff.Tests.Endpoints.Management
             (await _bffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
         }
         
+        [Fact]
+        public async Task logout_endpoint_for_authenticated_when_require_otpion_is_false_should_not_require_sid()
+        {
+            await _bffHost.BffLoginAsync("alice", "sid123");
+            
+            _bffHost.BffOptions.RequireLogoutSessionId = false;
+
+            var response = await _bffHost.BrowserClient.GetAsync(_bffHost.Url("/bff/logout"));
+            response.StatusCode.Should().Be(302); // endsession
+            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/endsession"));
+        }
+
         [Fact]
         public async Task logout_endpoint_for_authenticated_user_without_sid_should_succeed()
         {
