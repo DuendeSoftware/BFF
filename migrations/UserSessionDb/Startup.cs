@@ -21,7 +21,8 @@ namespace UserSessionDb
             var cn = Configuration.GetConnectionString("db");
 
             services.AddDbContext<SessionDbContext>(options => {
-                options.UseSqlServer(cn, dbOpts => dbOpts.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                //options.UseSqlServer(cn, dbOpts => dbOpts.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                options.UseSqlite(cn, dbOpts => dbOpts.MigrationsAssembly(typeof(Startup).Assembly.FullName));
             });
         }
 

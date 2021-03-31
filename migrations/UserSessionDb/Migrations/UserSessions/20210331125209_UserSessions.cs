@@ -11,16 +11,16 @@ namespace UserSessionDb.Migrations.UserSessions
                 name: "UserSessions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Renewed = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Expires = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Ticket = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Key = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    SubjectId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    SessionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Scheme = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Renewed = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Expires = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Ticket = table.Column<string>(type: "TEXT", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    SubjectId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    SessionId = table.Column<string>(type: "TEXT", nullable: true),
+                    Scheme = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,15 +37,13 @@ namespace UserSessionDb.Migrations.UserSessions
                 name: "IX_UserSessions_SessionId",
                 table: "UserSessions",
                 column: "SessionId",
-                unique: true,
-                filter: "[SessionId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSessions_SubjectId_SessionId",
                 table: "UserSessions",
                 columns: new[] { "SubjectId", "SessionId" },
-                unique: true,
-                filter: "[SessionId] IS NOT NULL");
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

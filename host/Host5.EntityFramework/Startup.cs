@@ -27,7 +27,8 @@ namespace Host5.EntityFramework
             var cn = _configuration.GetConnectionString("db");
             services.AddBff()
                 .AddEntityFrameworkServerSideSessions(options=> {
-                    options.UseSqlServer(cn);
+                    //options.UseSqlServer(cn);
+                    options.UseSqlite(cn);
                 });
 
             // local APIs
