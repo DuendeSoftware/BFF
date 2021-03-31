@@ -57,7 +57,7 @@ namespace Duende.Bff
                 {
                     var list = claims.ToList();
                     // todo: if they change the base path, then the /bff prefix is broken
-                    list.Add(new { type = "logoutUrl", value = "/bff/logout?sid=" + UrlEncoder.Default.Encode(sessionId) });
+                    list.Add(new { type = "bff:logout", value = "/bff/logout?sid=" + UrlEncoder.Default.Encode(sessionId) });
                     claims = list;
                 }
 

@@ -19,7 +19,7 @@ async function onLoad() {
             let claims = await resp.json();
             showUser(claims);
 
-            let logoutUrlClaim = claims.find(claim => claim.type === 'logoutUrl');
+            let logoutUrlClaim = claims.find(claim => claim.type === 'bff:logout');
             if (logoutUrlClaim) {
                 logoutUrl = logoutUrlClaim.value;
             }
