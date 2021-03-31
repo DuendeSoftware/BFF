@@ -27,6 +27,7 @@ namespace Duende.Bff
         {
             return async context =>
             {
+                var options = context.RequestServices.GetRequiredService<BffOptions>();
                 var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger("Duende.Bff.BffApiEndpoint");
 
@@ -44,8 +45,8 @@ namespace Duende.Bff
 
                 if (metadata.RequireAntiForgeryHeader)
                 {
-                    var antiForgeryHeader = context.Request.Headers[BffDefaults.AntiForgeryHeaderName].FirstOrDefault();
-                    if (antiForgeryHeader == null || antiForgeryHeader != BffDefaults.AntiForgeryHeaderValue)
+                    var antiForgeryHeader = context.Request.Headers[options.AntiForgeryHeaderName].FirstOrDefault();
+                    if (antiForgeryHeader == null || antiForgeryHeader != options.AntiForgeryHeaderValue)
                     {
                         logger.AntiForgeryValidationFailed(localPath);
 

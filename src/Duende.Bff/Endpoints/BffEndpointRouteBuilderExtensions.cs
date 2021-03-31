@@ -25,15 +25,15 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the BFF management endpoints (login, logout, logout notifications)
         /// </summary>
         /// <param name="endpoints"></param>
-        /// <param name="basePath"></param>
         public static void MapBffManagementEndpoints(
-            this IEndpointRouteBuilder endpoints,
-            string basePath = BffDefaults.ManagementBasePath)
+            this IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapGet(basePath + "/login", ProcessWith<ILoginService>);
-            endpoints.MapGet(basePath + "/logout", ProcessWith<ILogoutService>);
-            endpoints.MapGet(basePath + "/user", ProcessWith<IUserService>);
-            endpoints.MapPost(basePath + "/backchannel", ProcessWith<IBackchannelLogoutService>);
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+            endpoints.MapGet(options.ManagementBasePath + "/login", ProcessWith<ILoginService>);
+            endpoints.MapGet(options.ManagementBasePath + "/logout", ProcessWith<ILogoutService>);
+            endpoints.MapGet(options.ManagementBasePath + "/user", ProcessWith<IUserService>);
+            endpoints.MapPost(options.ManagementBasePath + "/backchannel", ProcessWith<IBackchannelLogoutService>);
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using Duende.Bff;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -17,9 +18,14 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the Duende.BFF services to DI
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
-        public static BffBuilder AddBff(this IServiceCollection services)
+        public static BffBuilder AddBff(this IServiceCollection services, Action<BffOptions> configureAction = null)
         {
+            var opts = new BffOptions();
+            configureAction?.Invoke(opts);
+            services.AddSingleton(opts);
+
             services.AddHttpProxy();
             services.AddAccessTokenManagement();
 

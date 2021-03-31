@@ -83,7 +83,7 @@ namespace Host5
                     .RequireAuthorization()
                     .AsLocalBffApiEndpoint();
                 
-                endpoints.MapBffManagementEndpoints("/bff");
+                endpoints.MapBffManagementEndpoints();
 
                 endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken();

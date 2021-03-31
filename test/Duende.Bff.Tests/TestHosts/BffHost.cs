@@ -24,6 +24,8 @@ namespace Duende.Bff.Tests.TestHosts
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
 
+        public BffOptions BffOptions { get; set; } = new BffOptions();
+
         public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app")
             : base(baseAddress)
         {
@@ -41,6 +43,7 @@ namespace Duende.Bff.Tests.TestHosts
             services.AddAuthorization();
 
             var bff = services.AddBff();
+            services.AddSingleton(BffOptions);
 
             bff.ConfigureTokenClient()
                 .ConfigurePrimaryHttpMessageHandler(() => _identityServerHost.Server.CreateHandler());

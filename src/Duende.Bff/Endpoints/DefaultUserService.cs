@@ -19,22 +19,25 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultUserService : IUserService
     {
+        private readonly BffOptions _options;
         private readonly ILogger _logger;
 
         /// <summary>
         /// Ctor
         /// </summary>
+        /// <param name="options"></param>
         /// <param name="loggerFactory"></param>
-        public DefaultUserService(ILoggerFactory loggerFactory)
+        public DefaultUserService(BffOptions options, ILoggerFactory loggerFactory)
         {
+            _options = options;
             _logger = loggerFactory.CreateLogger("Duende.Bff.BffApiEndpoint");
         }
 
         /// <inheritdoc />
         public async Task ProcessRequequestAsync(HttpContext context)
         {
-            var antiForgeryHeader = context.Request.Headers[BffDefaults.AntiForgeryHeaderName].FirstOrDefault();
-            if (antiForgeryHeader == null || antiForgeryHeader != BffDefaults.AntiForgeryHeaderValue)
+            var antiForgeryHeader = context.Request.Headers[_options.AntiForgeryHeaderName].FirstOrDefault();
+            if (antiForgeryHeader == null || antiForgeryHeader != _options.AntiForgeryHeaderValue)
             {
                 _logger.AntiForgeryValidationFailed("user");
 
@@ -56,8 +59,7 @@ namespace Duende.Bff
                 if (!String.IsNullOrWhiteSpace(sessionId))
                 {
                     var list = claims.ToList();
-                    // todo: if they change the base path, then the /bff prefix is broken
-                    list.Add(new { type = "bff:logout", value = "/bff/logout?sid=" + UrlEncoder.Default.Encode(sessionId) });
+                    list.Add(new { type = "bff:logout", value = _options.ManagementBasePath + "/logout?sid=" + UrlEncoder.Default.Encode(sessionId) });
                     claims = list;
                 }
 

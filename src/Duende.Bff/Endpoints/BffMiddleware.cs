@@ -15,16 +15,19 @@ namespace Duende.Bff.Endpoints
     public class BffMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly BffOptions _options;
         private readonly ILogger<BffMiddleware> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="next"></param>
+        /// <param name="options"></param>
         /// <param name="logger"></param>
-        public BffMiddleware(RequestDelegate next, ILogger<BffMiddleware> logger)
+        public BffMiddleware(RequestDelegate next, BffOptions options, ILogger<BffMiddleware> logger)
         {
             _next = next;
+            _options = options;
             _logger = logger;
         }
         
@@ -50,8 +53,8 @@ namespace Duende.Bff.Endpoints
             {
                 if (localEndoint.DisableAntiForgeryCheck == false)
                 {
-                    var antiForgeryHeader = context.Request.Headers[BffDefaults.AntiForgeryHeaderName].FirstOrDefault();
-                    if (antiForgeryHeader == null || antiForgeryHeader != BffDefaults.AntiForgeryHeaderValue)
+                    var antiForgeryHeader = context.Request.Headers[_options.AntiForgeryHeaderName].FirstOrDefault();
+                    if (antiForgeryHeader == null || antiForgeryHeader != _options.AntiForgeryHeaderValue)
                     {
                         _logger.AntiForgeryValidationFailed(context.Request.Path);
                         
