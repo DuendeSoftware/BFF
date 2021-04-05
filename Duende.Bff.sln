@@ -37,7 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "migrations", "migrations", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSessionDb", "migrations\UserSessionDb\UserSessionDb.csproj", "{F01EA18D-DAA2-41A3-B6B4-5F7B185C3525}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host5.EntityFramework", "host\Host5.EntityFramework\Host5.EntityFramework.csproj", "{8BAC820F-4969-42B6-8605-DDE76BE39444}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host5.EntityFramework", "samples\Host5.EntityFramework\Host5.EntityFramework.csproj", "{8BAC820F-4969-42B6-8605-DDE76BE39444}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
