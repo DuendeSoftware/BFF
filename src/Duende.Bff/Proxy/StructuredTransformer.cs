@@ -69,7 +69,7 @@ namespace Duende.Bff
                 return;
             }
 
-            var transformContext = new RequestTransformContext()
+            var transformContext = new RequestTransformContext
             {
                 DestinationPrefix = destinationPrefix,
                 HttpContext = httpContext,
