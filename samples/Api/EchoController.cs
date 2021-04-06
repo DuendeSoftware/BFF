@@ -35,7 +35,8 @@ namespace Api
             {
                 path = Request.Path.Value,
                 message = message,
-                time = DateTime.UtcNow.ToString()
+                time = DateTime.UtcNow.ToString(),
+                headers = Request.Headers
             };
 
             return Ok(response);
