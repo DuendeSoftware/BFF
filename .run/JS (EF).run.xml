@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="JS (EF)" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/host/Host5.EntityFramework/Host5.EntityFramework.csproj" />
+    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/Host5.EntityFramework/Host5.EntityFramework.csproj" />
     <option name="LAUNCH_PROFILE_TFM" value="net5.0" />
     <option name="LAUNCH_PROFILE_NAME" value="Host5.EntityFramework" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
