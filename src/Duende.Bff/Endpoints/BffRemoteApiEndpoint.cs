@@ -2,12 +2,14 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Service.Proxy;
+using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 
 namespace Duende.Bff
 {
@@ -16,6 +18,45 @@ namespace Duende.Bff
     /// </summary>
     public static class BffRemoteApiEndpoint
     {
+        private static readonly string ForKey = "For";
+        private static readonly string HostKey = "Host";
+        private static readonly string ProtoKey = "Proto";
+        private static readonly string PathBaseKey = "PathBase";
+        
+        private static HttpTransformer CreateTransformer(BffOptions options, string accessToken, PathString localPath)
+        {
+            var requestTransforms = new List<RequestTransform>
+            {
+                new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath)
+            };
+
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                requestTransforms.Add(new AccessTokenTransform(accessToken));
+            }
+
+            string headerPrefix = "X-Forwarded-";
+
+            requestTransforms.Add(
+                new RequestHeaderXForwardedForTransform(headerPrefix + ForKey, true));
+            requestTransforms.Add(
+                new RequestHeaderXForwardedHostTransform(headerPrefix + HostKey, true));
+            requestTransforms.Add(
+                new RequestHeaderXForwardedProtoTransform(headerPrefix + ProtoKey, true));
+            requestTransforms.Add(
+                new RequestHeaderXForwardedPathBaseTransform(headerPrefix + PathBaseKey, true));
+
+            var transformer = new StructuredTransformer(
+                copyRequestHeaders: true,
+                copyResponseHeaders: true,
+                copyResponseTrailers: true,
+                requestTransforms,
+                responseTransforms: new List<ResponseTransform>(),
+                responseTrailerTransforms: new List<ResponseTrailersTransform>());
+
+            return transformer;
+        }
+
         /// <summary>
         /// Endpoint logic
         /// </summary>
@@ -109,8 +150,9 @@ namespace Duende.Bff
                 var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
                 var httpClient = clientFactory.CreateClient(localPath);
 
-                var transformer = new BffHttpTransformer(token, context.Request.Path, new PathString(localPath),
-                    context.Request.QueryString);
+                // var transformer = new BffHttpTransformer(token, context.Request.Path, new PathString(localPath),
+                //     context.Request.QueryString);
+                var transformer = CreateTransformer(options, token, localPath);
                 await proxy.ProxyAsync(context, apiAddress, httpClient, new RequestProxyOptions(), transformer);
 
                 var errorFeature = context.Features.Get<IProxyErrorFeature>();
