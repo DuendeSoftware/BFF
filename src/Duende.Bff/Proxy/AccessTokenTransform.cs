@@ -18,7 +18,7 @@ namespace Duende.Bff
         {
             context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
 
-            return ValueTask.CompletedTask;
+            return default;
         }
     }
 }
