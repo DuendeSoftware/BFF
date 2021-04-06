@@ -33,7 +33,8 @@ namespace Duende.Bff
         {
             var requestTransforms = new List<RequestTransform>
             {
-                new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath)
+                new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath),
+                new EssentialHeadersTransform()
             };
 
             if (!string.IsNullOrWhiteSpace(accessToken))
