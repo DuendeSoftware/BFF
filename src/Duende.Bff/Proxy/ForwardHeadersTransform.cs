@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
@@ -8,10 +10,21 @@ using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 namespace Duende.Bff
 {
     /// <summary>
-    /// Adds an access token to outgoing requests
+    /// Forwards headers
     /// </summary>
-    public class EssentialHeadersTransform : RequestTransform
+    public class ForwardHeadersTransform : RequestTransform
     {
+        private readonly IEnumerable<string> _headerNames;
+
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="headerNames"></param>
+        public ForwardHeadersTransform(IEnumerable<string> headerNames)
+        {
+            _headerNames = headerNames;
+        }
+        
         /// <inheritdoc />
         public override ValueTask ApplyAsync(RequestTransformContext context)
         {
@@ -31,13 +44,10 @@ namespace Duende.Bff
                     continue;
                 }
 
-                if (headerName == HeaderNames.ContentLength ||
-                    headerName == HeaderNames.ContentType ||
-                    headerName == HeaderNames.Accept)
+                if (_headerNames.Contains(headerName, StringComparer.OrdinalIgnoreCase))
                 {
                     RequestUtilities.AddHeader(context.ProxyRequest, headerName, headerValue);    
                 }
-                
             }
 
             return default;

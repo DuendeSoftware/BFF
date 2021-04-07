@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Net.Http.Headers;
 using Yarp.ReverseProxy.Service.Proxy;
 using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 
@@ -33,8 +35,8 @@ namespace Duende.Bff
         {
             var requestTransforms = new List<RequestTransform>
             {
-                new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath),
-                new EssentialHeadersTransform()
+                new PathStringTransform(Options.PathTransformMode, localPath),
+                new ForwardHeadersTransform(new[] { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType })
             };
 
             if (!string.IsNullOrWhiteSpace(accessToken))
@@ -42,17 +44,25 @@ namespace Duende.Bff
                 requestTransforms.Add(new AccessTokenTransform(accessToken));
             }
 
-            string headerPrefix = "X-Forwarded-";
+            if (Options.ForwardedHeaders.Any())
+            {
+                requestTransforms.Add(new ForwardHeadersTransform(Options.ForwardedHeaders));
+            }
 
-            requestTransforms.Add(
-                new RequestHeaderXForwardedForTransform(headerPrefix + ForKey, true));
-            requestTransforms.Add(
-                new RequestHeaderXForwardedHostTransform(headerPrefix + HostKey, true));
-            requestTransforms.Add(
-                new RequestHeaderXForwardedProtoTransform(headerPrefix + ProtoKey, true));
-            requestTransforms.Add(
-                new RequestHeaderXForwardedPathBaseTransform(headerPrefix + PathBaseKey, true));
+            if (Options.AddXForwardedHeaders)
+            {
+                string headerPrefix = "X-Forwarded-";
 
+                requestTransforms.Add(
+                    new RequestHeaderXForwardedForTransform(headerPrefix + ForKey, true));
+                requestTransforms.Add(
+                    new RequestHeaderXForwardedHostTransform(headerPrefix + HostKey, true));
+                requestTransforms.Add(
+                    new RequestHeaderXForwardedProtoTransform(headerPrefix + ProtoKey, true));
+                requestTransforms.Add(
+                    new RequestHeaderXForwardedPathBaseTransform(headerPrefix + PathBaseKey, true));
+            }
+            
             var transformer = new StructuredTransformer(
                 copyRequestHeaders: false,
                 copyResponseHeaders: true,
