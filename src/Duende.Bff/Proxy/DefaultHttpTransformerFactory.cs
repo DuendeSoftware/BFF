@@ -28,6 +28,7 @@ namespace Duende.Bff
             Options = options;
         }
         
+        // todo: PathBase has been renamed to Prefix
         private static readonly string ForKey = "For";
         private static readonly string HostKey = "Host";
         private static readonly string ProtoKey = "Proto";
