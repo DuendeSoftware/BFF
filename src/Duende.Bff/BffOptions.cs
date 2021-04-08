@@ -36,13 +36,20 @@ namespace Duende.Bff
         /// <summary>
         /// Additional headers to forward to remote API endpoints
         /// </summary>
-        public ICollection<string> ForwardedHeaders = new HashSet<string>();
+        public ISet<string> ForwardedHeaders = new HashSet<string>();
 
         /// <summary>
         /// Specifies if X-Forwarded headers are automatically added to call to remote API endpoints.
         /// Defaults to true.
         /// </summary>
         public bool AddXForwardedHeaders { get; set; } = true;
+
+        // TODO: security notice?
+        /// <summary>
+        /// Forward incoming XForwarded headers.
+        /// Defaults to false.
+        /// </summary>
+        public bool ForwardIncomingXForwardedHeaders { get; set; } = false;
 
         /// <summary>
         /// Specifies how the path for remote API endpoints gets transformed

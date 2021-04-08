@@ -31,7 +31,7 @@ namespace Duende.Bff
         private static readonly string PathBaseKey = "PathBase";
         
         /// <inheritdoc />
-        public virtual HttpTransformer CreateClient(string localPath, string accessToken = null)
+        public virtual HttpTransformer CreateTransformer(string localPath, string accessToken = null)
         {
             var requestTransforms = new List<RequestTransform>
             {
@@ -52,15 +52,16 @@ namespace Duende.Bff
             if (Options.AddXForwardedHeaders)
             {
                 string headerPrefix = "X-Forwarded-";
+                var append = Options.ForwardIncomingXForwardedHeaders;
 
                 requestTransforms.Add(
-                    new RequestHeaderXForwardedForTransform(headerPrefix + ForKey, true));
+                    new RequestHeaderXForwardedForTransform(headerPrefix + ForKey, append));
                 requestTransforms.Add(
-                    new RequestHeaderXForwardedHostTransform(headerPrefix + HostKey, true));
+                    new RequestHeaderXForwardedHostTransform(headerPrefix + HostKey, append));
                 requestTransforms.Add(
-                    new RequestHeaderXForwardedProtoTransform(headerPrefix + ProtoKey, true));
+                    new RequestHeaderXForwardedProtoTransform(headerPrefix + ProtoKey, append));
                 requestTransforms.Add(
-                    new RequestHeaderXForwardedPathBaseTransform(headerPrefix + PathBaseKey, true));
+                    new RequestHeaderXForwardedPathBaseTransform(headerPrefix + PathBaseKey, append));
             }
             
             var transformer = new StructuredTransformer(

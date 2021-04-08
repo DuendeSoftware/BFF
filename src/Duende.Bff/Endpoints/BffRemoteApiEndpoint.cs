@@ -112,7 +112,7 @@ namespace Duende.Bff
                 var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
                 
                 var httpClient = clientFactory.CreateClient(localPath);
-                var transformer = transformerFactory.CreateClient(localPath, token);
+                var transformer = transformerFactory.CreateTransformer(localPath, token);
 
                 await proxy.ProxyAsync(context, apiAddress, httpClient, new RequestProxyOptions(), transformer);
 
