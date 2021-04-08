@@ -67,6 +67,28 @@ namespace Duende.Bff.Tests.Endpoints
             var body = JsonSerializer.Deserialize<TestPayload>(apiResult.body);
             body.message.Should().Be("hello test api");
         }
+        
+        [Fact]
+        public async Task post_to_remote_endpoint_should_forward_user_to_api()
+        {
+            await _bffHost.BffLoginAsync("alice");
+
+            var req = new HttpRequestMessage(HttpMethod.Post, _bffHost.Url("/api_user/test"));
+            req.Headers.Add("x-csrf", "1");
+            req.Content = new StringContent(JsonSerializer.Serialize(new TestPayload("hello test api")), Encoding.UTF8, "application/json");
+            var response = await _bffHost.BrowserClient.SendAsync(req);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+            apiResult.method.Should().Be("POST");
+            apiResult.path.Should().Be("/test");
+            apiResult.sub.Should().Be("alice");
+            apiResult.clientId.Should().Be("spa");
+            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.body);
+            body.message.Should().Be("hello test api");
+        }
 
 
 

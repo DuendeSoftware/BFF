@@ -6,7 +6,7 @@ using System.Net.Http;
 namespace Duende.Bff
 {
     /// <summary>
-    /// Factory for creating message invokes for outgoing remote BFF API calls
+    /// Factory for creating a HTTP message invoker for outgoing remote BFF API calls
     /// </summary>
     public interface IHttpMessageInvokerFactory
     {

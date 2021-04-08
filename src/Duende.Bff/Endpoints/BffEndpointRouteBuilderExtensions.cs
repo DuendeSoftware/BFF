@@ -30,6 +30,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
+            // todo: consider URI or PathString
             endpoints.MapGet(options.ManagementBasePath + "/login", ProcessWith<ILoginService>);
             endpoints.MapGet(options.ManagementBasePath + "/logout", ProcessWith<ILogoutService>);
             endpoints.MapGet(options.ManagementBasePath + "/user", ProcessWith<IUserService>);

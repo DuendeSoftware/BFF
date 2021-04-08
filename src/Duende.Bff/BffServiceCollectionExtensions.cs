@@ -30,6 +30,8 @@ namespace Microsoft.AspNetCore.Builder
             services.AddAccessTokenManagement();
 
             services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
+            services.TryAddSingleton<IHttpTransformerFactory, DefaultHttpTransformerFactory>();
+            
             services.AddTransient<ILoginService, DefaultLoginService>();
             services.AddTransient<ILogoutService, DefaultLogoutService>();
             services.AddTransient<IUserService, DefaultUserService>();

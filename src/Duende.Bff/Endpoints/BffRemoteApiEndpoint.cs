@@ -2,12 +2,14 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Service.Proxy;
+using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 
 namespace Duende.Bff
 {
@@ -107,10 +109,11 @@ namespace Duende.Bff
 
                 var proxy = context.RequestServices.GetRequiredService<IHttpProxy>();
                 var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
+                var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
+                
                 var httpClient = clientFactory.CreateClient(localPath);
+                var transformer = transformerFactory.CreateTransformer(localPath, token);
 
-                var transformer = new BffHttpTransformer(token, context.Request.Path, new PathString(localPath),
-                    context.Request.QueryString);
                 await proxy.ProxyAsync(context, apiAddress, httpClient, new RequestProxyOptions(), transformer);
 
                 var errorFeature = context.Features.Get<IProxyErrorFeature>();
