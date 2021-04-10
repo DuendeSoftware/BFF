@@ -7,12 +7,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CsQuery.ExtensionMethods;
+using Microsoft.Extensions.Primitives;
 
 namespace Duende.Bff.Tests.TestHosts
 {
@@ -108,8 +111,7 @@ namespace Duende.Bff.Tests.TestHosts
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBffManagementEndpoints();
-
-
+                
                 endpoints.Map("/local_anon", async context =>
                 {
                     var body = default(string);
@@ -121,14 +123,23 @@ namespace Duende.Bff.Tests.TestHosts
                         }
                     }
 
+                    var headers = new Dictionary<string, List<string>>();
+                    foreach (var header in context.Request.Headers)
+                    {
+                        var values = new List<string>(header.Value.Select(v => v));
+                        headers.Add(header.Key, values);
+                    }
+
                     var response = new ApiResponse(
                         context.Request.Method,
                         context.Request.Path.Value,
                         context.User.FindFirst(("sub"))?.Value,
                         context.User.FindFirst(("client_id"))?.Value,
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
-                        body
-                    );
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                        {
+                            Body = body,
+                            RequestHeaders = headers
+                        };
 
                     context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
                     LocalApiStatusCodeToReturn = null;
@@ -156,11 +167,12 @@ namespace Duende.Bff.Tests.TestHosts
                         context.Request.Method,
                         context.Request.Path.Value,
                         sub,
-                        context.User.FindFirst(("client_id"))?.Value, 
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
-                        body
-                    );
-
+                        context.User.FindFirst(("client_id"))?.Value,
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                    {
+                        Body = body
+                    };
+                    
                     context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
                     LocalApiStatusCodeToReturn = null;
 

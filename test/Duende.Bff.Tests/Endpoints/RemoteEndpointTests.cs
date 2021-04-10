@@ -40,10 +40,10 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("GET");
-            apiResult.path.Should().Be("/test");
-            apiResult.sub.Should().Be("alice");
-            apiResult.clientId.Should().Be("spa");
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/test");
+            apiResult.Sub.Should().Be("alice");
+            apiResult.ClientId.Should().Be("spa");
         }
 
         [Fact]
@@ -60,11 +60,11 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("PUT");
-            apiResult.path.Should().Be("/test");
-            apiResult.sub.Should().Be("alice");
-            apiResult.clientId.Should().Be("spa");
-            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.body);
+            apiResult.Method.Should().Be("PUT");
+            apiResult.Path.Should().Be("/test");
+            apiResult.Sub.Should().Be("alice");
+            apiResult.ClientId.Should().Be("spa");
+            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.Body);
             body.message.Should().Be("hello test api");
         }
         
@@ -82,11 +82,11 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("POST");
-            apiResult.path.Should().Be("/test");
-            apiResult.sub.Should().Be("alice");
-            apiResult.clientId.Should().Be("spa");
-            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.body);
+            apiResult.Method.Should().Be("POST");
+            apiResult.Path.Should().Be("/test");
+            apiResult.Sub.Should().Be("alice");
+            apiResult.ClientId.Should().Be("spa");
+            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.Body);
             body.message.Should().Be("hello test api");
         }
 
@@ -104,10 +104,10 @@ namespace Duende.Bff.Tests.Endpoints
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-                apiResult.method.Should().Be("GET");
-                apiResult.path.Should().Be("/test");
-                apiResult.sub.Should().BeNull();
-                apiResult.clientId.Should().BeNull();
+                apiResult.Method.Should().Be("GET");
+                apiResult.Path.Should().Be("/test");
+                apiResult.Sub.Should().BeNull();
+                apiResult.ClientId.Should().BeNull();
             }
 
             {
@@ -121,10 +121,10 @@ namespace Duende.Bff.Tests.Endpoints
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-                apiResult.method.Should().Be("GET");
-                apiResult.path.Should().Be("/test");
-                apiResult.sub.Should().Be("alice");
-                apiResult.clientId.Should().Be("spa");
+                apiResult.Method.Should().Be("GET");
+                apiResult.Path.Should().Be("/test");
+                apiResult.Sub.Should().Be("alice");
+                apiResult.ClientId.Should().Be("spa");
             }
         }
 
@@ -141,10 +141,10 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("GET");
-            apiResult.path.Should().Be("/test");
-            apiResult.sub.Should().BeNull();
-            apiResult.clientId.Should().Be("spa");
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/test");
+            apiResult.Sub.Should().BeNull();
+            apiResult.ClientId.Should().Be("spa");
         }
 
         [Fact]
@@ -159,10 +159,10 @@ namespace Duende.Bff.Tests.Endpoints
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-                apiResult.method.Should().Be("GET");
-                apiResult.path.Should().Be("/test");
-                apiResult.sub.Should().BeNull();
-                apiResult.clientId.Should().Be("spa");
+                apiResult.Method.Should().Be("GET");
+                apiResult.Path.Should().Be("/test");
+                apiResult.Sub.Should().BeNull();
+                apiResult.ClientId.Should().Be("spa");
             }
 
             {
@@ -176,10 +176,10 @@ namespace Duende.Bff.Tests.Endpoints
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-                apiResult.method.Should().Be("GET");
-                apiResult.path.Should().Be("/test");
-                apiResult.sub.Should().Be("alice");
-                apiResult.clientId.Should().Be("spa");
+                apiResult.Method.Should().Be("GET");
+                apiResult.Path.Should().Be("/test");
+                apiResult.Sub.Should().Be("alice");
+                apiResult.ClientId.Should().Be("spa");
             }
         }
 
@@ -195,10 +195,10 @@ namespace Duende.Bff.Tests.Endpoints
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-                apiResult.method.Should().Be("GET");
-                apiResult.path.Should().Be("/test");
-                apiResult.sub.Should().BeNull();
-                apiResult.clientId.Should().BeNull();
+                apiResult.Method.Should().Be("GET");
+                apiResult.Path.Should().Be("/test");
+                apiResult.Sub.Should().BeNull();
+                apiResult.ClientId.Should().BeNull();
             }
 
             {
@@ -212,10 +212,10 @@ namespace Duende.Bff.Tests.Endpoints
                 response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
                 var json = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-                apiResult.method.Should().Be("GET");
-                apiResult.path.Should().Be("/test");
-                apiResult.sub.Should().BeNull();
-                apiResult.clientId.Should().BeNull();
+                apiResult.Method.Should().Be("GET");
+                apiResult.Path.Should().Be("/test");
+                apiResult.Sub.Should().BeNull();
+                apiResult.ClientId.Should().BeNull();
             }
         }
 
@@ -293,10 +293,10 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("GET");
-            apiResult.path.Should().Be("/test");
-            apiResult.sub.Should().Be("alice");
-            apiResult.clientId.Should().Be("spa");
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/test");
+            apiResult.Sub.Should().Be("alice");
+            apiResult.ClientId.Should().Be("spa");
         }
 
         [Fact]

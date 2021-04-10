@@ -69,9 +69,10 @@ namespace Duende.Bff.Tests.TestHosts
                         context.Request.Path.Value,
                         context.User.FindFirst(("sub"))?.Value,
                         context.User.FindFirst(("client_id"))?.Value,
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
-                        body
-                    );
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                    {
+                        Body = body
+                    };
 
                     context.Response.StatusCode = ApiStatusCodeToReturn ?? 200;
                     ApiStatusCodeToReturn = null;

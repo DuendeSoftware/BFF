@@ -28,9 +28,9 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("GET");
-            apiResult.path.Should().Be("/local_authz");
-            apiResult.sub.Should().Be("alice");
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/local_authz");
+            apiResult.Sub.Should().Be("alice");
         }
 
         [Fact]
@@ -55,9 +55,9 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("GET");
-            apiResult.path.Should().Be("/local_anon");
-            apiResult.sub.Should().BeNull();
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/local_anon");
+            apiResult.Sub.Should().BeNull();
         }
 
         [Fact]
@@ -74,10 +74,10 @@ namespace Duende.Bff.Tests.Endpoints
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-            apiResult.method.Should().Be("PUT");
-            apiResult.path.Should().Be("/local_authz");
-            apiResult.sub.Should().Be("alice");
-            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.body);
+            apiResult.Method.Should().Be("PUT");
+            apiResult.Path.Should().Be("/local_authz");
+            apiResult.Sub.Should().Be("alice");
+            var body = JsonSerializer.Deserialize<TestPayload>(apiResult.Body);
             body.message.Should().Be("hello test api");
         }
 
