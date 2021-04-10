@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CsQuery.ExtensionMethods;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Primitives;
 
 namespace Duende.Bff.Tests.TestHosts
@@ -26,15 +27,17 @@ namespace Duende.Bff.Tests.TestHosts
         private readonly IdentityServerHost _identityServerHost;
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
+        private readonly bool _useForwardedHeaders;
 
         public BffOptions BffOptions { get; set; } = new();
 
-        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app")
+        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app", bool useForwardedHeaders = false)
             : base(baseAddress)
         {
             _identityServerHost = identityServerHost;
             _apiHost = apiHost;
             _clientId = clientId;
+            _useForwardedHeaders = useForwardedHeaders;
 
             OnConfigureServices += ConfigureServices;
             OnConfigure += Configure;
@@ -101,6 +104,14 @@ namespace Duende.Bff.Tests.TestHosts
 
         private void Configure(IApplicationBuilder app)
         {
+            if (_useForwardedHeaders)
+            {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+                });
+            }
+            
             app.UseAuthentication();
 
             app.UseRouting();
@@ -114,6 +125,7 @@ namespace Duende.Bff.Tests.TestHosts
                 
                 endpoints.Map("/local_anon", async context =>
                 {
+                    // capture body if present
                     var body = default(string);
                     if (context.Request.HasJsonContentType())
                     {
@@ -123,11 +135,12 @@ namespace Duende.Bff.Tests.TestHosts
                         }
                     }
 
-                    var headers = new Dictionary<string, List<string>>();
+                    // capture request headers
+                    var requestHeaders = new Dictionary<string, List<string>>();
                     foreach (var header in context.Request.Headers)
                     {
                         var values = new List<string>(header.Value.Select(v => v));
-                        headers.Add(header.Key, values);
+                        requestHeaders.Add(header.Key, values);
                     }
 
                     var response = new ApiResponse(
@@ -138,7 +151,7 @@ namespace Duende.Bff.Tests.TestHosts
                         context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                         {
                             Body = body,
-                            RequestHeaders = headers
+                            RequestHeaders = requestHeaders
                         };
 
                     context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
@@ -302,6 +315,7 @@ namespace Duende.Bff.Tests.TestHosts
                 CreateInvoker = callback;
             }
             public Func<string, HttpMessageInvoker> CreateInvoker { get; set; }
+            
             public HttpMessageInvoker CreateClient(string localPath)
             {
                 return CreateInvoker.Invoke(localPath);
