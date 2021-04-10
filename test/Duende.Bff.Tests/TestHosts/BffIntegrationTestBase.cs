@@ -12,14 +12,14 @@ namespace Duende.Bff.Tests.TestHosts
 {
     public class BffIntegrationTestBase
     {
-        protected readonly IdentityServerHost _identityServerHost;
-        protected readonly ApiHost _apiHost;
-        protected readonly BffHost _bffHost;
+        protected readonly IdentityServerHost IdentityServerHost;
+        protected readonly ApiHost ApiHost;
+        protected BffHost BffHost;
 
         public BffIntegrationTestBase()
         {
-            _identityServerHost = new IdentityServerHost();
-            _identityServerHost.Clients.Add(new Client
+            IdentityServerHost = new IdentityServerHost();
+            IdentityServerHost.Clients.Add(new Client
             {
                 ClientId = "spa",
                 ClientSecrets = { new Secret("secret".Sha256()) },
@@ -30,22 +30,22 @@ namespace Duende.Bff.Tests.TestHosts
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "scope1" }
             });
-            _identityServerHost.OnConfigureServices += services => {
+            IdentityServerHost.OnConfigureServices += services => {
                 services.AddTransient<IBackChannelLogoutHttpClient>(provider => 
-                    new DefaultBackChannelLogoutHttpClient(_bffHost.HttpClient, provider.GetRequiredService<ILoggerFactory>()));
+                    new DefaultBackChannelLogoutHttpClient(BffHost.HttpClient, provider.GetRequiredService<ILoggerFactory>()));
             };
-            _identityServerHost.InitializeAsync().Wait();
+            IdentityServerHost.InitializeAsync().Wait();
 
-            _apiHost = new ApiHost(_identityServerHost, "scope1");
-            _apiHost.InitializeAsync().Wait();
+            ApiHost = new ApiHost(IdentityServerHost, "scope1");
+            ApiHost.InitializeAsync().Wait();
 
-            _bffHost = new BffHost(_identityServerHost, _apiHost, "spa");
-            _bffHost.InitializeAsync().Wait();
+            BffHost = new BffHost(IdentityServerHost, ApiHost, "spa");
+            BffHost.InitializeAsync().Wait();
         }
 
         public async Task Login(string sub)
         {
-            await _identityServerHost.IssueSessionCookieAsync(new Claim("sub", sub));
+            await IdentityServerHost.IssueSessionCookieAsync(new Claim("sub", sub));
         }
     }
 }
