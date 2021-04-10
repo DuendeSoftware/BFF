@@ -24,7 +24,7 @@ namespace Duende.Bff.Tests.TestHosts
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
 
-        public BffOptions BffOptions { get; set; } = new BffOptions();
+        public BffOptions BffOptions { get; set; } = new();
 
         public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app")
             : base(baseAddress)

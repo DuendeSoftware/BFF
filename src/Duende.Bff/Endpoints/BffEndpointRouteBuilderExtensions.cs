@@ -30,11 +30,10 @@ namespace Microsoft.AspNetCore.Builder
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            // todo: consider URI or PathString
-            endpoints.MapGet(options.ManagementBasePath + "/login", ProcessWith<ILoginService>);
-            endpoints.MapGet(options.ManagementBasePath + "/logout", ProcessWith<ILogoutService>);
-            endpoints.MapGet(options.ManagementBasePath + "/user", ProcessWith<IUserService>);
-            endpoints.MapPost(options.ManagementBasePath + "/backchannel", ProcessWith<IBackchannelLogoutService>);
+            endpoints.MapGet(options.ManagementBasePath.Add("/login"), ProcessWith<ILoginService>);
+            endpoints.MapGet(options.ManagementBasePath.Add("/logout"), ProcessWith<ILogoutService>);
+            endpoints.MapGet(options.ManagementBasePath.Add("/user"), ProcessWith<IUserService>);
+            endpoints.MapPost(options.ManagementBasePath.Add("/backchannel"), ProcessWith<IBackchannelLogoutService>);
         }
 
         /// <summary>

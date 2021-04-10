@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 
 namespace Duende.Bff
@@ -21,7 +22,7 @@ namespace Duende.Bff
         /// <summary>
         /// Base path for management endpoints
         /// </summary>
-        public string ManagementBasePath = "/bff";
+        public PathString ManagementBasePath = "/bff";
 
         /// <summary>
         /// Anti-forgery header name

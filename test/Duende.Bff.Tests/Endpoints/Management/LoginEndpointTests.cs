@@ -28,7 +28,67 @@ namespace Duende.Bff.Tests.Endpoints.Management
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().Be("/");
         }
+        
+        [Fact]
+        public async Task login_endpoint_should_challenge_and_redirect_to_root_with_custom_prefix()
+        {
+            _bffHost.BffOptions.ManagementBasePath = "/custom/bff";
+            await _bffHost.InitializeAsync();
+            
+            var response = await _bffHost.BrowserClient.GetAsync(_bffHost.Url("/custom/bff/login"));
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith(_identityServerHost.Url("/connect/authorize"));
 
+            await _identityServerHost.IssueSessionCookieAsync("alice");
+            response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith(_bffHost.Url("/signin-oidc"));
+
+            response = await _bffHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().Be("/");
+        }
+        
+        [Fact]
+        public async Task login_endpoint_should_challenge_and_redirect_to_root_with_custom_prefix_trailing_slash()
+        {
+            _bffHost.BffOptions.ManagementBasePath = "/custom/bff/";
+            await _bffHost.InitializeAsync();
+            
+            var response = await _bffHost.BrowserClient.GetAsync(_bffHost.Url("/custom/bff/login"));
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith(_identityServerHost.Url("/connect/authorize"));
+
+            await _identityServerHost.IssueSessionCookieAsync("alice");
+            response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith(_bffHost.Url("/signin-oidc"));
+
+            response = await _bffHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().Be("/");
+        }
+        
+        [Fact]
+        public async Task login_endpoint_should_challenge_and_redirect_to_root_with_root_prefix()
+        {
+            _bffHost.BffOptions.ManagementBasePath = "/";
+            await _bffHost.InitializeAsync();
+            
+            var response = await _bffHost.BrowserClient.GetAsync(_bffHost.Url("/login"));
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith(_identityServerHost.Url("/connect/authorize"));
+
+            await _identityServerHost.IssueSessionCookieAsync("alice");
+            response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith(_bffHost.Url("/signin-oidc"));
+
+            response = await _bffHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().Be("/");
+        }
+        
         [Fact]
         public async Task login_endpoint_with_existing_session_should_challenge()
         {
