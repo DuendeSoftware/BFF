@@ -13,7 +13,7 @@ namespace Duende.Bff.Tests.TestHosts
     public class BffIntegrationTestBase
     {
         protected readonly IdentityServerHost IdentityServerHost;
-        protected readonly ApiHost ApiHost;
+        protected ApiHost ApiHost;
         protected BffHost BffHost;
 
         public BffIntegrationTestBase()
