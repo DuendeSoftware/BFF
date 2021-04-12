@@ -28,7 +28,28 @@ namespace Duende.Bff.Tests.Headers
         }
         
         [Fact]
-        public async Task custom_header_should_be_forwarded()
+        public async Task custom_header_should_not_be_forwarded_by_default()
+        {
+            BffHost.BffOptions.AddXForwardedHeaders = false;
+            
+            await BffHost.InitializeAsync();
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
+            req.Headers.Add("x-csrf", "1");
+            req.Headers.Add("x-custom", "custom");
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+
+            apiResult.RequestHeaders.Count.Should().Be(1);
+            
+            apiResult.RequestHeaders["Host"].Single().Should().Be("api");
+        }
+        
+        [Fact]
+        public async Task custom_header_should_be_forwarded_when_configured()
         {
             BffHost.BffOptions.AddXForwardedHeaders = false;
             BffHost.BffOptions.ForwardedHeaders.Add("x-custom");
@@ -48,27 +69,6 @@ namespace Duende.Bff.Tests.Headers
             
             apiResult.RequestHeaders["Host"].Single().Should().Be("api");
             apiResult.RequestHeaders["x-custom"].Single().Should().Be("custom");
-        }
-        
-        [Fact]
-        public async Task custom_header_should_not_be_forwarded()
-        {
-            BffHost.BffOptions.AddXForwardedHeaders = false;
-            
-            await BffHost.InitializeAsync();
-
-            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
-            req.Headers.Add("x-csrf", "1");
-            req.Headers.Add("x-custom", "custom");
-            var response = await BffHost.BrowserClient.SendAsync(req);
-
-            response.IsSuccessStatusCode.Should().BeTrue();
-            var json = await response.Content.ReadAsStringAsync();
-            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-
-            apiResult.RequestHeaders.Count.Should().Be(1);
-            
-            apiResult.RequestHeaders["Host"].Single().Should().Be("api");
         }
         
         [Fact]

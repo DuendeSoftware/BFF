@@ -16,7 +16,7 @@ namespace Duende.Bff.Tests.Headers
             ApiHost = new ApiHost(IdentityServerHost, "scope1", useForwardedHeaders: true);
             ApiHost.InitializeAsync().Wait();
 
-            BffHost = new BffHost(IdentityServerHost, ApiHost, "spa");
+            BffHost = new BffHost(IdentityServerHost, ApiHost, "spa", useForwardedHeaders: false);
             BffHost.InitializeAsync().Wait();
         }
         
