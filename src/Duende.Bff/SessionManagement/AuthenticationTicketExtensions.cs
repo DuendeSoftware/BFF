@@ -75,7 +75,7 @@ namespace Duende.Bff
         public static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
         {
             var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
-            var id = new ClaimsIdentity(claims, principal.AuthenticationType);
+            var id = new ClaimsIdentity(claims, principal.AuthenticationType, principal.NameClaimType, principal.RoleClaimType);
             return new ClaimsPrincipal(id);
         }
         
@@ -97,6 +97,8 @@ namespace Duende.Bff
             return new ClaimsPrincipalLite
             {
                 AuthenticationType = principal.Identity.AuthenticationType,
+                NameClaimType = principal.Identities.First().NameClaimType,
+                RoleClaimType = principal.Identities.First().RoleClaimType,
                 Claims = claims
             };
         }
@@ -205,7 +207,17 @@ namespace Duende.Bff
             /// The authentication type
             /// </summary>
             public string AuthenticationType { get; set; }
-            
+
+            /// <summary>
+            /// The name claim type
+            /// </summary>
+            public string NameClaimType { get; set; }
+
+            /// <summary>
+            /// The role claim type
+            /// </summary>
+            public string RoleClaimType { get; set; }
+
             /// <summary>
             /// The claims
             /// </summary>
