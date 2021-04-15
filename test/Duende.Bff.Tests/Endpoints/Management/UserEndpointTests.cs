@@ -16,9 +16,9 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task user_endpoint_for_authenticated_user_should_return_claims()
         {
-            await _bffHost.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
+            await BffHost.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
 
-            var claims = await _bffHost.GetUserClaimsAsync();
+            var claims = await BffHost.GetUserClaimsAsync();
 
             claims.Length.Should().Be(3);
             claims.Should().Contain(new ClaimRecord("sub", "alice"));
@@ -29,10 +29,10 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task user_endpoint_for_authenticated_user_without_csrf_header_should_fail()
         {
-            await _bffHost.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
+            await BffHost.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
 
-            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/bff/user"));
-            var response = await _bffHost.BrowserClient.SendAsync(req);
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/bff/user"));
+            var response = await BffHost.BrowserClient.SendAsync(req);
             
             response.StatusCode.Should().Be(401);
         }
@@ -40,9 +40,9 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task user_endpoint_for_unauthenticated_user_should_fail()
         {
-            var req = new HttpRequestMessage(HttpMethod.Get, _bffHost.Url("/bff/user"));
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/bff/user"));
             req.Headers.Add("x-csrf", "1");
-            var response = await _bffHost.BrowserClient.SendAsync(req);
+            var response = await BffHost.BrowserClient.SendAsync(req);
 
             response.StatusCode.Should().Be(401);
         }

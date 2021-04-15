@@ -5,5 +5,10 @@ using System.Collections.Generic;
 
 namespace Duende.Bff.Tests.TestFramework
 {
-    public record ApiResponse(string method, string path, string sub, string clientId, IEnumerable<ClaimRecord> claims, string body = null);
+    public record ApiResponse(string Method, string Path, string Sub, string ClientId, IEnumerable<ClaimRecord> Claims)
+    {
+        public string Body { get; init; }
+
+        public Dictionary<string, List<string>> RequestHeaders { get; init; }
+    }
 }

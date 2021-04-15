@@ -95,7 +95,7 @@ namespace Duende.Bff.Tests.TestFramework
         {
             services.AddLogging(options =>
             {
-                options.SetMinimumLevel(LogLevel.Warning);
+                options.SetMinimumLevel(LogLevel.Debug);
                 options.AddProvider(Logger);
             });
 

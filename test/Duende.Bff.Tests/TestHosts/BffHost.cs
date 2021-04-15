@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CsQuery.ExtensionMethods;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Primitives;
 
 namespace Duende.Bff.Tests.TestHosts
 {
@@ -23,15 +27,18 @@ namespace Duende.Bff.Tests.TestHosts
         private readonly IdentityServerHost _identityServerHost;
         private readonly ApiHost _apiHost;
         private readonly string _clientId;
+        private readonly bool _useForwardedHeaders;
 
-        public BffOptions BffOptions { get; set; } = new BffOptions();
+        public BffOptions BffOptions { get; set; } = new();
 
-        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId, string baseAddress = "https://app")
+        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId,
+            string baseAddress = "https://app", bool useForwardedHeaders = false)
             : base(baseAddress)
         {
             _identityServerHost = identityServerHost;
             _apiHost = apiHost;
             _clientId = clientId;
+            _useForwardedHeaders = useForwardedHeaders;
 
             OnConfigureServices += ConfigureServices;
             OnConfigure += Configure;
@@ -58,10 +65,10 @@ namespace Duende.Bff.Tests.TestHosts
             bff.AddServerSideSessions();
 
             services.AddAuthentication(options =>
-            {
-                options.DefaultChallengeScheme = "oidc";
-                options.DefaultSignOutScheme = "oidc";
-            })
+                {
+                    options.DefaultChallengeScheme = "oidc";
+                    options.DefaultSignOutScheme = "oidc";
+                })
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = _identityServerHost.Url();
@@ -81,6 +88,7 @@ namespace Duende.Bff.Tests.TestHosts
                     {
                         options.Scope.Add(scope);
                     }
+
                     if (client.AllowOfflineAccess)
                     {
                         options.Scope.Add("offline_access");
@@ -89,15 +97,29 @@ namespace Duende.Bff.Tests.TestHosts
                     options.BackchannelHttpHandler = _identityServerHost.Server.CreateHandler();
                 });
 
-            services.AddAuthorization(options => {
-                options.AddPolicy("AlwaysFail", policy => {
-                    policy.RequireAssertion(ctx => false);
-                });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AlwaysFail", policy => { policy.RequireAssertion(ctx => false); });
             });
         }
 
         private void Configure(IApplicationBuilder app)
         {
+            // app.Use(async (ctx, next) =>
+            // {
+            //     ctx.Connection.RemoteIpAddress = IPAddress.IPv6Loopback;
+            // });
+
+            if (_useForwardedHeaders)
+            {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                                       ForwardedHeaders.XForwardedProto |
+                                       ForwardedHeaders.XForwardedHost
+                });
+            }
+
             app.UseAuthentication();
 
             app.UseRouting();
@@ -109,78 +131,83 @@ namespace Duende.Bff.Tests.TestHosts
             {
                 endpoints.MapBffManagementEndpoints();
 
-
                 endpoints.Map("/local_anon", async context =>
-                {
-                    var body = default(string);
-                    if (context.Request.HasJsonContentType())
                     {
-                        using (var sr = new StreamReader(context.Request.Body))
+                        // capture body if present
+                        var body = default(string);
+                        if (context.Request.HasJsonContentType())
                         {
-                            body = await sr.ReadToEndAsync();
+                            using (var sr = new StreamReader(context.Request.Body))
+                            {
+                                body = await sr.ReadToEndAsync();
+                            }
                         }
-                    }
 
-                    var response = new ApiResponse(
-                        context.Request.Method,
-                        context.Request.Path.Value,
-                        context.User.FindFirst(("sub"))?.Value,
-                        context.User.FindFirst(("client_id"))?.Value,
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
-                        body
-                    );
+                        // capture request headers
+                        var requestHeaders = new Dictionary<string, List<string>>();
+                        foreach (var header in context.Request.Headers)
+                        {
+                            var values = new List<string>(header.Value.Select(v => v));
+                            requestHeaders.Add(header.Key, values);
+                        }
 
-                    context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                    LocalApiStatusCodeToReturn = null;
+                        var response = new ApiResponse(
+                            context.Request.Method,
+                            context.Request.Path.Value,
+                            context.User.FindFirst(("sub"))?.Value,
+                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                        {
+                            Body = body,
+                            RequestHeaders = requestHeaders
+                        };
 
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                })
+                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
+                        LocalApiStatusCodeToReturn = null;
+
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                    })
                     .AsLocalBffApiEndpoint();
 
                 endpoints.Map("/local_authz", async context =>
-                {
-                    var sub = context.User.FindFirst(("sub"))?.Value;
-                    if (sub == null) throw new Exception("sub is missing");
-
-                    var body = default(string);
-                    if (context.Request.HasJsonContentType())
                     {
-                        using (var sr = new StreamReader(context.Request.Body))
+                        var sub = context.User.FindFirst(("sub"))?.Value;
+                        if (sub == null) throw new Exception("sub is missing");
+
+                        var body = default(string);
+                        if (context.Request.HasJsonContentType())
                         {
-                            body = await sr.ReadToEndAsync();
+                            using (var sr = new StreamReader(context.Request.Body))
+                            {
+                                body = await sr.ReadToEndAsync();
+                            }
                         }
-                    }
 
-                    var response = new ApiResponse(
-                        context.Request.Method,
-                        context.Request.Path.Value,
-                        sub,
-                        context.User.FindFirst(("client_id"))?.Value, 
-                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray(),
-                        body
-                    );
+                        var response = new ApiResponse(
+                            context.Request.Method,
+                            context.Request.Path.Value,
+                            sub,
+                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                        {
+                            Body = body
+                        };
 
-                    context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                    LocalApiStatusCodeToReturn = null;
+                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
+                        LocalApiStatusCodeToReturn = null;
 
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                })
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                    })
                     .RequireAuthorization()
                     .AsLocalBffApiEndpoint();
 
 
-                endpoints.Map("/always_fail_authz_non_bff_endpoint", context =>
-                {
-                    return Task.CompletedTask;
-                })
+                endpoints.Map("/always_fail_authz_non_bff_endpoint", context => { return Task.CompletedTask; })
                     .RequireAuthorization("AlwaysFail");
 
-                endpoints.Map("/always_fail_authz", context =>
-                {
-                    return Task.CompletedTask;
-                })
+                endpoints.Map("/always_fail_authz", context => { return Task.CompletedTask; })
                     .AsLocalBffApiEndpoint()
                     .RequireAuthorization("AlwaysFail");
 
@@ -206,7 +233,8 @@ namespace Duende.Bff.Tests.TestHosts
                 endpoints.Map("/not_bff_endpoint", BffRemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
             });
 
-            app.Map("/invalid_endpoint", invalid => invalid.Use(next => BffRemoteApiEndpoint.Map("/invalid_endpoint", _apiHost.Url())));
+            app.Map("/invalid_endpoint",
+                invalid => invalid.Use(next => BffRemoteApiEndpoint.Map("/invalid_endpoint", _apiHost.Url())));
         }
 
         public async Task<bool> GetIsUserLoggedInAsync()
@@ -215,7 +243,8 @@ namespace Duende.Bff.Tests.TestHosts
             req.Headers.Add("x-csrf", "1");
             var response = await BrowserClient.SendAsync(req);
 
-            (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Unauthorized).Should().BeTrue();
+            (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Unauthorized).Should()
+                .BeTrue();
 
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -243,7 +272,8 @@ namespace Duende.Bff.Tests.TestHosts
 
             var response = await BrowserClient.GetAsync(Url("/bff/login"));
             response.StatusCode.Should().Be(302); // authorize
-            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/authorize"));
+            response.Headers.Location.ToString().ToLowerInvariant().Should()
+                .StartWith(_identityServerHost.Url("/connect/authorize"));
 
             response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
             response.StatusCode.Should().Be(302); // client callback
@@ -263,11 +293,13 @@ namespace Duende.Bff.Tests.TestHosts
         {
             var response = await BrowserClient.GetAsync(Url("/bff/logout") + "?sid=" + sid);
             response.StatusCode.Should().Be(302); // endsession
-            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/connect/endsession"));
+            response.Headers.Location.ToString().ToLowerInvariant().Should()
+                .StartWith(_identityServerHost.Url("/connect/endsession"));
 
             response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
             response.StatusCode.Should().Be(302); // logout
-            response.Headers.Location.ToString().ToLowerInvariant().Should().StartWith(_identityServerHost.Url("/account/logout"));
+            response.Headers.Location.ToString().ToLowerInvariant().Should()
+                .StartWith(_identityServerHost.Url("/account/logout"));
 
             response = await _identityServerHost.BrowserClient.GetAsync(response.Headers.Location.ToString());
             response.StatusCode.Should().Be(302); // post logout redirect uri
@@ -289,7 +321,9 @@ namespace Duende.Bff.Tests.TestHosts
             {
                 CreateInvoker = callback;
             }
+
             public Func<string, HttpMessageInvoker> CreateInvoker { get; set; }
+
             public HttpMessageInvoker CreateClient(string localPath)
             {
                 return CreateInvoker.Invoke(localPath);
