@@ -90,7 +90,7 @@ We embed [YARP](https://github.com/microsoft/reverse-proxy) (the new Microsoft .
 
 #### Automatic token lifetime management
 
-We also incorporate our [IdentityModel.AspNetCore](https://identitymodel.readthedocs.io/en/latest/aspnetcore/overview.html]) library to take care of all token request/refresh needs. This library can manage both client and user tokens and does all the heavy lifting of caching/storing tokens and refreshing them when needed.
+We also incorporate our [IdentityModel.AspNetCore](https://identitymodel.readthedocs.io/en/latest/aspnetcore/overview.html) library to take care of all token request/refresh needs. This library can manage both client and user tokens and does all the heavy lifting of caching/storing tokens and refreshing them when needed.
 
 The library exposes a super simple API to developers if they want to manually call remote APIs, and is automatically utilized by our reverse proxy endpoints.
 
