@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Net.Http.Headers;
+using Yarp.ReverseProxy.Abstractions.Config;
+using Yarp.ReverseProxy.Service;
 using Yarp.ReverseProxy.Service.Proxy;
 using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 
@@ -28,55 +30,39 @@ namespace Duende.Bff
             Options = options;
         }
         
-        // todo: PathBase has been renamed to Prefix
-        private static readonly string ForKey = "For";
-        private static readonly string HostKey = "Host";
-        private static readonly string ProtoKey = "Proto";
-        private static readonly string PathBaseKey = "PathBase";
-        
         /// <inheritdoc />
         public virtual HttpTransformer CreateTransformer(string localPath, string accessToken = null)
         {
-            var requestTransforms = new List<RequestTransform>
+            var context = new TransformBuilderContext()
             {
-                new PathStringTransform(Options.PathTransformMode, localPath),
-                new ForwardHeadersTransform(new[] { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType })
+                CopyRequestHeaders = false
             };
-
+         
+            context.RequestTransforms.Add( new PathStringTransform(Options.PathTransformMode, localPath));
+            context.RequestTransforms.Add(new ForwardHeadersTransform(new[] { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType }));
+            
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                requestTransforms.Add(new AccessTokenTransform(accessToken));
+                context.RequestTransforms.Add(new AccessTokenTransform(accessToken));
             }
 
             if (Options.ForwardedHeaders.Any())
             {
-                requestTransforms.Add(new ForwardHeadersTransform(Options.ForwardedHeaders));
+                context.RequestTransforms.Add(new ForwardHeadersTransform(Options.ForwardedHeaders));
             }
 
             if (Options.AddXForwardedHeaders)
             {
-                string headerPrefix = "X-Forwarded-";
-                var append = Options.ForwardIncomingXForwardedHeaders;
-
-                requestTransforms.Add(
-                    new RequestHeaderXForwardedForTransform(headerPrefix + ForKey, append));
-                requestTransforms.Add(
-                    new RequestHeaderXForwardedHostTransform(headerPrefix + HostKey, append));
-                requestTransforms.Add(
-                    new RequestHeaderXForwardedProtoTransform(headerPrefix + ProtoKey, append));
-                requestTransforms.Add(
-                    new RequestHeaderXForwardedPathBaseTransform(headerPrefix + PathBaseKey, append));
+                context.AddXForwarded(append: Options.ForwardIncomingXForwardedHeaders);
             }
             
-            var transformer = new StructuredTransformer(
-                copyRequestHeaders: false,
-                copyResponseHeaders: true,
-                copyResponseTrailers: true,
-                requestTransforms,
-                responseTransforms: new List<ResponseTransform>(),
-                responseTrailerTransforms: new List<ResponseTrailersTransform>());
-
-            return transformer;
+            return new StructuredTransformer(
+                context.CopyRequestHeaders,
+                context.CopyResponseHeaders,
+                context.CopyResponseTrailers,
+                context.RequestTransforms,
+                context.ResponseTransforms,
+                context.ResponseTrailersTransforms);
         }
     }
 }

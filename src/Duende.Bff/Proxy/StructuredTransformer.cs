@@ -9,10 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Yarp.ReverseProxy.Service.Proxy;
 using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
+using Yarp.ReverseProxy.Utilities;
 
 namespace Duende.Bff
 {
-    internal class StructuredTransformer : HttpTransformer
+    /// <summary>
+    /// Transforms for a given route.
+    /// </summary>
+    internal sealed class StructuredTransformer : HttpTransformer
     {
         /// <summary>
         /// Creates a new <see cref="StructuredTransformer"/> instance.
@@ -60,7 +64,7 @@ namespace Duende.Bff
         /// </summary>
         internal IList<ResponseTrailersTransform> ResponseTrailerTransforms { get; }
 
-        public override async Task TransformRequestAsync(HttpContext httpContext, HttpRequestMessage proxyRequest, string destinationPrefix)
+        public override async ValueTask TransformRequestAsync(HttpContext httpContext, HttpRequestMessage proxyRequest, string destinationPrefix)
         {
             if (ShouldCopyRequestHeaders.GetValueOrDefault(true))
             {
@@ -72,7 +76,7 @@ namespace Duende.Bff
                 return;
             }
 
-            var transformContext = new RequestTransformContext
+            var transformContext = new RequestTransformContext()
             {
                 DestinationPrefix = destinationPrefix,
                 HttpContext = httpContext,
@@ -92,7 +96,7 @@ namespace Duende.Bff
                 transformContext.DestinationPrefix, transformContext.Path, transformContext.Query.QueryString);
         }
 
-        public override async Task TransformResponseAsync(HttpContext httpContext, HttpResponseMessage proxyResponse)
+        public override async ValueTask<bool> TransformResponseAsync(HttpContext httpContext, HttpResponseMessage proxyResponse)
         {
             if (ShouldCopyResponseHeaders.GetValueOrDefault(true))
             {
@@ -101,7 +105,7 @@ namespace Duende.Bff
 
             if (ResponseTransforms.Count == 0)
             {
-                return;
+                return true;
             }
 
             var transformContext = new ResponseTransformContext()
@@ -115,9 +119,11 @@ namespace Duende.Bff
             {
                 await responseTransform.ApplyAsync(transformContext);
             }
+
+            return !transformContext.SuppressResponseBody;
         }
 
-        public override async Task TransformResponseTrailersAsync(HttpContext httpContext, HttpResponseMessage proxyResponse)
+        public override async ValueTask TransformResponseTrailersAsync(HttpContext httpContext, HttpResponseMessage proxyResponse)
         {
             if (ShouldCopyResponseTrailers.GetValueOrDefault(true))
             {
