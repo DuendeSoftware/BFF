@@ -28,11 +28,57 @@ namespace Microsoft.AspNetCore.Builder
         public static void MapBffManagementEndpoints(
             this IEndpointRouteBuilder endpoints)
         {
+            endpoints.MapBffManagementLoginEndpoint();
+            endpoints.MapBffManagementLogoutEndpoint();
+            endpoints.MapBffManagementUserEndpoint();
+            endpoints.MapBffManagementBackchannelEndpoint();
+        }
+
+        /// <summary>
+        /// Adds the login BFF management endpoint
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void MapBffManagementLoginEndpoint(
+            this IEndpointRouteBuilder endpoints)
+        {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapGet(options.ManagementBasePath.Add("/login"), ProcessWith<ILoginService>);
+        }
+
+        /// <summary>
+        /// Adds the logout BFF management endpoint
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void MapBffManagementLogoutEndpoint(
+            this IEndpointRouteBuilder endpoints)
+        {
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
             endpoints.MapGet(options.ManagementBasePath.Add("/logout"), ProcessWith<ILogoutService>);
+        }
+
+        /// <summary>
+        /// Adds the user BFF management endpoint
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void MapBffManagementUserEndpoint(
+            this IEndpointRouteBuilder endpoints)
+        {
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
             endpoints.MapGet(options.ManagementBasePath.Add("/user"), ProcessWith<IUserService>);
+        }
+
+        /// <summary>
+        /// Adds the back channel BFF management endpoint
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void MapBffManagementBackchannelEndpoint(
+            this IEndpointRouteBuilder endpoints)
+        {
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
             endpoints.MapPost(options.ManagementBasePath.Add("/backchannel"), ProcessWith<IBackchannelLogoutService>);
         }
 
