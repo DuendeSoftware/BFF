@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -19,8 +22,15 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultUserService : IUserService
     {
-        private readonly BffOptions _options;
-        private readonly ILogger _logger;
+        /// <summary>
+        /// The options
+        /// </summary>
+        protected readonly BffOptions Options;
+        
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Ctor
@@ -29,17 +39,17 @@ namespace Duende.Bff
         /// <param name="loggerFactory"></param>
         public DefaultUserService(BffOptions options, ILoggerFactory loggerFactory)
         {
-            _options = options;
-            _logger = loggerFactory.CreateLogger("Duende.Bff.BffApiEndpoint");
+            Options = options;
+            Logger = loggerFactory.CreateLogger(LogCategories.ManagementEndpoints);
         }
 
         /// <inheritdoc />
         public async Task ProcessRequequestAsync(HttpContext context)
         {
-            var antiForgeryHeader = context.Request.Headers[_options.AntiForgeryHeaderName].FirstOrDefault();
-            if (antiForgeryHeader == null || antiForgeryHeader != _options.AntiForgeryHeaderValue)
+            var antiForgeryHeader = context.Request.Headers[Options.AntiForgeryHeaderName].FirstOrDefault();
+            if (antiForgeryHeader == null || antiForgeryHeader != Options.AntiForgeryHeaderValue)
             {
-                _logger.AntiForgeryValidationFailed("user");
+                Logger.AntiForgeryValidationFailed("user");
 
                 context.Response.StatusCode = 401;
                 return;
@@ -53,15 +63,9 @@ namespace Duende.Bff
             }
             else
             {
-                var claims = result.Principal.Claims.Select(x => new { type = x.Type, value = x.Value });
-                
-                var sessionId = result.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
-                if (!String.IsNullOrWhiteSpace(sessionId))
-                {
-                    var list = claims.ToList();
-                    list.Add(new { type = "bff:logout", value = _options.ManagementBasePath + "/logout?sid=" + UrlEncoder.Default.Encode(sessionId) });
-                    claims = list;
-                }
+                var claims = new List<ClaimRecord>();
+                claims.AddRange(GetUserClaims(result));
+                claims.AddRange(GetManagementClaims(result));
 
                 var json = JsonSerializer.Serialize(claims);
 
@@ -70,5 +74,50 @@ namespace Duende.Bff
                 await context.Response.WriteAsync(json, Encoding.UTF8);
             }
         }
+
+        /// <summary>
+        /// Collect user-centric claims
+        /// </summary>
+        /// <param name="authenticateResult"></param>
+        /// <returns></returns>
+        protected virtual IEnumerable<ClaimRecord> GetUserClaims(AuthenticateResult authenticateResult)
+        {
+            return authenticateResult.Principal.Claims.Select(x => new ClaimRecord(x.Type, x.Value));
+        }
+
+        /// <summary>
+        /// Collect management claims
+        /// </summary>
+        /// <param name="authenticateResult"></param>
+        /// <returns></returns>
+        protected virtual IEnumerable<ClaimRecord> GetManagementClaims(AuthenticateResult authenticateResult)
+        {
+            var claims = new List<ClaimRecord>();
+            
+            var sessionId = authenticateResult.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
+            if (!String.IsNullOrWhiteSpace(sessionId))
+            {
+                claims.Add(new ClaimRecord(
+                    "bff:logout", 
+                    Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").ToString()));
+            }
+
+            var expiresInSeconds =
+                authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
+            claims.Add(new ClaimRecord(
+                "bff:session_expires_in",
+                Math.Round(expiresInSeconds)));
+            
+            return claims;
+        }
+        
+        /// <summary>
+        /// Serialization-friendly claim
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        protected record ClaimRecord(string type, object value);
     }
+
+    
 }
