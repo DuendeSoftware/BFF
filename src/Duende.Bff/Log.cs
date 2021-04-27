@@ -6,6 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff
 {
+    internal static class LogCategories
+    {
+        public const string ManagementEndpoints = "Duende.Bff.ManagementEndpoints";
+    }
+    
     internal static class EventIds
     {
         public static readonly EventId AccessTokenMissing = new EventId(1, "AccessTokenMissing");
