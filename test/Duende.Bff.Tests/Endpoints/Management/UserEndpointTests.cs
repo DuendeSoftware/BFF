@@ -44,8 +44,8 @@ namespace Duende.Bff.Tests.Endpoints.Management
             claims.Should().Contain(new ClaimRecord("foo", "foo1"));
             claims.Should().Contain(new ClaimRecord("foo", "foo2"));
             claims.Should().Contain(new ClaimRecord("sid", "123"));
-            claims.Should().Contain(new ClaimRecord("bff:logout", "/bff/logout%3Fsid=123"));
-            claims.Select(c => c.type).Should().Contain("bff:session_expires_in");
+            claims.Should().Contain(new ClaimRecord(Constants.ClaimTypes.LogoutUrl, "/bff/logout?sid=123"));
+            claims.Select(c => c.type).Should().Contain(Constants.ClaimTypes.SessionExpiresIn);
         }
 
         [Fact]

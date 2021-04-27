@@ -98,15 +98,15 @@ namespace Duende.Bff
             if (!String.IsNullOrWhiteSpace(sessionId))
             {
                 claims.Add(new ClaimRecord(
-                    "bff:logout", 
-                    Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").ToString()));
+                    Constants.ClaimTypes.LogoutUrl,
+                    Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").Value));
             }
 
             // todo: string or number?
             var expiresInSeconds =
                 authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
             claims.Add(new ClaimRecord(
-                "bff:session_expires_in",
+                Constants.ClaimTypes.SessionExpiresIn,
                 Math.Round(expiresInSeconds).ToString()));
             
             return claims;
