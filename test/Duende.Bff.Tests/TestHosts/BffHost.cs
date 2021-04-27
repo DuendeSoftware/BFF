@@ -247,7 +247,7 @@ namespace Duende.Bff.Tests.TestHosts
             return response.StatusCode == HttpStatusCode.OK;
         }
 
-        public async Task<ClaimRecord[]> GetUserClaimsAsync()
+        public async Task<List<JsonRecord>> CallUserEndpointAsync()
         {
             var req = new HttpRequestMessage(HttpMethod.Get, Url("/bff/user"));
             req.Headers.Add("x-csrf", "1");
@@ -258,12 +258,9 @@ namespace Duende.Bff.Tests.TestHosts
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
 
             var json = await response.Content.ReadAsStringAsync();
-            var claims = JsonSerializer.Deserialize<ClaimRecord[]>(json);
-
-            return claims;
+            return JsonSerializer.Deserialize<List<JsonRecord>>(json);
         }
-
-
+        
         public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = null)
         {
             await _identityServerHost.CreateIdentityServerSessionCookieAsync(sub, sid);

@@ -101,13 +101,12 @@ namespace Duende.Bff
                     Constants.ClaimTypes.LogoutUrl,
                     Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").Value));
             }
-
-            // todo: string or number?
+            
             var expiresInSeconds =
                 authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
             claims.Add(new ClaimRecord(
                 Constants.ClaimTypes.SessionExpiresIn,
-                Math.Round(expiresInSeconds).ToString()));
+                Math.Round(expiresInSeconds)));
             
             return claims;
         }
@@ -117,7 +116,7 @@ namespace Duende.Bff
         /// </summary>
         /// <param name="type"></param>
         /// <param name="value"></param>
-        protected record ClaimRecord(string type, string value);
+        protected record ClaimRecord(string type, object value);
     }
 
     

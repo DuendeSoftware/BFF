@@ -2,7 +2,6 @@
 // See LICENSE in the project root for license information.
 
 using System.Linq;
-using Duende.Bff.Tests.TestFramework;
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
 using System.Net.Http;
@@ -17,35 +16,38 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task user_endpoint_for_authenticated_user_should_return_claims()
         {
-            await BffHost.IssueSessionCookieAsync(new Claim("sub", "alice"), new Claim("foo", "foo1"), new Claim("foo", "foo2"));
+            await BffHost.IssueSessionCookieAsync(
+                new Claim("sub", "alice"), 
+                new Claim("foo", "foo1"), 
+                new Claim("foo", "foo2"));
 
-            var claims = await BffHost.GetUserClaimsAsync();
+            var data = await BffHost.CallUserEndpointAsync();
 
-            claims.Length.Should().Be(4);
-            claims.Should().Contain(new ClaimRecord("sub", "alice"));
-            claims.Should().Contain(new ClaimRecord("foo", "foo1"));
-            claims.Should().Contain(new ClaimRecord("foo", "foo2"));
-            claims.Select(c => c.type).Should().Contain("bff:session_expires_in");
+            data.Count.Should().Be(4);
+            data.First(d => d.type == "sub").value.GetString().Should().Be("alice");
+
+            var foos = data.Where(d => d.type == "foo");
+            foos.Count().Should().Be(2);
+            foos.First().value.GetString().Should().Be("foo1");
+            foos.Skip(1).First().value.GetString().Should().Be("foo2");
+
+            data.First(d => d.type == Constants.ClaimTypes.SessionExpiresIn).value.GetInt32().Should().BePositive();
         }
         
         [Fact]
         public async Task user_endpoint_for_authenticated_user_with_sid_should_return_claims_including_logout()
         {
             await BffHost.IssueSessionCookieAsync(
-                new Claim("sub", "alice"), 
-                new Claim("foo", "foo1"), 
-                new Claim("foo", "foo2"),
+                new Claim("sub", "alice"),
                 new Claim("sid", "123"));
+        
+            var data = await BffHost.CallUserEndpointAsync();
 
-            var claims = await BffHost.GetUserClaimsAsync();
-
-            claims.Length.Should().Be(6);
-            claims.Should().Contain(new ClaimRecord("sub", "alice"));
-            claims.Should().Contain(new ClaimRecord("foo", "foo1"));
-            claims.Should().Contain(new ClaimRecord("foo", "foo2"));
-            claims.Should().Contain(new ClaimRecord("sid", "123"));
-            claims.Should().Contain(new ClaimRecord(Constants.ClaimTypes.LogoutUrl, "/bff/logout?sid=123"));
-            claims.Select(c => c.type).Should().Contain(Constants.ClaimTypes.SessionExpiresIn);
+            data.Count.Should().Be(4);
+            data.First(d => d.type == "sub").value.GetString().Should().Be("alice");
+            data.First(d => d.type == "sid").value.GetString().Should().Be("123");
+            data.First(d => d.type == Constants.ClaimTypes.LogoutUrl).value.GetString().Should().Be("/bff/logout?sid=123");
+            data.First(d => d.type == Constants.ClaimTypes.SessionExpiresIn).value.GetInt32().Should().BePositive();
         }
 
         [Fact]
@@ -68,6 +70,5 @@ namespace Duende.Bff.Tests.Endpoints.Management
 
             response.StatusCode.Should().Be(401);
         }
-
     }
 }
