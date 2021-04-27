@@ -87,21 +87,5 @@ namespace Microsoft.AspNetCore.Builder
 
             return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName, configureClient);
         }
-
-        /// <summary>
-        /// Configures the HTTP client used to do API calls.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="configureClient"></param>
-        /// <returns></returns>
-        public IHttpClientBuilder ConfigureProxyHttpClient(string path, Action<HttpClient> configureClient = null)
-        {
-            if (configureClient == null)
-            {
-                return Services.AddHttpClient(path);
-            }
-
-            return Services.AddHttpClient(path, configureClient);
-        }
     }
 }

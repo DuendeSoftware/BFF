@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Yarp.ReverseProxy.Service.Proxy;
 using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
-using Yarp.ReverseProxy.Utilities;
 
 namespace Duende.Bff
 {

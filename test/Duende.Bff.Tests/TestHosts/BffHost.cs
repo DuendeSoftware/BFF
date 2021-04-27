@@ -14,9 +14,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CsQuery.ExtensionMethods;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Primitives;
 
 namespace Duende.Bff.Tests.TestHosts
 {

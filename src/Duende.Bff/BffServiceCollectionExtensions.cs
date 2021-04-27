@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using Yarp.ReverseProxy.Service;
-using Yarp.ReverseProxy.Utilities;
 
 namespace Microsoft.AspNetCore.Builder
 {

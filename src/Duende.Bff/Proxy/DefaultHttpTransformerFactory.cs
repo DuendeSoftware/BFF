@@ -1,11 +1,9 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Net.Http.Headers;
 using Yarp.ReverseProxy.Abstractions.Config;
-using Yarp.ReverseProxy.Service;
 using Yarp.ReverseProxy.Service.Proxy;
 using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
 
