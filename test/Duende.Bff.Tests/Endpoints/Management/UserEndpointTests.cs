@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System.Linq;
 using Duende.Bff.Tests.TestFramework;
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
@@ -20,10 +21,31 @@ namespace Duende.Bff.Tests.Endpoints.Management
 
             var claims = await BffHost.GetUserClaimsAsync();
 
-            claims.Length.Should().Be(3);
+            claims.Length.Should().Be(4);
             claims.Should().Contain(new ClaimRecord("sub", "alice"));
             claims.Should().Contain(new ClaimRecord("foo", "foo1"));
             claims.Should().Contain(new ClaimRecord("foo", "foo2"));
+            claims.Select(c => c.type).Should().Contain("bff:session_expires_in");
+        }
+        
+        [Fact]
+        public async Task user_endpoint_for_authenticated_user_with_sid_should_return_claims_including_logout()
+        {
+            await BffHost.IssueSessionCookieAsync(
+                new Claim("sub", "alice"), 
+                new Claim("foo", "foo1"), 
+                new Claim("foo", "foo2"),
+                new Claim("sid", "123"));
+
+            var claims = await BffHost.GetUserClaimsAsync();
+
+            claims.Length.Should().Be(6);
+            claims.Should().Contain(new ClaimRecord("sub", "alice"));
+            claims.Should().Contain(new ClaimRecord("foo", "foo1"));
+            claims.Should().Contain(new ClaimRecord("foo", "foo2"));
+            claims.Should().Contain(new ClaimRecord("sid", "123"));
+            claims.Should().Contain(new ClaimRecord("bff:logout", "/bff/logout%3Fsid=123"));
+            claims.Select(c => c.type).Should().Contain("bff:session_expires_in");
         }
 
         [Fact]

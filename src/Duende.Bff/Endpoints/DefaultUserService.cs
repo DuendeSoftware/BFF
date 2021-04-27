@@ -102,11 +102,12 @@ namespace Duende.Bff
                     Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").ToString()));
             }
 
+            // todo: string or number?
             var expiresInSeconds =
                 authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
             claims.Add(new ClaimRecord(
                 "bff:session_expires_in",
-                Math.Round(expiresInSeconds)));
+                Math.Round(expiresInSeconds).ToString()));
             
             return claims;
         }
@@ -116,7 +117,7 @@ namespace Duende.Bff
         /// </summary>
         /// <param name="type"></param>
         /// <param name="value"></param>
-        protected record ClaimRecord(string type, object value);
+        protected record ClaimRecord(string type, string value);
     }
 
     
