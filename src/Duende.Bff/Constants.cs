@@ -20,5 +20,29 @@ namespace Duende.Bff
             /// </summary>
             public const string SessionExpiresIn = "bff:session_expires_in";
         }
+
+        /// <summary>
+        /// Paths used for management endpoints.
+        /// </summary>
+        public static class ManagementEndpoints
+        {
+            /// <summary>
+            /// Login path
+            /// </summary>
+            public const string Login = "/login";
+            /// <summary>
+            /// Logout path
+            /// </summary>
+            public const string Logout = "/logout";
+            /// <summary>
+            /// User path
+            /// </summary>
+            public const string User = "/user";
+            /// <summary>
+            /// Back channel logout path
+            /// </summary>
+            public const string BackChannelLogout = "/backchannel";
+        }
+
     }
 }

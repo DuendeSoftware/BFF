@@ -41,7 +41,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.ManagementBasePath.Add("/login"), ProcessWith<ILoginService>);
+            endpoints.MapGet(options.LoginPath, ProcessWith<ILoginService>);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.ManagementBasePath.Add("/logout"), ProcessWith<ILogoutService>);
+            endpoints.MapGet(options.LogoutPath, ProcessWith<ILogoutService>);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.ManagementBasePath.Add("/user"), ProcessWith<IUserService>);
+            endpoints.MapGet(options.UserPath, ProcessWith<IUserService>);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapPost(options.ManagementBasePath.Add("/backchannel"), ProcessWith<IBackchannelLogoutService>);
+            endpoints.MapPost(options.BackChannelLogoutPath, ProcessWith<IBackchannelLogoutService>);
         }
 
         /// <summary>

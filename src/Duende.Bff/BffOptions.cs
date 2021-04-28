@@ -25,6 +25,23 @@ namespace Duende.Bff
         public PathString ManagementBasePath { get; set; } = "/bff";
 
         /// <summary>
+        /// Login endpoint
+        /// </summary>
+        public PathString LoginPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Login);
+        /// <summary>
+        /// Logout endpoint
+        /// </summary>
+        public PathString LogoutPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Logout);
+        /// <summary>
+        /// User endpoint
+        /// </summary>
+        public PathString UserPath => ManagementBasePath.Add(Constants.ManagementEndpoints.User);
+        /// <summary>
+        /// Back channel logout endpoint
+        /// </summary>
+        public PathString BackChannelLogoutPath => ManagementBasePath.Add(Constants.ManagementEndpoints.BackChannelLogout);
+
+        /// <summary>
         /// Anti-forgery header name
         /// </summary>
         public string AntiForgeryHeaderName { get; set; } = "X-CSRF";
