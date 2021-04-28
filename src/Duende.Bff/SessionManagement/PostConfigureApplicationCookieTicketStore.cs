@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ namespace Duende.Bff
     /// <summary>
     /// Cookie configuration for the user session plumbing
     /// </summary>
-    public class PostConfigureApplicationCookieSessionStore : IPostConfigureOptions<CookieAuthenticationOptions>
+    public class PostConfigureApplicationCookieTicketStore : IPostConfigureOptions<CookieAuthenticationOptions>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _scheme;
@@ -19,17 +20,17 @@ namespace Duende.Bff
         /// ctor
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        /// <param name="scheme"></param>
-        public PostConfigureApplicationCookieSessionStore(IHttpContextAccessor httpContextAccessor, string scheme = null)
+        /// <param name="options"></param>
+        public PostConfigureApplicationCookieTicketStore(IHttpContextAccessor httpContextAccessor, IOptions<AuthenticationOptions> options)
         {
             _httpContextAccessor = httpContextAccessor;
-            _scheme = scheme;
+            _scheme = options.Value.DefaultAuthenticateScheme ?? options.Value.DefaultScheme;
         }
 
         /// <inheritdoc />
         public void PostConfigure(string name, CookieAuthenticationOptions options)
         {
-            if (_scheme == null || name == _scheme)
+            if (name == _scheme)
             {
                 options.SessionStore = new TicketStoreShim(_httpContextAccessor);
             }

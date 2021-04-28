@@ -36,9 +36,9 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds a server-side session store using the in-memory store
         /// </summary>
         /// <returns></returns>
-        public BffBuilder AddServerSideSessions(string scheme = null)
+        public BffBuilder AddServerSideSessions()
         {
-            Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>>(svcs => new PostConfigureApplicationCookieSessionStore(svcs.GetRequiredService<IHttpContextAccessor>(), scheme));
+            Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieTicketStore>();
             Services.AddTransient<ITicketStore, ServerSideTicketStore>();
 
             Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
@@ -52,10 +52,10 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public BffBuilder AddServerSideSessions<T>(string scheme = null)
+        public BffBuilder AddServerSideSessions<T>()
             where T : class, IUserSessionStore
         {
-            AddServerSideSessions(scheme);
+            AddServerSideSessions();
             Services.AddTransient<IUserSessionStore, T>();
 
             return this;
