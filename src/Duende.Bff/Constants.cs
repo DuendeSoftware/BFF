@@ -44,5 +44,15 @@ namespace Duende.Bff
             public const string BackChannelLogout = "/backchannel";
         }
 
+        /// <summary>
+        /// Request parameter names
+        /// </summary>
+        public static class RequestParameters
+        {
+            /// <summary>
+            /// Used to prevent cookie sliding on user endpoint
+            /// </summary>
+            public const string SlideCookie = "slide";
+        }
     }
 }

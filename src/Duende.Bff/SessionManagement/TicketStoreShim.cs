@@ -17,6 +17,7 @@ namespace Duende.Bff
     public class TicketStoreShim : ITicketStore
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly BffOptions _options;
 
         /// <summary>
         /// ctor
@@ -25,6 +26,7 @@ namespace Duende.Bff
         public TicketStoreShim(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
+            _options = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<BffOptions>();
         }
 
         /// <summary>
@@ -45,9 +47,23 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public Task<AuthenticationTicket> RetrieveAsync(string key)
+        public async Task<AuthenticationTicket> RetrieveAsync(string key)
         {
-            return Inner.RetrieveAsync(key);
+            var ticket = await Inner.RetrieveAsync(key);
+
+            // allows the client-side app to request that the cookie does not slide on the user endpoint
+            // this only works if we're implementing the a ticket store, as we can suppress the behavior
+            // by explicitly setting the AllowRefresh on the ticket
+            if (ticket != null && _httpContextAccessor.HttpContext.Request.Path == _options.UserPath)
+            {
+                var slide = _httpContextAccessor.HttpContext.Request.Query[Constants.RequestParameters.SlideCookie];
+                if (slide == "false")
+                {
+                    ticket.Properties.AllowRefresh = false;
+                }
+            }
+
+            return ticket;
         }
 
         /// <inheritdoc />
