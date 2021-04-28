@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.Builder
             services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
             
-            #if NET5_0
+            #if NET5_0_OR_GREATER
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
             #endif
             
