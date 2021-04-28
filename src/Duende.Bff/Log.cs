@@ -13,11 +13,11 @@ namespace Duende.Bff
     
     internal static class EventIds
     {
-        public static readonly EventId AccessTokenMissing = new EventId(1, "AccessTokenMissing");
-        public static readonly EventId AntiforgeryValidationFailed = new EventId(2, "AntiforgeryValidationFailed");
-        public static readonly EventId ProxyError = new EventId(3, "ProxyError");
-        public static readonly EventId BackChannelLogout = new EventId(4, "BackChannelLogout");
-        public static readonly EventId BackChannelLogoutError = new EventId(5, "BackChannelLogoutError");
+        public static readonly EventId AccessTokenMissing = new (1, "AccessTokenMissing");
+        public static readonly EventId AntiforgeryValidationFailed = new (2, "AntiforgeryValidationFailed");
+        public static readonly EventId ProxyError = new (3, "ProxyError");
+        public static readonly EventId BackChannelLogout = new (4, "BackChannelLogout");
+        public static readonly EventId BackChannelLogoutError = new (5, "BackChannelLogoutError");
     }
     
     internal static class Log

@@ -14,7 +14,7 @@ namespace Duende.Bff
     /// </summary>
     public class InMemoryUserSessionStore : IUserSessionStore
     {
-        private readonly ConcurrentDictionary<string, UserSession> _store = new ConcurrentDictionary<string, UserSession>();
+        private readonly ConcurrentDictionary<string, UserSession> _store = new();
 
         /// <inheritdoc />
         public Task CreateUserSessionAsync(UserSession session)

@@ -2,10 +2,10 @@
 // See LICENSE in the project root for license information.
 
 using Duende.Bff;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Microsoft.AspNetCore.Builder
 {

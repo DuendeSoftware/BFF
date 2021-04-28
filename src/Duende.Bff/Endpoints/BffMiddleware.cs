@@ -48,19 +48,15 @@ namespace Duende.Bff.Endpoints
             }
             
             var localEndoint = endpoint.Metadata.GetMetadata<BffLocalApiEndpointAttribute>();
-
-            if (localEndoint != null)
+            if (localEndoint is { DisableAntiForgeryCheck: false })
             {
-                if (localEndoint.DisableAntiForgeryCheck == false)
+                var antiForgeryHeader = context.Request.Headers[_options.AntiForgeryHeaderName].FirstOrDefault();
+                if (antiForgeryHeader == null || antiForgeryHeader != _options.AntiForgeryHeaderValue)
                 {
-                    var antiForgeryHeader = context.Request.Headers[_options.AntiForgeryHeaderName].FirstOrDefault();
-                    if (antiForgeryHeader == null || antiForgeryHeader != _options.AntiForgeryHeaderValue)
-                    {
-                        _logger.AntiForgeryValidationFailed(context.Request.Path);
+                    _logger.AntiForgeryValidationFailed(context.Request.Path);
                         
-                        context.Response.StatusCode = 401;
-                        return;
-                    }
+                    context.Response.StatusCode = 401;
+                    return;
                 }
             }
 

@@ -17,7 +17,7 @@ namespace Duende.Bff
     /// </summary>
     public static class AuthenticationTicketExtensions
     {
-        static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        static readonly JsonSerializerOptions _jsonOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
@@ -52,8 +52,7 @@ namespace Duende.Bff
         /// <returns></returns>
         public static DateTime GetIssued(this AuthenticationTicket ticket)
         {
-            return ticket.Properties.IssuedUtc.HasValue ?
-                ticket.Properties.IssuedUtc.Value.UtcDateTime : DateTime.UtcNow;
+            return ticket.Properties.IssuedUtc?.UtcDateTime ?? DateTime.UtcNow;
         }
         
         /// <summary>
@@ -63,8 +62,7 @@ namespace Duende.Bff
         /// <returns></returns>
         public static DateTime? GetExpiration(this AuthenticationTicket ticket)
         {
-            return ticket.Properties.ExpiresUtc.HasValue ?
-                ticket.Properties.ExpiresUtc.Value.UtcDateTime : default(DateTime?);
+            return ticket.Properties.ExpiresUtc?.UtcDateTime;
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace Duende.Bff
         /// </summary>
         /// <param name="principal"></param>
         /// <returns></returns>
-        public static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
+        private static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
         {
             var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
             var id = new ClaimsIdentity(claims, principal.AuthenticationType, principal.NameClaimType, principal.RoleClaimType);
@@ -84,7 +82,7 @@ namespace Duende.Bff
         /// </summary>
         /// <param name="principal"></param>
         /// <returns></returns>
-        public static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
+        private static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
         {
             var claims = principal.Claims.Select(
                     x => new ClaimLite
@@ -114,7 +112,7 @@ namespace Duende.Bff
             {
                 Scheme = ticket.AuthenticationScheme,
                 User = ticket.Principal.ToClaimsPrincipalLite(),
-                Items = ticket.Properties.Items,
+                Items = ticket.Properties.Items
             };
             
             // todo: data protect? PII, etc?
@@ -185,17 +183,17 @@ namespace Duende.Bff
             /// <summary>
             /// The type
             /// </summary>
-            public string Type { get; set; }
+            public string Type { get; init; }
             
             /// <summary>
             /// The value
             /// </summary>
-            public string Value { get; set; }
+            public string Value { get; init; }
             
             /// <summary>
             /// The value type
             /// </summary>
-            public string ValueType { get; set; }
+            public string ValueType { get; init; }
         }
         
         /// <summary>
@@ -206,22 +204,22 @@ namespace Duende.Bff
             /// <summary>
             /// The authentication type
             /// </summary>
-            public string AuthenticationType { get; set; }
+            public string AuthenticationType { get; init; }
 
             /// <summary>
             /// The name claim type
             /// </summary>
-            public string NameClaimType { get; set; }
+            public string NameClaimType { get; init; }
 
             /// <summary>
             /// The role claim type
             /// </summary>
-            public string RoleClaimType { get; set; }
+            public string RoleClaimType { get; init; }
 
             /// <summary>
             /// The claims
             /// </summary>
-            public ClaimLite[] Claims { get; set; }
+            public ClaimLite[] Claims { get; init; }
         }
     }
 

@@ -14,7 +14,7 @@ namespace Microsoft.AspNetCore.Builder
     /// </summary>
     public static class BffEndpointRouteBuilderExtensions
     {
-        static Task ProcessWith<T>(HttpContext context)
+        private static Task ProcessWith<T>(HttpContext context)
             where T : IBffEndpointService
         {
             var service = context.RequestServices.GetRequiredService<T>();

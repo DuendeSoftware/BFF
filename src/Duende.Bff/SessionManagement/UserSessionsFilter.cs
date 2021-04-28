@@ -13,12 +13,12 @@ namespace Duende.Bff
         /// <summary>
         /// The subject ID
         /// </summary>
-        public string SubjectId { get; set; }
+        public string SubjectId { get; init; }
 
         /// <summary>
         /// The sesion ID
         /// </summary>
-        public string SessionId { get; set; }
+        public string SessionId { get; init; }
 
         /// <summary>
         /// Validates

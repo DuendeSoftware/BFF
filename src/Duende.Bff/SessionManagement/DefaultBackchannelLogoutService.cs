@@ -73,7 +73,7 @@ namespace Duende.Bff
                             await _userSession.DeleteUserSessionsAsync(new UserSessionsFilter 
                             { 
                                 SubjectId = sub,
-                                SessionId = sid,
+                                SessionId = sid
                             });
                             
                             return;
@@ -145,11 +145,8 @@ namespace Duende.Bff
             {
                 return result.ClaimsIdentity;
             }
-            else
-            {
-                _logger.BackChannelLogoutError(result.Exception.ToString());
-            }
 
+            _logger.BackChannelLogoutError(result.Exception.ToString());
             return null;
         }
 

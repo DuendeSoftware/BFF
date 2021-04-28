@@ -13,15 +13,14 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
     {
-        private readonly ConcurrentDictionary<string, HttpMessageInvoker> _clients =
-            new ConcurrentDictionary<string, HttpMessageInvoker>();
+        private readonly ConcurrentDictionary<string, HttpMessageInvoker> _clients = new();
 
         /// <inheritdoc />
         public HttpMessageInvoker CreateClient(string localPath)
         {
             return _clients.GetOrAdd(localPath, (key) =>
             {
-                return new HttpMessageInvoker(new SocketsHttpHandler()
+                return new HttpMessageInvoker(new SocketsHttpHandler
                 {
                     UseProxy = false,
                     AllowAutoRedirect = false,

@@ -30,13 +30,7 @@ namespace Duende.Bff
         /// <summary>
         /// The inner
         /// </summary>
-        public ITicketStore Inner
-        {
-            get
-            {
-                return _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ITicketStore>();
-            }
-        }
+        private ITicketStore Inner => _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ITicketStore>();
 
         /// <inheritdoc />
         public Task RemoveAsync(string key)

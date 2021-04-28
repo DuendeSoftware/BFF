@@ -107,11 +107,11 @@ namespace Duende.Bff
                 return true;
             }
 
-            var transformContext = new ResponseTransformContext()
+            var transformContext = new ResponseTransformContext
             {
                 HttpContext = httpContext,
                 ProxyResponse = proxyResponse,
-                HeadersCopied = ShouldCopyResponseHeaders.GetValueOrDefault(true),
+                HeadersCopied = ShouldCopyResponseHeaders.GetValueOrDefault(true)
             };
 
             foreach (var responseTransform in ResponseTransforms)

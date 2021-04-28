@@ -29,11 +29,8 @@ namespace Duende.Bff
         /// <inheritdoc />
         public override ValueTask ApplyAsync(RequestTransformContext context)
         {
-            foreach (var header in context.HttpContext.Request.Headers)
+            foreach (var (headerName, headerValue) in context.HttpContext.Request.Headers)
             {
-                var headerName = header.Key;
-                var headerValue = header.Value;
-                
                 if (StringValues.IsNullOrEmpty(headerValue))
                 {
                     continue;

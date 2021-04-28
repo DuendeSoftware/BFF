@@ -31,7 +31,7 @@ namespace Duende.Bff
         /// <inheritdoc />
         public virtual HttpTransformer CreateTransformer(string localPath, string accessToken = null)
         {
-            var context = new TransformBuilderContext()
+            var context = new TransformBuilderContext
             {
                 CopyRequestHeaders = false
             };

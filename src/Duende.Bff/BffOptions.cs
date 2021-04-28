@@ -22,22 +22,22 @@ namespace Duende.Bff
         /// <summary>
         /// Base path for management endpoints
         /// </summary>
-        public PathString ManagementBasePath = "/bff";
+        public PathString ManagementBasePath { get; set; } = "/bff";
 
         /// <summary>
         /// Anti-forgery header name
         /// </summary>
-        public string AntiForgeryHeaderName = "X-CSRF";
+        public string AntiForgeryHeaderName { get; set; } = "X-CSRF";
 
         /// <summary>
         /// Anti-forgery header value
         /// </summary>
-        public string AntiForgeryHeaderValue = "1";
+        public string AntiForgeryHeaderValue { get; set; } = "1";
 
         /// <summary>
         /// Additional headers to forward to remote API endpoints
         /// </summary>
-        public ISet<string> ForwardedHeaders = new HashSet<string>();
+        public ISet<string> ForwardedHeaders { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Specifies if X-Forwarded headers are automatically added to call to remote API endpoints.

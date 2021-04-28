@@ -44,7 +44,7 @@ namespace Duende.Bff
                 SubjectId = ticket.GetSubjectId(),
                 SessionId = ticket.GetSessionId(),
                 Scheme = ticket.AuthenticationScheme,
-                Ticket = ticket.Serialize(),
+                Ticket = ticket.Serialize()
             };
 
             await _store.CreateUserSessionAsync(session);
@@ -56,20 +56,17 @@ namespace Duende.Bff
         public async Task<AuthenticationTicket> RetrieveAsync(string key)
         {
             var session = await _store.GetUserSessionAsync(key);
-            if (session != null)
-            {
-                var ticket = session.Deserialize();
-                if (ticket == null)
-                {
-                    // if we failed to get a ticket, then remove DB record 
-                    _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
-                    await RemoveAsync(key);
-                }
+            if (session == null) return null;
+            
+            var ticket = session.Deserialize();
+            if (ticket != null) return ticket;
+                
+            // if we failed to get a ticket, then remove DB record 
+            _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
+            await RemoveAsync(key);
 
-                return ticket;
-            }
+            return ticket;
 
-            return null;
         }
 
         /// <inheritdoc />
@@ -79,7 +76,7 @@ namespace Duende.Bff
             return _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
                 Renewed = ticket.GetIssued(),
                 Expires = ticket.GetExpiration(),
-                Ticket = ticket.Serialize(),
+                Ticket = ticket.Serialize()
             });
         }
 
