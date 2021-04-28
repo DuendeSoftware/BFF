@@ -44,10 +44,10 @@ namespace Duende.Bff
         /// Defaults to true.
         /// </summary>
         public bool AddXForwardedHeaders { get; set; } = true;
-
-        // TODO: security notice?
+        
         /// <summary>
         /// Forward incoming XForwarded headers.
+        /// Make sure you only forward headers from source you trust.
         /// Defaults to false.
         /// </summary>
         public bool ForwardIncomingXForwardedHeaders { get; set; } = false;
