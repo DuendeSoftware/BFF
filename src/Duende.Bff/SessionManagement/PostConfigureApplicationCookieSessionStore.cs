@@ -10,23 +10,29 @@ namespace Duende.Bff
     /// <summary>
     /// Cookie configuration for the user session plumbing
     /// </summary>
-    public class PostConfigureBffApplicationCookie : IPostConfigureOptions<CookieAuthenticationOptions>
+    public class PostConfigureApplicationCookieSessionStore : IPostConfigureOptions<CookieAuthenticationOptions>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string _scheme;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public PostConfigureBffApplicationCookie(IHttpContextAccessor httpContextAccessor)
+        /// <param name="scheme"></param>
+        public PostConfigureApplicationCookieSessionStore(IHttpContextAccessor httpContextAccessor, string scheme = null)
         {
             _httpContextAccessor = httpContextAccessor;
+            _scheme = scheme;
         }
 
         /// <inheritdoc />
         public void PostConfigure(string name, CookieAuthenticationOptions options)
         {
-            options.SessionStore = new TicketStoreShim(_httpContextAccessor);
+            if (_scheme == null || name == _scheme)
+            {
+                options.SessionStore = new TicketStoreShim(_httpContextAccessor);
+            }
         }
     }
 }

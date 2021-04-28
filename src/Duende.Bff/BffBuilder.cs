@@ -6,6 +6,7 @@ using System.Net.Http;
 using Duende.Bff;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -35,9 +36,9 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds a server-side session store using the in-memory store
         /// </summary>
         /// <returns></returns>
-        public BffBuilder AddServerSideSessions()
+        public BffBuilder AddServerSideSessions(string scheme = null)
         {
-            Services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureBffApplicationCookie>();
+            Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>>(svcs => new PostConfigureApplicationCookieSessionStore(svcs.GetRequiredService<IHttpContextAccessor>(), scheme));
             Services.AddTransient<ITicketStore, ServerSideTicketStore>();
 
             Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
@@ -51,10 +52,10 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public BffBuilder AddServerSideSessions<T>()
+        public BffBuilder AddServerSideSessions<T>(string scheme = null)
             where T : class, IUserSessionStore
         {
-            AddServerSideSessions();
+            AddServerSideSessions(scheme);
             Services.AddTransient<IUserSessionStore, T>();
 
             return this;
