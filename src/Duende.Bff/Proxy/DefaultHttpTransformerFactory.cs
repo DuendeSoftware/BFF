@@ -39,11 +39,6 @@ namespace Duende.Bff
             context.RequestTransforms.Add( new PathStringTransform(Options.PathTransformMode, localPath));
             context.RequestTransforms.Add(new ForwardHeadersTransform(new[] { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType }));
             
-            if (!string.IsNullOrWhiteSpace(accessToken))
-            {
-                context.RequestTransforms.Add(new AccessTokenTransform(accessToken));
-            }
-
             if (Options.ForwardedHeaders.Any())
             {
                 context.RequestTransforms.Add(new ForwardHeadersTransform(Options.ForwardedHeaders));
@@ -52,6 +47,11 @@ namespace Duende.Bff
             if (Options.AddXForwardedHeaders)
             {
                 context.AddXForwarded(append: Options.ForwardIncomingXForwardedHeaders);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                context.RequestTransforms.Add(new AccessTokenTransform(accessToken));
             }
             
             return new StructuredTransformer(

@@ -29,7 +29,7 @@ namespace Duende.Bff
             {
                 var options = context.RequestServices.GetRequiredService<BffOptions>();
                 var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
-                var logger = loggerFactory.CreateLogger("Duende.Bff.BffApiEndpoint");
+                var logger = loggerFactory.CreateLogger(LogCategories.RemoteApiEndpoints);
 
                 var endpoint = context.GetEndpoint();
                 if (endpoint == null)

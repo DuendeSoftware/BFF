@@ -25,8 +25,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the BFF management endpoints (login, logout, logout notifications)
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void MapBffManagementEndpoints(
-            this IEndpointRouteBuilder endpoints)
+        public static void MapBffManagementEndpoints(this IEndpointRouteBuilder endpoints)
         {
             endpoints.MapBffManagementLoginEndpoint();
             endpoints.MapBffManagementLogoutEndpoint();
@@ -38,8 +37,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the login BFF management endpoint
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void MapBffManagementLoginEndpoint(
-            this IEndpointRouteBuilder endpoints)
+        public static void MapBffManagementLoginEndpoint(this IEndpointRouteBuilder endpoints)
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
@@ -50,8 +48,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the logout BFF management endpoint
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void MapBffManagementLogoutEndpoint(
-            this IEndpointRouteBuilder endpoints)
+        public static void MapBffManagementLogoutEndpoint(this IEndpointRouteBuilder endpoints)
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
@@ -62,8 +59,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the user BFF management endpoint
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void MapBffManagementUserEndpoint(
-            this IEndpointRouteBuilder endpoints)
+        public static void MapBffManagementUserEndpoint(this IEndpointRouteBuilder endpoints)
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
@@ -74,8 +70,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds the back channel BFF management endpoint
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void MapBffManagementBackchannelEndpoint(
-            this IEndpointRouteBuilder endpoints)
+        public static void MapBffManagementBackchannelEndpoint(this IEndpointRouteBuilder endpoints)
         {
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
@@ -91,11 +86,11 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IEndpointConventionBuilder MapRemoteBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,
-            string localPath, 
+            PathString localPath, 
             string apiAddress)
         {
             return endpoints.Map(
-                    localPath + "/{**catch-all}",
+                    localPath.Add("/{**catch-all}").Value,
                     BffRemoteApiEndpoint.Map(localPath, apiAddress))
                 .WithMetadata(new BffRemoteApiEndpointMetadata());
 

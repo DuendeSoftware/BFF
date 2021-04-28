@@ -9,6 +9,7 @@ namespace Duende.Bff
     internal static class LogCategories
     {
         public const string ManagementEndpoints = "Duende.Bff.ManagementEndpoints";
+        public const string RemoteApiEndpoints = "Duende.Bff.RemoteApiEndpoints";
     }
     
     internal static class EventIds

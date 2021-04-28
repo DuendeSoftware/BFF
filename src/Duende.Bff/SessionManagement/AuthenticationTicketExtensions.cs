@@ -74,6 +74,7 @@ namespace Duende.Bff
         {
             var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
             var id = new ClaimsIdentity(claims, principal.AuthenticationType, principal.NameClaimType, principal.RoleClaimType);
+            
             return new ClaimsPrincipal(id);
         }
         

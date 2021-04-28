@@ -3,7 +3,7 @@
 
 // .NET 5+ version of converting the 302 of the OIDC challenge to an Ajax friendly 401/403
 // for earlier .NET versions, we need to do that in the middleware
-#if NET5_0
+#if NET5_0_OR_GREATER
 
 using System.Net;
 using System.Threading.Tasks;
@@ -33,6 +33,7 @@ namespace Duende.Bff
             PolicyAuthorizationResult authorizeResult)
         {
             var endpoint = context.GetEndpoint();
+            
             var remoteApi = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
             var localApi = endpoint.Metadata.GetMetadata<BffLocalApiEndpointAttribute>();
 

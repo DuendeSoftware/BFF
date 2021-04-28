@@ -7,7 +7,7 @@ namespace Duende.Bff
 {
     /// <summary>
     /// Decorates a controller as a local BFF API endpoint
-    /// This allows the BFF midleware to add the antiforgery header checks as well as 302 to 401 conversion
+    /// This allows the BFF midleware to automatically add the antiforgery header checks as well as 302 to 401 conversion
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class BffLocalApiEndpointAttribute : Attribute

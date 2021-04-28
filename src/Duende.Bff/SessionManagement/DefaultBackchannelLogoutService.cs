@@ -79,13 +79,18 @@ namespace Duende.Bff
                             return;
                         }
                     }
+                    else
+                    {
+                        _logger.BackChannelLogoutError($"Failed to process backchannel logout request. 'Logout token is missing'");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.BackChannelLogoutError($"Failed to process backchannel logout request. {ex.Message}'");
+                _logger.BackChannelLogoutError($"Failed to process backchannel logout request. '{ex.Message}'");
             }
-
+            
+            _logger.BackChannelLogoutError($"Failed to process backchannel logout request.");
             context.Response.StatusCode = 400;
         }
 
