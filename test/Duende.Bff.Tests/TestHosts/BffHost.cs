@@ -235,9 +235,11 @@ namespace Duende.Bff.Tests.TestHosts
                 invalid => invalid.Use(next => BffRemoteApiEndpoint.Map("/invalid_endpoint", _apiHost.Url())));
         }
 
-        public async Task<bool> GetIsUserLoggedInAsync()
+        public async Task<bool> GetIsUserLoggedInAsync(string userQuery = null)
         {
-            var req = new HttpRequestMessage(HttpMethod.Get, Url("/bff/user"));
+            if (userQuery != null) userQuery = "?" + userQuery;
+
+            var req = new HttpRequestMessage(HttpMethod.Get, Url("/bff/user") + userQuery);
             req.Headers.Add("x-csrf", "1");
             var response = await BrowserClient.SendAsync(req);
 
