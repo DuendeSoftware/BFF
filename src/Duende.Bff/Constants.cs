@@ -19,6 +19,11 @@ namespace Duende.Bff
             /// Claim type for session expiration in seconds
             /// </summary>
             public const string SessionExpiresIn = "bff:session_expires_in";
+
+            /// <summary>
+            /// Claim type for authorize response session state value
+            /// </summary>
+            public const string SessionState = "bff:session_state";
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +92,7 @@ namespace Duende.Bff
         protected virtual IEnumerable<ClaimRecord> GetManagementClaims(AuthenticateResult authenticateResult)
         {
             var claims = new List<ClaimRecord>();
-            
+
             var sessionId = authenticateResult.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
             if (!String.IsNullOrWhiteSpace(sessionId))
             {
@@ -99,13 +100,18 @@ namespace Duende.Bff
                     Constants.ClaimTypes.LogoutUrl,
                     Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").Value));
             }
-            
+
             var expiresInSeconds =
                 authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
             claims.Add(new ClaimRecord(
                 Constants.ClaimTypes.SessionExpiresIn,
                 Math.Round(expiresInSeconds)));
-            
+
+            if (authenticateResult.Properties.Items.TryGetValue(OpenIdConnectSessionProperties.SessionState, out var sessionState))
+            {
+                claims.Add(new ClaimRecord(Constants.ClaimTypes.SessionState, sessionState));
+            }
+
             return claims;
         }
         
