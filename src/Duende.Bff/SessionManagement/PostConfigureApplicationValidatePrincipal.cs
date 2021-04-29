@@ -41,6 +41,8 @@ namespace Duende.Bff
         {
             Task Callback(CookieValidatePrincipalContext ctx)
             {
+                var result = inner?.Invoke(ctx) ?? Task.CompletedTask;
+
                 // allows the client-side app to request that the cookie does not slide on the user endpoint
                 // we must add this logic in the OnValidatePrincipal because it's a code path that can trigger the 
                 // cookie to slide regardless of the CookieOption's sliding feature
@@ -53,8 +55,8 @@ namespace Duende.Bff
                         ctx.ShouldRenew = false;
                     }
                 }
-                
-                return inner?.Invoke(ctx) ?? Task.CompletedTask;
+
+                return result;
             };
 
             return Callback;
