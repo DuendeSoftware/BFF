@@ -42,6 +42,7 @@ namespace Microsoft.AspNetCore.Builder
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
 
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
+            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
 
             #if NET5_0_OR_GREATER
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();

@@ -42,6 +42,12 @@ namespace Duende.Bff
         public PathString BackChannelLogoutPath => ManagementBasePath.Add(Constants.ManagementEndpoints.BackChannelLogout);
 
         /// <summary>
+        /// Specifies if the user's refresh token is revoked at logout time.
+        /// Defaults to true.
+        /// </summary>
+        public bool RevokeRefreshTokenOnLogout { get; set; } = true;
+        
+        /// <summary>
         /// Anti-forgery header name
         /// </summary>
         public string AntiForgeryHeaderName { get; set; } = "X-CSRF";

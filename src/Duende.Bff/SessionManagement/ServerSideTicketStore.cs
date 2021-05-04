@@ -66,7 +66,6 @@ namespace Duende.Bff
             await RemoveAsync(key);
 
             return ticket;
-
         }
 
         /// <inheritdoc />
