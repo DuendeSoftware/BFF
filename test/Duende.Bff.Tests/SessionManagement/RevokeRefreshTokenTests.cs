@@ -102,6 +102,9 @@ namespace Duende.Bff.Tests.SessionManagement
         [Fact]
         public async Task when_setting_disabled_backchannel_logout_endpoint_should_not_revoke_refreshtoken()
         {
+            BffHost.BffOptions.RevokeRefreshTokenOnLogout = false;
+            await BffHost.InitializeAsync();
+            
             await BffHost.BffLoginAsync("alice", "sid123");
 
             {

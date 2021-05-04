@@ -46,7 +46,7 @@ namespace Duende.Bff.Tests.SessionManagement
 
             var session = sessions.Single();
 
-            var ticketStore = BffHost.Resolve<ITicketStore>();
+            var ticketStore = BffHost.Resolve<IServerTicketStore>();
             var firstTicket = await ticketStore.RetrieveAsync(session.Key);
             firstTicket.Should().NotBeNull();
 
@@ -70,7 +70,7 @@ namespace Duende.Bff.Tests.SessionManagement
 
             var session = sessions.Single();
 
-            var ticketStore = BffHost.Resolve<ITicketStore>();
+            var ticketStore = BffHost.Resolve<IServerTicketStore>();
             var firstTicket = await ticketStore.RetrieveAsync(session.Key);
             firstTicket.Should().NotBeNull();
 
@@ -109,7 +109,7 @@ namespace Duende.Bff.Tests.SessionManagement
 
             var session = sessions.Single();
 
-            var ticketStore = BffHost.Resolve<ITicketStore>();
+            var ticketStore = BffHost.Resolve<IServerTicketStore>();
             var firstTicket = await ticketStore.RetrieveAsync(session.Key);
             firstTicket.Should().NotBeNull();
 
@@ -148,7 +148,7 @@ namespace Duende.Bff.Tests.SessionManagement
 
             var session = sessions.Single();
 
-            var ticketStore = BffHost.Resolve<ITicketStore>();
+            var ticketStore = BffHost.Resolve<IServerTicketStore>();
             var firstTicket = await ticketStore.RetrieveAsync(session.Key);
             firstTicket.Should().NotBeNull();
 

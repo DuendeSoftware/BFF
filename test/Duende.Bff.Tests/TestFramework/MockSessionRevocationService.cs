@@ -9,7 +9,7 @@ namespace Duende.Bff.Tests.TestFramework
     {
         public bool DeleteUserSessionsWasCalled { get; set; }
         public UserSessionsFilter DeleteUserSessionsFilter { get; set; }
-        public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
+        public Task RevokeSessionsAsync(UserSessionsFilter filter)
         {
             DeleteUserSessionsWasCalled = true;
             DeleteUserSessionsFilter = filter;

@@ -70,7 +70,7 @@ namespace Duende.Bff
 
                             _logger.BackChannelLogout(sub ?? "missing", sid ?? "missing");
                             
-                            await _userSession.DeleteUserSessionsAsync(new UserSessionsFilter 
+                            await _userSession.RevokeSessionsAsync(new UserSessionsFilter 
                             { 
                                 SubjectId = sub,
                                 SessionId = sid

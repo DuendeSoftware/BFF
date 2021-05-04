@@ -11,10 +11,10 @@ namespace Duende.Bff
     public interface ISessionRevocationService
     {
         /// <summary>
-        /// Deletes a user session
+        /// Revokes a user session
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        Task DeleteUserSessionsAsync(UserSessionsFilter filter);
+        Task RevokeSessionsAsync(UserSessionsFilter filter);
     }
 }

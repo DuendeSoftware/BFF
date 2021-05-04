@@ -9,7 +9,7 @@ namespace Duende.Bff
     /// <summary>
     /// User session store
     /// </summary>
-    public interface IUserSessionStore : ISessionRevocationService
+    public interface IUserSessionStore
     {
         /// <summary>
         /// Retrieves a user session
@@ -46,5 +46,12 @@ namespace Duende.Bff
         /// <param name="filter"></param>
         /// <returns></returns>
         Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter);
+
+        /// <summary>
+        /// Deletes a user session
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task DeleteUserSessionsAsync(UserSessionsFilter filter);
     }
 }

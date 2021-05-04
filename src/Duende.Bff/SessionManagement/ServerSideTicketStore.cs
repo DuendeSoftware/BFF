@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
@@ -10,9 +11,22 @@ using Microsoft.Extensions.Logging;
 namespace Duende.Bff
 {
     /// <summary>
+    /// Extends ITicketStore with additional query APIs.
+    /// </summary>
+    public interface IServerTicketStore : ITicketStore
+    {
+        /// <summary>
+        /// Returns the AuthenticationTickets for the UserSessionsFilter.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter);
+    }
+
+    /// <summary>
     /// IUserSession-backed ticket store
     /// </summary>
-    public class ServerSideTicketStore : ITicketStore
+    public class ServerSideTicketStore : IServerTicketStore
     {
         private readonly IUserSessionStore _store;
         private readonly ILogger<ServerSideTicketStore> _logger;
@@ -83,6 +97,25 @@ namespace Duende.Bff
         public Task RemoveAsync(string key)
         {
             return _store.DeleteUserSessionAsync(key);
+        }
+
+        /// <summary>
+        /// Returns the AuthenticationTickets for the UserSessionsFilter.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter)
+        {
+            var list = new List<AuthenticationTicket>();
+            
+            var sessions = await _store.GetUserSessionsAsync(filter);
+            foreach(var session in sessions)
+            {
+                var ticket = session.Deserialize();
+                list.Add(ticket);
+            }
+
+            return list;
         }
     }
 }

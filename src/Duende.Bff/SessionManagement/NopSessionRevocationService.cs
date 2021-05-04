@@ -23,7 +23,7 @@ namespace Duende.Bff
         }
         
         /// <inheritdoc />
-        public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
+        public Task RevokeSessionsAsync(UserSessionsFilter filter)
         {
             _logger.LogDebug("Nop implementation of session revocation for sub: {sub}, and sid: {sid}. Implement ISessionRevocationService to provide your own implementation.", filter.SubjectId, filter.SessionId);
             return Task.CompletedTask;
