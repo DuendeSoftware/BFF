@@ -133,7 +133,7 @@ namespace Duende.Bff
             }
             catch (Exception ex)
             {
-                _logger.BackChannelLogoutError($"Logout token contains invalid JSON in events claim value. {ex.Message}");
+                _logger.BackChannelLogoutError($"Logout token contains invalid JSON in events claim value. '{ex.Message}'");
                 return null;
             }
 
@@ -151,7 +151,7 @@ namespace Duende.Bff
                 return result.ClaimsIdentity;
             }
 
-            _logger.BackChannelLogoutError(result.Exception.ToString());
+            _logger.BackChannelLogoutError($"Error validating logout token. '{result.Exception.ToString()}'");
             return null;
         }
 
