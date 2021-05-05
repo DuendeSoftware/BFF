@@ -46,7 +46,15 @@ namespace Duende.Bff
         /// Defaults to true.
         /// </summary>
         public bool RevokeRefreshTokenOnLogout { get; set; } = true;
-        
+
+        /// <summary>
+        /// Specifies if during backchannel logout if all matching user sessions are logged out.
+        /// If true, all sessions for the subject will be revoked. If false, just the specific 
+        /// sesssion will be revoked.
+        /// Defaults to false.
+        /// </summary>
+        public bool BackchannelLogoutAllUserSessions { get; set; }
+
         /// <summary>
         /// Anti-forgery header name
         /// </summary>

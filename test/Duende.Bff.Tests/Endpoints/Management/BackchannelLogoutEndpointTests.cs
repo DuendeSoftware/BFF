@@ -3,6 +3,7 @@
 
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -44,5 +45,54 @@ namespace Duende.Bff.Tests.Endpoints.Management
             (await BffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
         }
 
+
+        [Fact]
+        public async Task when_BackchannelLogoutAllUserSessions_is_false_backchannel_logout_should_only_logout_one_session()
+        {
+            BffHost.BffOptions.BackchannelLogoutAllUserSessions = false;
+
+            await BffHost.BffLoginAsync("alice", "sid1");
+            BffHost.BrowserClient.RemoveCookie("bff");
+            await BffHost.BffLoginAsync("alice", "sid2");
+
+            {
+                var store = BffHost.Resolve<IUserSessionStore>();
+                var sessions = await store.GetUserSessionsAsync(new UserSessionsFilter { SubjectId = "alice" });
+                sessions.Count().Should().Be(2);
+            }
+            
+            await IdentityServerHost.RevokeSessionCookieAsync();
+
+            {
+                var store = BffHost.Resolve<IUserSessionStore>();
+                var sessions = await store.GetUserSessionsAsync(new UserSessionsFilter { SubjectId = "alice" });
+                var session = sessions.Single();
+                session.SessionId.Should().Be("sid1");
+            }
+        }
+
+        [Fact]
+        public async Task when_BackchannelLogoutAllUserSessions_is_true_backchannel_logout_should_logout_all_sessions()
+        {
+            BffHost.BffOptions.BackchannelLogoutAllUserSessions = true;
+
+            await BffHost.BffLoginAsync("alice", "sid1");
+            BffHost.BrowserClient.RemoveCookie("bff");
+            await BffHost.BffLoginAsync("alice", "sid2");
+
+            {
+                var store = BffHost.Resolve<IUserSessionStore>();
+                var sessions = await store.GetUserSessionsAsync(new UserSessionsFilter { SubjectId = "alice" });
+                sessions.Count().Should().Be(2);
+            }
+
+            await IdentityServerHost.RevokeSessionCookieAsync();
+
+            {
+                var store = BffHost.Resolve<IUserSessionStore>();
+                var sessions = await store.GetUserSessionsAsync(new UserSessionsFilter { SubjectId = "alice" });
+                sessions.Should().BeEmpty();
+            }
+        }
     }
 }

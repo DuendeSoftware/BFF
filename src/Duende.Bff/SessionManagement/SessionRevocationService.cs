@@ -41,6 +41,11 @@ namespace Duende.Bff
         /// <inheritdoc/>
         public async Task RevokeSessionsAsync(UserSessionsFilter filter)
         {
+            if (_options.BackchannelLogoutAllUserSessions)
+            {
+                filter.SessionId = null;
+            }
+
             if (_options.RevokeRefreshTokenOnLogout)
             {
                 var tickets = await _ticketStore.GetUserTicketsAsync(filter);
