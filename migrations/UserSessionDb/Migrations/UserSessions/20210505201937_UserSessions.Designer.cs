@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UserSessionDb.Migrations.UserSessions
 {
     [DbContext(typeof(SessionDbContext))]
-    [Migration("20210331125209_UserSessions")]
+    [Migration("20210505201937_UserSessions")]
     partial class UserSessions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,10 @@ namespace UserSessionDb.Migrations.UserSessions
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ApplicationDiscriminator")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
@@ -56,13 +60,13 @@ namespace UserSessionDb.Migrations.UserSessions
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key")
+                    b.HasIndex("ApplicationDiscriminator", "Key")
                         .IsUnique();
 
-                    b.HasIndex("SessionId")
+                    b.HasIndex("ApplicationDiscriminator", "SessionId")
                         .IsUnique();
 
-                    b.HasIndex("SubjectId", "SessionId")
+                    b.HasIndex("ApplicationDiscriminator", "SubjectId", "SessionId")
                         .IsUnique();
 
                     b.ToTable("UserSessions");

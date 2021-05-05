@@ -13,6 +13,7 @@ namespace UserSessionDb.Migrations.UserSessions
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    ApplicationDiscriminator = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
                     Renewed = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Expires = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Ticket = table.Column<string>(type: "TEXT", nullable: false),
@@ -28,21 +29,21 @@ namespace UserSessionDb.Migrations.UserSessions
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSessions_Key",
+                name: "IX_UserSessions_ApplicationDiscriminator_Key",
                 table: "UserSessions",
-                column: "Key",
+                columns: new[] { "ApplicationDiscriminator", "Key" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSessions_SessionId",
+                name: "IX_UserSessions_ApplicationDiscriminator_SessionId",
                 table: "UserSessions",
-                column: "SessionId",
+                columns: new[] { "ApplicationDiscriminator", "SessionId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSessions_SubjectId_SessionId",
+                name: "IX_UserSessions_ApplicationDiscriminator_SubjectId_SessionId",
                 table: "UserSessions",
-                columns: new[] { "SubjectId", "SessionId" },
+                columns: new[] { "ApplicationDiscriminator", "SubjectId", "SessionId" },
                 unique: true);
         }
 

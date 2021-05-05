@@ -22,6 +22,10 @@ namespace UserSessionDb.Migrations.UserSessions
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ApplicationDiscriminator")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
@@ -54,13 +58,13 @@ namespace UserSessionDb.Migrations.UserSessions
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key")
+                    b.HasIndex("ApplicationDiscriminator", "Key")
                         .IsUnique();
 
-                    b.HasIndex("SessionId")
+                    b.HasIndex("ApplicationDiscriminator", "SessionId")
                         .IsUnique();
 
-                    b.HasIndex("SubjectId", "SessionId")
+                    b.HasIndex("ApplicationDiscriminator", "SubjectId", "SessionId")
                         .IsUnique();
 
                     b.ToTable("UserSessions");

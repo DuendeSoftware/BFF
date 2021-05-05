@@ -7,6 +7,7 @@ BEGIN TRANSACTION;
 
 CREATE TABLE "UserSessions" (
     "Id" INTEGER NOT NULL CONSTRAINT "PK_UserSessions" PRIMARY KEY AUTOINCREMENT,
+    "ApplicationDiscriminator" TEXT NULL,
     "Renewed" TEXT NOT NULL,
     "Expires" TEXT NULL,
     "Ticket" TEXT NOT NULL,
@@ -17,14 +18,14 @@ CREATE TABLE "UserSessions" (
     "Created" TEXT NOT NULL
 );
 
-CREATE UNIQUE INDEX "IX_UserSessions_Key" ON "UserSessions" ("Key");
+CREATE UNIQUE INDEX "IX_UserSessions_ApplicationDiscriminator_Key" ON "UserSessions" ("ApplicationDiscriminator", "Key");
 
-CREATE UNIQUE INDEX "IX_UserSessions_SessionId" ON "UserSessions" ("SessionId");
+CREATE UNIQUE INDEX "IX_UserSessions_ApplicationDiscriminator_SessionId" ON "UserSessions" ("ApplicationDiscriminator", "SessionId");
 
-CREATE UNIQUE INDEX "IX_UserSessions_SubjectId_SessionId" ON "UserSessions" ("SubjectId", "SessionId");
+CREATE UNIQUE INDEX "IX_UserSessions_ApplicationDiscriminator_SubjectId_SessionId" ON "UserSessions" ("ApplicationDiscriminator", "SubjectId", "SessionId");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20210331125209_UserSessions', '5.0.0');
+VALUES ('20210505201937_UserSessions', '5.0.0');
 
 COMMIT;
 
