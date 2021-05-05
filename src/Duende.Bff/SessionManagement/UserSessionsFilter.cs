@@ -18,7 +18,7 @@ namespace Duende.Bff
         /// <summary>
         /// The sesion ID
         /// </summary>
-        public string SessionId { get; init; }
+        public string SessionId { get; set; }
 
         /// <summary>
         /// Validates

@@ -58,7 +58,10 @@ namespace Duende.Bff.Tests.TestHosts
                     path => new HttpMessageInvoker(_apiHost.Server.CreateHandler())));
 
             services.AddAuthentication("cookie")
-                .AddCookie("cookie");
+                .AddCookie("cookie", options =>
+                {
+                    options.Cookie.Name = "bff";
+                });
 
             bff.AddServerSideSessions();
 
@@ -112,7 +115,7 @@ namespace Duende.Bff.Tests.TestHosts
             {
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor |
                                        ForwardedHeaders.XForwardedProto |
                                        ForwardedHeaders.XForwardedHost
                 });
@@ -262,7 +265,7 @@ namespace Duende.Bff.Tests.TestHosts
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<List<JsonRecord>>(json);
         }
-        
+
         public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = null)
         {
             await _identityServerHost.CreateIdentityServerSessionCookieAsync(sub, sid);
