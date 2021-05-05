@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Duende.Bff.EntityFramework
@@ -30,23 +31,23 @@ namespace Duende.Bff.EntityFramework
         }
 
         /// <inheritdoc/>
-        public Task CreateUserSessionAsync(UserSession session)
+        public Task CreateUserSessionAsync(UserSession session, CancellationToken cancellationToken)
         {
             var item = new UserSessionEntity();
             session.CopyTo(item);
             _sessionDbContext.UserSessions.Add(item);
-            return _sessionDbContext.SaveChangesAsync();
+            return _sessionDbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task DeleteUserSessionAsync(string key)
+        public async Task DeleteUserSessionAsync(string key, CancellationToken cancellationToken)
         {
-            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key).ToArrayAsync();
+            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key).ToArrayAsync(cancellationToken);
             var item = items.SingleOrDefault(x => x.Key == key);
             if (item != null)
             {
                 _sessionDbContext.UserSessions.Remove(item);
-                await _sessionDbContext.SaveChangesAsync();
+                await _sessionDbContext.SaveChangesAsync(cancellationToken);
             }
             else
             {
@@ -55,7 +56,7 @@ namespace Duende.Bff.EntityFramework
         }
 
         /// <inheritdoc/>
-        public async Task DeleteUserSessionsAsync(UserSessionsFilter filter)
+        public async Task DeleteUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken)
         {
             filter.Validate();
 
@@ -69,7 +70,7 @@ namespace Duende.Bff.EntityFramework
                 query = query.Where(x => x.SessionId == filter.SessionId);
             }
 
-            var items = await query.ToArrayAsync();
+            var items = await query.ToArrayAsync(cancellationToken);
             if (!String.IsNullOrWhiteSpace(filter.SubjectId))
             {
                 items = items.Where(x => x.SubjectId == filter.SubjectId).ToArray();
@@ -80,13 +81,13 @@ namespace Duende.Bff.EntityFramework
             }
 
             _sessionDbContext.RemoveRange(items);
-            await _sessionDbContext.SaveChangesAsync();
+            await _sessionDbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<UserSession> GetUserSessionAsync(string key)
+        public async Task<UserSession> GetUserSessionAsync(string key, CancellationToken cancellationToken)
         {
-            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key).ToArrayAsync();
+            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key).ToArrayAsync(cancellationToken);
             var item = items.SingleOrDefault(x => x.Key == key);
             
             UserSession result = null;
@@ -104,7 +105,7 @@ namespace Duende.Bff.EntityFramework
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter)
+        public async Task<IReadOnlyCollection<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken)
         {
             filter.Validate();
 
@@ -118,7 +119,7 @@ namespace Duende.Bff.EntityFramework
                 query = query.Where(x => x.SessionId == filter.SessionId);
             }
 
-            var items = await query.ToArrayAsync();
+            var items = await query.ToArrayAsync(cancellationToken);
             if (!String.IsNullOrWhiteSpace(filter.SubjectId))
             {
                 items = items.Where(x => x.SubjectId == filter.SubjectId).ToArray();
@@ -136,14 +137,14 @@ namespace Duende.Bff.EntityFramework
         }
 
         /// <inheritdoc/>
-        public async Task UpdateUserSessionAsync(string key, UserSessionUpdate session)
+        public async Task UpdateUserSessionAsync(string key, UserSessionUpdate session, CancellationToken cancellationToken)
         {
-            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key).ToArrayAsync();
+            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key).ToArrayAsync(cancellationToken);
             var item = items.SingleOrDefault(x => x.Key == key);
             if (item != null)
             {
                 session.CopyTo(item);
-                await _sessionDbContext.SaveChangesAsync();
+                await _sessionDbContext.SaveChangesAsync(cancellationToken);
             }
             else
             {
