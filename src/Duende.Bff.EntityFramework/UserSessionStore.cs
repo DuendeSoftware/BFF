@@ -39,7 +39,7 @@ namespace Duende.Bff.EntityFramework
         {
             var item = new UserSessionEntity()
             {
-                ApplicationDiscriminator = _applicationDiscriminator
+                ApplicationName = _applicationDiscriminator
             };
             session.CopyTo(item);
             _sessionDbContext.UserSessions.Add(item);
@@ -49,8 +49,8 @@ namespace Duende.Bff.EntityFramework
         /// <inheritdoc/>
         public async Task DeleteUserSessionAsync(string key)
         {
-            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationDiscriminator == _applicationDiscriminator).ToArrayAsync();
-            var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationDiscriminator == _applicationDiscriminator);
+            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationName == _applicationDiscriminator).ToArrayAsync();
+            var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationName == _applicationDiscriminator);
             if (item != null)
             {
                 _sessionDbContext.UserSessions.Remove(item);
@@ -67,7 +67,7 @@ namespace Duende.Bff.EntityFramework
         {
             filter.Validate();
 
-            var query = _sessionDbContext.UserSessions.Where(x => x.ApplicationDiscriminator == _applicationDiscriminator).AsQueryable();
+            var query = _sessionDbContext.UserSessions.Where(x => x.ApplicationName == _applicationDiscriminator).AsQueryable();
             if (!String.IsNullOrWhiteSpace(filter.SubjectId))
             {
                 query = query.Where(x => x.SubjectId == filter.SubjectId);
@@ -77,7 +77,7 @@ namespace Duende.Bff.EntityFramework
                 query = query.Where(x => x.SessionId == filter.SessionId);
             }
 
-            var items = await query.Where(x => x.ApplicationDiscriminator == _applicationDiscriminator).ToArrayAsync();
+            var items = await query.Where(x => x.ApplicationName == _applicationDiscriminator).ToArrayAsync();
             if (!String.IsNullOrWhiteSpace(filter.SubjectId))
             {
                 items = items.Where(x => x.SubjectId == filter.SubjectId).ToArray();
@@ -94,8 +94,8 @@ namespace Duende.Bff.EntityFramework
         /// <inheritdoc/>
         public async Task<UserSession> GetUserSessionAsync(string key)
         {
-            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationDiscriminator == _applicationDiscriminator).ToArrayAsync();
-            var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationDiscriminator == _applicationDiscriminator);
+            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationName == _applicationDiscriminator).ToArrayAsync();
+            var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationName == _applicationDiscriminator);
             
             UserSession result = null;
             if (item != null)
@@ -116,7 +116,7 @@ namespace Duende.Bff.EntityFramework
         {
             filter.Validate();
 
-            var query = _sessionDbContext.UserSessions.Where(x => x.ApplicationDiscriminator == _applicationDiscriminator).AsQueryable();
+            var query = _sessionDbContext.UserSessions.Where(x => x.ApplicationName == _applicationDiscriminator).AsQueryable();
             if (!String.IsNullOrWhiteSpace(filter.SubjectId))
             {
                 query = query.Where(x => x.SubjectId == filter.SubjectId);
@@ -126,7 +126,7 @@ namespace Duende.Bff.EntityFramework
                 query = query.Where(x => x.SessionId == filter.SessionId);
             }
 
-            var items = await query.Where(x => x.ApplicationDiscriminator == _applicationDiscriminator).ToArrayAsync();
+            var items = await query.Where(x => x.ApplicationName == _applicationDiscriminator).ToArrayAsync();
             if (!String.IsNullOrWhiteSpace(filter.SubjectId))
             {
                 items = items.Where(x => x.SubjectId == filter.SubjectId).ToArray();
@@ -146,8 +146,8 @@ namespace Duende.Bff.EntityFramework
         /// <inheritdoc/>
         public async Task UpdateUserSessionAsync(string key, UserSessionUpdate session)
         {
-            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationDiscriminator == _applicationDiscriminator).ToArrayAsync();
-            var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationDiscriminator == _applicationDiscriminator);
+            var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationName == _applicationDiscriminator).ToArrayAsync();
+            var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationName == _applicationDiscriminator);
             if (item != null)
             {
                 session.CopyTo(item);

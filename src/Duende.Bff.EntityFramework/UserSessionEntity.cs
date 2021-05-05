@@ -16,6 +16,6 @@ namespace Duende.Bff.EntityFramework
         /// <summary>
         /// Discriminator to allow multiple applications to share the user session table.
         /// </summary>
-        public string ApplicationDiscriminator { get; set; }
+        public string ApplicationName { get; set; }
     }
 }

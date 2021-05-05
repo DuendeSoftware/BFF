@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UserSessionDb.Migrations.UserSessions
 {
     [DbContext(typeof(SessionDbContext))]
-    [Migration("20210505201937_UserSessions")]
+    [Migration("20210505203547_UserSessions")]
     partial class UserSessions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace UserSessionDb.Migrations.UserSessions
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ApplicationDiscriminator")
+                    b.Property<string>("ApplicationName")
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
@@ -42,10 +42,6 @@ namespace UserSessionDb.Migrations.UserSessions
                     b.Property<DateTime>("Renewed")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Scheme")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("SessionId")
                         .HasColumnType("TEXT");
 
@@ -60,13 +56,13 @@ namespace UserSessionDb.Migrations.UserSessions
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationDiscriminator", "Key")
+                    b.HasIndex("ApplicationName", "Key")
                         .IsUnique();
 
-                    b.HasIndex("ApplicationDiscriminator", "SessionId")
+                    b.HasIndex("ApplicationName", "SessionId")
                         .IsUnique();
 
-                    b.HasIndex("ApplicationDiscriminator", "SubjectId", "SessionId")
+                    b.HasIndex("ApplicationName", "SubjectId", "SessionId")
                         .IsUnique();
 
                     b.ToTable("UserSessions");

@@ -26,11 +26,6 @@ namespace Duende.Bff
         public string SessionId { get; set; }
         
         /// <summary>
-        /// The scheme
-        /// </summary>
-        public string Scheme { get; set; }
-
-        /// <summary>
         /// The creation time
         /// </summary>
         public DateTime Created { get; set; }
@@ -56,7 +51,6 @@ namespace Duende.Bff
             other.Key = Key;
             other.SubjectId = SubjectId;
             other.SessionId = SessionId;
-            other.Scheme = Scheme;
             other.Created = Created;
             other.Renewed = Renewed;
             other.Expires = Expires;

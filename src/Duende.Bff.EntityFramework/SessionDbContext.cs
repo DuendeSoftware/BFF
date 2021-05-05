@@ -38,15 +38,14 @@ namespace Duende.Bff.EntityFramework
         {
             entity.HasKey(x => x.Id);
             
-            entity.Property(x => x.ApplicationDiscriminator).HasMaxLength(200);
+            entity.Property(x => x.ApplicationName).HasMaxLength(200);
             entity.Property(x => x.Key).IsRequired().HasMaxLength(200);
             entity.Property(x => x.SubjectId).IsRequired().HasMaxLength(200);
             entity.Property(x => x.Ticket).IsRequired();
-            entity.Property(x => x.Scheme).HasMaxLength(200);
 
-            entity.HasIndex(x => new { x.ApplicationDiscriminator, x.Key }).IsUnique();
-            entity.HasIndex(x => new { x.ApplicationDiscriminator, x.SubjectId, x.SessionId }).IsUnique();
-            entity.HasIndex(x => new { x.ApplicationDiscriminator, x.SessionId }).IsUnique();
+            entity.HasIndex(x => new { x.ApplicationName, x.Key }).IsUnique();
+            entity.HasIndex(x => new { x.ApplicationName, x.SubjectId, x.SessionId }).IsUnique();
+            entity.HasIndex(x => new { x.ApplicationName, x.SessionId }).IsUnique();
         }
     }
 }
