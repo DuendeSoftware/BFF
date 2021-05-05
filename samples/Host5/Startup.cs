@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +41,12 @@ namespace Host5
                 })
                 .AddCookie("cookie", options =>
                 {
+                    // set session lifetime
+                    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                    
+                    // sliding or absolute
+                    options.SlidingExpiration = false;
+                    
                     // host prefixed cookie name
                     options.Cookie.Name = "__Host-spa5";
                     
@@ -95,7 +102,7 @@ namespace Host5
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
-
+                
                 // proxy endpoint for cross-site APIs
                 // all calls to /api/* will be forwarded to the remote API
                 // user or client access token will be attached in API call
