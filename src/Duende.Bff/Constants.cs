@@ -58,6 +58,11 @@ namespace Duende.Bff
             /// Used to prevent cookie sliding on user endpoint
             /// </summary>
             public const string SlideCookie = "slide";
+            
+            /// <summary>
+            /// Used to pass a return URL to login/logout
+            /// </summary>
+            public const string ReturnUrl = "returnUrl";
         }
     }
 }

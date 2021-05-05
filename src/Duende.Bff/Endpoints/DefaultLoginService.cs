@@ -17,7 +17,7 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task ProcessRequequestAsync(HttpContext context)
         {
-            var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
+            var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {

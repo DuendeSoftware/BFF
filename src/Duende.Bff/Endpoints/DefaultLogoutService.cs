@@ -48,13 +48,12 @@ namespace Duende.Bff
                     }
                 }
             }
-
-
+            
             // get rid of local cookie first
             var signInScheme = await _schemes.GetDefaultSignInSchemeAsync();
             await context.SignOutAsync(signInScheme.Name);
 
-            var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault();
+            var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
