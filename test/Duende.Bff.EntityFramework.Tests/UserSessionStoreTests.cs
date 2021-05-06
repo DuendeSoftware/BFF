@@ -36,7 +36,6 @@ namespace Duende.Bff.EntityFramework.Tests
             await _subject.CreateUserSessionAsync(new UserSession
             {
                 Key = "key123",
-                Scheme = "scheme",
                 SessionId = "sid",
                 SubjectId = "sub",
                 Created = new DateTime(2020, 3, 1, 9, 12, 33, DateTimeKind.Utc),
@@ -55,7 +54,6 @@ namespace Duende.Bff.EntityFramework.Tests
             await _subject.CreateUserSessionAsync(new UserSession
             {
                 Key = "key123",
-                Scheme = "scheme",
                 SessionId = "sid",
                 SubjectId = "sub",
                 Created = new DateTime(2020, 3, 1, 9, 12, 33, DateTimeKind.Utc),
@@ -68,7 +66,6 @@ namespace Duende.Bff.EntityFramework.Tests
 
             item.Should().NotBeNull();
             item.Key.Should().Be("key123");
-            item.Scheme.Should().Be("scheme");
             item.SubjectId.Should().Be("sub");
             item.SessionId.Should().Be("sid");
             item.Ticket.Should().Be("ticket");
@@ -90,7 +87,6 @@ namespace Duende.Bff.EntityFramework.Tests
             await _subject.CreateUserSessionAsync(new UserSession
             {
                 Key = "key123",
-                Scheme = "scheme",
                 SessionId = "sid",
                 SubjectId = "sub",
                 Created = new DateTime(2020, 3, 1, 9, 12, 33, DateTimeKind.Utc),
@@ -108,7 +104,6 @@ namespace Duende.Bff.EntityFramework.Tests
             var item = await _subject.GetUserSessionAsync("key123");
             item.Should().NotBeNull();
             item.Key.Should().Be("key123");
-            item.Scheme.Should().Be("scheme");
             item.SubjectId.Should().Be("sub");
             item.SessionId.Should().Be("sid");
             item.Ticket.Should().Be("ticket2");
