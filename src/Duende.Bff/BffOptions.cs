@@ -13,17 +13,69 @@ namespace Duende.Bff
     public class BffOptions
     {
         /// <summary>
-        /// Flag that requires sid claim to be present in the logout request. 
+        /// Base path for management endpoints. Defaults to "/bff".
+        /// </summary>
+        public PathString ManagementBasePath { get; set; } = "/bff";
+        
+        /// <summary>
+        /// Flag that specifies if the *sid* claim needs to be present in the logout request as query string parameter. 
         /// Used to prevent cross site request forgery.
         /// Defaults to true.
         /// </summary>
         public bool RequireLogoutSessionId { get; set; } = true;
 
         /// <summary>
-        /// Base path for management endpoints
+        /// Specifies if the user's refresh token is automatically revoked at logout time.
+        /// Defaults to true.
         /// </summary>
-        public PathString ManagementBasePath { get; set; } = "/bff";
+        public bool RevokeRefreshTokenOnLogout { get; set; } = true;
 
+        /// <summary>
+        /// Specifies if during backchannel logout all matching user sessions are logged out.
+        /// If true, all sessions for the subject will be revoked. If false, just the specific 
+        /// session will be revoked.
+        /// Defaults to false.
+        /// </summary>
+        public bool BackchannelLogoutAllUserSessions { get; set; }
+
+        /// <summary>
+        /// Specifies the name of the header used for anti-forgery header protection.
+        /// Defaults to X-CSRF.
+        /// </summary>
+        public string AntiForgeryHeaderName { get; set; } = "X-CSRF";
+
+        /// <summary>
+        /// Specifies the expected value of the anti-forgery header.
+        /// Defaults to 1.
+        /// </summary>
+        public string AntiForgeryHeaderValue { get; set; } = "1";
+
+        /// <summary>
+        /// Specifies if X-Forwarded headers are automatically added to calls to remote API endpoints.
+        /// Defaults to true.
+        /// </summary>
+        public bool AddXForwardedHeaders { get; set; } = true;
+        
+        /// <summary>
+        /// Specifies if incoming XForwarded headers should be forwarded.
+        /// Make sure you only forward headers from sources you trust.
+        /// Defaults to false.
+        /// </summary>
+        public bool ForwardIncomingXForwardedHeaders { get; set; } = false;
+        
+        /// <summary>
+        /// Specifies additional headers to forward to remote API endpoints.
+        /// </summary>
+        public ISet<string> ForwardedHeaders { get; set; } = new HashSet<string>();
+
+        /// <summary>
+        /// Specifies how the path for remote API endpoints gets transformed.
+        /// Defaults to removing the configured local prefix.
+        /// </summary>
+        public PathStringTransform.PathTransformMode PathTransformMode { get; set; } =
+            PathStringTransform.PathTransformMode.RemovePrefix;
+        
+        
         /// <summary>
         /// Login endpoint
         /// </summary>
@@ -40,53 +92,5 @@ namespace Duende.Bff
         /// Back channel logout endpoint
         /// </summary>
         public PathString BackChannelLogoutPath => ManagementBasePath.Add(Constants.ManagementEndpoints.BackChannelLogout);
-
-        /// <summary>
-        /// Specifies if the user's refresh token is revoked at logout time.
-        /// Defaults to true.
-        /// </summary>
-        public bool RevokeRefreshTokenOnLogout { get; set; } = true;
-
-        /// <summary>
-        /// Specifies if during backchannel logout if all matching user sessions are logged out.
-        /// If true, all sessions for the subject will be revoked. If false, just the specific 
-        /// sesssion will be revoked.
-        /// Defaults to false.
-        /// </summary>
-        public bool BackchannelLogoutAllUserSessions { get; set; }
-
-        /// <summary>
-        /// Anti-forgery header name
-        /// </summary>
-        public string AntiForgeryHeaderName { get; set; } = "X-CSRF";
-
-        /// <summary>
-        /// Anti-forgery header value
-        /// </summary>
-        public string AntiForgeryHeaderValue { get; set; } = "1";
-
-        /// <summary>
-        /// Additional headers to forward to remote API endpoints
-        /// </summary>
-        public ISet<string> ForwardedHeaders { get; set; } = new HashSet<string>();
-
-        /// <summary>
-        /// Specifies if X-Forwarded headers are automatically added to call to remote API endpoints.
-        /// Defaults to true.
-        /// </summary>
-        public bool AddXForwardedHeaders { get; set; } = true;
-        
-        /// <summary>
-        /// Forward incoming XForwarded headers.
-        /// Make sure you only forward headers from source you trust.
-        /// Defaults to false.
-        /// </summary>
-        public bool ForwardIncomingXForwardedHeaders { get; set; } = false;
-
-        /// <summary>
-        /// Specifies how the path for remote API endpoints gets transformed
-        /// </summary>
-        public PathStringTransform.PathTransformMode PathTransformMode { get; set; } =
-            PathStringTransform.PathTransformMode.RemovePrefix;
     }
 }

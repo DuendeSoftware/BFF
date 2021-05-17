@@ -8,7 +8,7 @@ namespace Microsoft.AspNetCore.Builder
     /// <summary>
     /// Extension methods for the BFF middleware
     /// </summary>
-    public static class BffBuilderExtensions
+    public static class BffApplicationBuilderExtensions
     {
         /// <summary>
         /// Adds the Duende.BFF middleware to the pipeline
