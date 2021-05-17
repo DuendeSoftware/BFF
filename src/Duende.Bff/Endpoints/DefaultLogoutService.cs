@@ -30,7 +30,7 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public async Task ProcessRequequestAsync(HttpContext context)
+        public async Task ProcessRequestAsync(HttpContext context)
         {
             var result = await context.AuthenticateAsync();
             if (result.Succeeded && result.Principal.Identity.IsAuthenticated)

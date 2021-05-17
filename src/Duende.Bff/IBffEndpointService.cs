@@ -16,6 +16,6 @@ namespace Duende.Bff
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task ProcessRequequestAsync(HttpContext context);
+        Task ProcessRequestAsync(HttpContext context);
     }
 }
