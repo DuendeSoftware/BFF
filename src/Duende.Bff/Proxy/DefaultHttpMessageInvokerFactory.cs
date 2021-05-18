@@ -13,12 +13,15 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
     {
-        private readonly ConcurrentDictionary<string, HttpMessageInvoker> _clients = new();
+        /// <summary>
+        /// Dictionary to cachen invoker instances
+        /// </summary>
+        protected readonly ConcurrentDictionary<string, HttpMessageInvoker> Clients = new();
 
         /// <inheritdoc />
-        public HttpMessageInvoker CreateClient(string localPath)
+        public virtual HttpMessageInvoker CreateClient(string localPath)
         {
-            return _clients.GetOrAdd(localPath, (key) =>
+            return Clients.GetOrAdd(localPath, (key) =>
             {
                 return new HttpMessageInvoker(new SocketsHttpHandler
                 {

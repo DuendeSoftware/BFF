@@ -13,7 +13,7 @@ namespace Duende.Bff
     /// <summary>
     /// Forwards headers
     /// </summary>
-    public class ForwardHeadersTransform : RequestTransform
+    public class ForwardHeadersRequestTransform : RequestTransform
     {
         private readonly IEnumerable<string> _headerNames;
 
@@ -21,7 +21,7 @@ namespace Duende.Bff
         /// ctor
         /// </summary>
         /// <param name="headerNames"></param>
-        public ForwardHeadersTransform(IEnumerable<string> headerNames)
+        public ForwardHeadersRequestTransform(IEnumerable<string> headerNames)
         {
             _headerNames = headerNames;
         }

@@ -11,7 +11,7 @@ namespace Duende.Bff
     /// <summary>
     /// Adds an access token to outgoing requests
     /// </summary>
-    public class AccessTokenTransform : RequestTransform
+    public class AccessTokenRequestTransform : RequestTransform
     {
         private readonly string _accessToken;
 
@@ -19,7 +19,7 @@ namespace Duende.Bff
         /// ctor
         /// </summary>
         /// <param name="accessToken"></param>
-        public AccessTokenTransform(string accessToken)
+        public AccessTokenRequestTransform(string accessToken)
         {
             _accessToken = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
         }
