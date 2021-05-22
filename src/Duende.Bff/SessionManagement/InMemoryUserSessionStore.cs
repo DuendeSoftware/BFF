@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Duende.Bff
@@ -17,7 +18,7 @@ namespace Duende.Bff
         private readonly ConcurrentDictionary<string, UserSession> _store = new();
 
         /// <inheritdoc />
-        public Task CreateUserSessionAsync(UserSession session)
+        public Task CreateUserSessionAsync(UserSession session, CancellationToken cancellationToken = default)
         {
             if (!_store.TryAdd(session.Key, session.Clone()))
             {
@@ -27,14 +28,14 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public Task<UserSession> GetUserSessionAsync(string key)
+        public Task<UserSession> GetUserSessionAsync(string key, CancellationToken cancellationToken = default)
         {
             _store.TryGetValue(key, out var item);
             return Task.FromResult(item?.Clone());
         }
 
         /// <inheritdoc />
-        public Task UpdateUserSessionAsync(string key, UserSessionUpdate session)
+        public Task UpdateUserSessionAsync(string key, UserSessionUpdate session, CancellationToken cancellationToken = default)
         {
             var item = _store[key].Clone();
             session.CopyTo(item);
@@ -43,14 +44,14 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public Task DeleteUserSessionAsync(string key)
+        public Task DeleteUserSessionAsync(string key, CancellationToken cancellationToken = default)
         {
             _store.TryRemove(key, out _);
             return Task.CompletedTask;
         }
         
         /// <inheritdoc />
-        public Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter)
+        public Task<IReadOnlyCollection<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default)
         {
             filter.Validate();
 
@@ -64,12 +65,12 @@ namespace Duende.Bff
                 query = query.Where(x => x.SessionId == filter.SessionId);
             }
 
-            var results = query.Select(x => x.Clone()).ToArray().AsEnumerable();
-            return Task.FromResult(results);
+            var results = query.Select(x => x.Clone()).ToArray();
+            return Task.FromResult((IReadOnlyCollection<UserSession>)results);
         }
 
         /// <inheritdoc />
-        public Task DeleteUserSessionsAsync(UserSessionsFilter filter)
+        public Task DeleteUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default)
         {
             filter.Validate();
 

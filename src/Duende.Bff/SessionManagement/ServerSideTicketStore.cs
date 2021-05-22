@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
@@ -19,8 +20,9 @@ namespace Duende.Bff
         /// Returns the AuthenticationTickets for the UserSessionsFilter.
         /// </summary>
         /// <param name="filter"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task<IEnumerable<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter);
+        Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -102,12 +104,13 @@ namespace Duende.Bff
         /// Returns the AuthenticationTickets for the UserSessionsFilter.
         /// </summary>
         /// <param name="filter"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter)
+        public async Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken)
         {
             var list = new List<AuthenticationTicket>();
             
-            var sessions = await _store.GetUserSessionsAsync(filter);
+            var sessions = await _store.GetUserSessionsAsync(filter, cancellationToken);
             foreach(var session in sessions)
             {
                 var ticket = session.Deserialize();

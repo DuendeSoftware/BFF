@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Duende.Bff
@@ -15,43 +16,49 @@ namespace Duende.Bff
         /// Retrieves a user session
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task<UserSession> GetUserSessionAsync(string key);
-        
+        Task<UserSession> GetUserSessionAsync(string key, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Creates a user session
         /// </summary>
         /// <param name="session"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task CreateUserSessionAsync(UserSession session);
+        Task CreateUserSessionAsync(UserSession session, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates a user session
         /// </summary>
         /// <param name="key"></param>
         /// <param name="session"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task UpdateUserSessionAsync(string key, UserSessionUpdate session);
-        
+        Task UpdateUserSessionAsync(string key, UserSessionUpdate session, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Deletes a user session
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task DeleteUserSessionAsync(string key);
+        Task DeleteUserSessionAsync(string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Queries user sessions
         /// </summary>
         /// <param name="filter"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task<IEnumerable<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter);
+        Task<IReadOnlyCollection<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes a user session
         /// </summary>
         /// <param name="filter"></param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
-        Task DeleteUserSessionsAsync(UserSessionsFilter filter);
+        Task DeleteUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
     }
 }

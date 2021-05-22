@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Duende.Bff
@@ -39,7 +40,7 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc/>
-        public async Task RevokeSessionsAsync(UserSessionsFilter filter)
+        public async Task RevokeSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default)
         {
             if (_options.BackchannelLogoutAllUserSessions)
             {
