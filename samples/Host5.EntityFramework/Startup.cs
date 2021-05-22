@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Host5.EntityFramework
 {
@@ -23,6 +24,9 @@ namespace Host5.EntityFramework
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDataProtection()
+                .SetApplicationName("Host5.Ef");
+
             // Add BFF services to DI - also add server-side session management
             var cn = _configuration.GetConnectionString("db");
             services.AddBff()

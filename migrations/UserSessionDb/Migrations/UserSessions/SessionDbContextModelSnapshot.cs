@@ -22,6 +22,10 @@ namespace UserSessionDb.Migrations.UserSessions
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ApplicationName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
@@ -34,10 +38,6 @@ namespace UserSessionDb.Migrations.UserSessions
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Renewed")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Scheme")
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SessionId")
@@ -54,13 +54,13 @@ namespace UserSessionDb.Migrations.UserSessions
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key")
+                    b.HasIndex("ApplicationName", "Key")
                         .IsUnique();
 
-                    b.HasIndex("SessionId")
+                    b.HasIndex("ApplicationName", "SessionId")
                         .IsUnique();
 
-                    b.HasIndex("SubjectId", "SessionId")
+                    b.HasIndex("ApplicationName", "SubjectId", "SessionId")
                         .IsUnique();
 
                     b.ToTable("UserSessions");

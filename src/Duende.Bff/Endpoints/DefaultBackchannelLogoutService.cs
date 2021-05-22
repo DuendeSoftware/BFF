@@ -48,7 +48,7 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public async Task ProcessRequequestAsync(HttpContext context)
+        public async Task ProcessRequestAsync(HttpContext context)
         {
             context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
             context.Response.Headers.Add("Pragma", "no-cache");

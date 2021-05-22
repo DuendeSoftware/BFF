@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
             where T : IBffEndpointService
         {
             var service = context.RequestServices.GetRequiredService<T>();
-            return service.ProcessRequequestAsync(context);
+            return service.ProcessRequestAsync(context);
         }
 
         /// <summary>

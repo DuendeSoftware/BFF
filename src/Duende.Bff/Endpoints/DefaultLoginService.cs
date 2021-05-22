@@ -15,7 +15,7 @@ namespace Duende.Bff
     public class DefaultLoginService : ILoginService
     {
         /// <inheritdoc />
-        public async Task ProcessRequequestAsync(HttpContext context)
+        public async Task ProcessRequestAsync(HttpContext context)
         {
             var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
 

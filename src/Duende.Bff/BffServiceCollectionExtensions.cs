@@ -31,17 +31,21 @@ namespace Microsoft.AspNetCore.Builder
             services.AddHttpProxy();
 
             services.AddAccessTokenManagement();
-
+            
+            // reverse proxy related
             services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
             services.TryAddSingleton<IHttpTransformerFactory, DefaultHttpTransformerFactory>();
 
+            // management endpoints
             services.AddTransient<ILoginService, DefaultLoginService>();
             services.AddTransient<ILogoutService, DefaultLogoutService>();
             services.AddTransient<IUserService, DefaultUserService>();
-            
             services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
+            
+            // session management
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
 
+            // cookie configuration
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
 

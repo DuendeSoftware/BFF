@@ -59,7 +59,6 @@ namespace Duende.Bff
                 Expires = ticket.GetExpiration(),
                 SubjectId = ticket.GetSubjectId(),
                 SessionId = ticket.GetSessionId(),
-                Scheme = ticket.AuthenticationScheme,
                 Ticket = ticket.Serialize()
             };
 
