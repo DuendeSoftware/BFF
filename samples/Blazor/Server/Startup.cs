@@ -84,6 +84,7 @@ namespace Blazor.Server
 
             app.UseRouting();
             app.UseAuthentication();
+            app.UseBff();
             app.UseAuthorization();
             
             app.UseEndpoints(endpoints =>

@@ -56,7 +56,7 @@ namespace Blazor.Client.Services
             return _cachedUser;
         }
 
-        record ClaimRecord(string Type, string Value);
+        record ClaimRecord(string Type, object Value);
 
         private async Task<ClaimsPrincipal> FetchUser()
         {
@@ -76,7 +76,7 @@ namespace Blazor.Client.Services
                     
                     foreach (var claim in claims)
                     {
-                        identity.AddClaim(new Claim(claim.Type, claim.Value));
+                        identity.AddClaim(new Claim(claim.Type, claim.Value.ToString()));
                     }
 
                     return new ClaimsPrincipal(identity);
