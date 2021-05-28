@@ -5,6 +5,8 @@ namespace Duende.Bff
     /// </summary>
     public static class Constants
     {
+        internal const string BffMiddlewareMarker = "Duende.Bff.BffMiddlewareMarker";
+        
         /// <summary>
         /// Custom claim types used by Duende.BFF
         /// </summary>

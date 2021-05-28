@@ -45,6 +45,8 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task ProcessRequestAsync(HttpContext context)
         {
+            context.CheckForBffMiddleware(Options);
+            
             var antiForgeryHeader = context.Request.Headers[Options.AntiForgeryHeaderName].FirstOrDefault();
             if (antiForgeryHeader == null || antiForgeryHeader != Options.AntiForgeryHeaderValue)
             {

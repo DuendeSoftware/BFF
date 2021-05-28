@@ -74,7 +74,11 @@ namespace Duende.Bff
         /// </summary>
         public PathStringTransform.PathTransformMode PathTransformMode { get; set; } =
             PathStringTransform.PathTransformMode.RemovePrefix;
-        
+
+        /// <summary>
+        /// Specifies if the management endpoints check that the BFF middleware is added to the pipeline.
+        /// </summary>
+        public bool EnforceBffMiddlewareOnManagementEndpoints { get; set; } = true;
         
         /// <summary>
         /// Login endpoint

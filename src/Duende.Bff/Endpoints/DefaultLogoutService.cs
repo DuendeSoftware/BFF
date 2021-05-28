@@ -32,6 +32,8 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task ProcessRequestAsync(HttpContext context)
         {
+            context.CheckForBffMiddleware(_options);
+            
             var result = await context.AuthenticateAsync();
             if (result.Succeeded && result.Principal.Identity.IsAuthenticated)
             {
