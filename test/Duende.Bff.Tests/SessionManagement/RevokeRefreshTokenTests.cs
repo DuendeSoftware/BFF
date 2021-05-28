@@ -2,10 +2,8 @@
 // See LICENSE in the project root for license information.
 
 using Duende.Bff.Tests.TestHosts;
-using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
