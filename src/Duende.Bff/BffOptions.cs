@@ -16,6 +16,11 @@ namespace Duende.Bff
         /// Base path for management endpoints. Defaults to "/bff".
         /// </summary>
         public PathString ManagementBasePath { get; set; } = "/bff";
+
+        /// <summary>
+        /// Specifies whether the user endpoint requires the antiforgery header
+        /// </summary>
+        public bool RequireAntiforgeryHeaderForUserEndpoint { get; set; } = true;
         
         /// <summary>
         /// Flag that specifies if the *sid* claim needs to be present in the logout request as query string parameter. 

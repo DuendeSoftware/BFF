@@ -46,14 +46,16 @@ namespace Duende.Bff
         public async Task ProcessRequestAsync(HttpContext context)
         {
             context.CheckForBffMiddleware(Options);
-            
-            var antiForgeryHeader = context.Request.Headers[Options.AntiForgeryHeaderName].FirstOrDefault();
-            if (antiForgeryHeader == null || antiForgeryHeader != Options.AntiForgeryHeaderValue)
-            {
-                Logger.AntiForgeryValidationFailed("user");
 
-                context.Response.StatusCode = 401;
-                return;
+            if (Options.RequireAntiforgeryForUserEndpoint)
+            {
+                if (!context.CheckAntiForgeryHeader(Options))
+                {
+                    Logger.AntiForgeryValidationFailed("user");
+
+                    context.Response.StatusCode = 401;
+                    return;
+                }
             }
 
             var result = await context.AuthenticateAsync();

@@ -2,7 +2,6 @@
 // See LICENSE in the project root for license information.
 
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,8 +44,7 @@ namespace Duende.Bff
 
                 if (metadata.RequireAntiForgeryHeader)
                 {
-                    var antiForgeryHeader = context.Request.Headers[options.AntiForgeryHeaderName].FirstOrDefault();
-                    if (antiForgeryHeader == null || antiForgeryHeader != options.AntiForgeryHeaderValue)
+                    if (!context.CheckAntiForgeryHeader(options))
                     {
                         logger.AntiForgeryValidationFailed(localPath);
 

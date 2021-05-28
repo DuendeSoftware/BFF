@@ -1,7 +1,6 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -53,8 +52,7 @@ namespace Duende.Bff.Endpoints
             var localEndoint = endpoint.Metadata.GetMetadata<BffLocalApiEndpointAttribute>();
             if (localEndoint is { DisableAntiForgeryCheck: false })
             {
-                var antiForgeryHeader = context.Request.Headers[_options.AntiForgeryHeaderName].FirstOrDefault();
-                if (antiForgeryHeader == null || antiForgeryHeader != _options.AntiForgeryHeaderValue)
+                if (!context.CheckAntiForgeryHeader(_options))
                 {
                     _logger.AntiForgeryValidationFailed(context.Request.Path);
                         
