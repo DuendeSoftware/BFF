@@ -84,6 +84,11 @@ namespace Duende.Bff
         /// Specifies if the management endpoints check that the BFF middleware is added to the pipeline.
         /// </summary>
         public bool EnforceBffMiddlewareOnManagementEndpoints { get; set; } = true;
+
+        /// <summary>
+        /// License key
+        /// </summary>
+        public string LicenseKey { get; set; }
         
         /// <summary>
         /// Login endpoint

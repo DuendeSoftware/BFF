@@ -1,11 +1,14 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
 using Duende.Bff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using Duende.Bff.Endpoints;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -14,6 +17,8 @@ namespace Microsoft.AspNetCore.Builder
     /// </summary>
     public static class BffEndpointRouteBuilderExtensions
     {
+        internal static bool _licenseChecked;
+        
         private static Task ProcessWith<T>(HttpContext context)
             where T : IBffEndpointService
         {
@@ -39,6 +44,8 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="endpoints"></param>
         public static void MapBffManagementLoginEndpoint(this IEndpointRouteBuilder endpoints)
         {
+            endpoints.CheckLicense();
+            
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapGet(options.LoginPath, ProcessWith<ILoginService>);
@@ -50,6 +57,8 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="endpoints"></param>
         public static void MapBffManagementLogoutEndpoint(this IEndpointRouteBuilder endpoints)
         {
+            endpoints.CheckLicense();
+            
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapGet(options.LogoutPath, ProcessWith<ILogoutService>);
@@ -61,6 +70,8 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="endpoints"></param>
         public static void MapBffManagementUserEndpoint(this IEndpointRouteBuilder endpoints)
         {
+            endpoints.CheckLicense();
+            
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapGet(options.UserPath, ProcessWith<IUserService>);
@@ -72,6 +83,8 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="endpoints"></param>
         public static void MapBffManagementBackchannelEndpoint(this IEndpointRouteBuilder endpoints)
         {
+            endpoints.CheckLicense();
+            
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapPost(options.BackChannelLogoutPath, ProcessWith<IBackchannelLogoutService>);
@@ -89,11 +102,27 @@ namespace Microsoft.AspNetCore.Builder
             PathString localPath, 
             string apiAddress)
         {
+            endpoints.CheckLicense();
+            
             return endpoints.Map(
                     localPath.Add("/{**catch-all}").Value,
                     BffRemoteApiEndpoint.Map(localPath, apiAddress))
                 .WithMetadata(new BffRemoteApiEndpointMetadata());
 
+        }
+        
+        internal static void CheckLicense(this IEndpointRouteBuilder endpoints)
+        {
+            if (_licenseChecked == false)
+            {
+                var loggerFactory = endpoints.ServiceProvider.GetRequiredService<ILoggerFactory>();
+                var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+                
+                LicenseValidator.Initalize(loggerFactory, options);
+                LicenseValidator.ValidateLicense();
+            }
+
+            _licenseChecked = true;
         }
     }
 }
