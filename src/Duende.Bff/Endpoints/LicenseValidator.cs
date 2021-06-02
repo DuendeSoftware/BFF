@@ -73,7 +73,7 @@ namespace Duende.Bff.Endpoints
 
                 if (_license.IsStarter && _license.BFF == false)
                 {
-                    errors.Add($"Your license does not include the BFF feature.");
+                    errors.Add($"Your IdentityServer license does not include the BFF feature.");
                 }
             }
 
