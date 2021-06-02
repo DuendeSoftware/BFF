@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -151,6 +152,30 @@ namespace Duende.Bff.Endpoints
 
         internal class License
         {
+            public string CompanyName { get; set; }
+            public string ContactInfo { get; set; }
+
+            public DateTime? Expiration { get; set; }
+
+            public LicenseEdition Edition { get; set; }
+
+            internal bool IsEnterprise => Edition == LicenseEdition.Enterprise;
+            internal bool IsBusiness => Edition == LicenseEdition.Business;
+            internal bool IsStarter => Edition == LicenseEdition.Starter;
+            internal bool IsCommunity => Edition == LicenseEdition.Community;
+
+
+            public bool BFF { get; set; }
+            public bool ISV { get; set; }
+
+            public enum LicenseEdition
+            {
+                Enterprise,
+                Business,
+                Starter,
+                Community
+            }
+            
             // for testing
             internal License(params Claim[] claims)
                 : this(new ClaimsPrincipal(new ClaimsIdentity(claims)))
@@ -184,28 +209,9 @@ namespace Duende.Bff.Endpoints
                 }
             }
 
-            public string CompanyName { get; set; }
-            public string ContactInfo { get; set; }
-
-            public DateTime? Expiration { get; set; }
-
-            public LicenseEdition Edition { get; set; }
-
-            internal bool IsEnterprise => Edition == LicenseEdition.Enterprise;
-            internal bool IsBusiness => Edition == LicenseEdition.Business;
-            internal bool IsStarter => Edition == LicenseEdition.Starter;
-            internal bool IsCommunity => Edition == LicenseEdition.Community;
-
-
-            public bool BFF { get; set; }
-            public bool ISV { get; set; }
-
-            public enum LicenseEdition
+            public override string ToString()
             {
-                Enterprise,
-                Business,
-                Starter,
-                Community
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions { IgnoreNullValues = true });
             }
         }
     }
