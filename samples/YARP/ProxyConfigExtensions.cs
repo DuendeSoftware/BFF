@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using Duende.Bff;
+using Microsoft.AspNetCore.Builder;
 using Yarp.ReverseProxy.Abstractions;
+using Yarp.ReverseProxy.Middleware;
 
 namespace YARP.Sample
 {
@@ -25,6 +27,29 @@ namespace YARP.Sample
             metadata.TryAdd("Duende.Bff.TokenType", tokenType.ToString());
             
             return config with { Metadata = metadata };
+        }
+        
+        public static ClusterConfig WithAccessToken(this ClusterConfig config, TokenType tokenType)
+        {
+            Dictionary<string, string> metadata;
+
+            if (config.Metadata != null)
+            {
+                metadata = new Dictionary<string, string>(config.Metadata);
+            }
+            else
+            {
+                metadata = new();
+            }
+
+            metadata.TryAdd("Duende.Bff.TokenType", tokenType.ToString());
+            
+            return config with { Metadata = metadata };
+        }
+
+        public static IApplicationBuilder AddAntiforgeryProtection(this IReverseProxyApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<BffAntiforgeryMiddleware>();
         }
     }
 }

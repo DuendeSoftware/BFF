@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Threading.Tasks;
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
@@ -144,14 +145,10 @@ namespace Host5
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
 
-                endpoints.MapReverseProxy(pipeline => { pipeline.Use(CustomProxyStep); });
-
-                // proxy endpoint for cross-site APIs
-                // all calls to /api/* will be forwarded to the remote API
-                // user or client access token will be attached in API call
-                // user access token will be managed automatically using the refresh token
-                // endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                //     .RequireAccessToken(TokenType.UserOrClient);
+                endpoints.MapReverseProxy(pipeline =>
+                {
+                    pipeline.AddAntiforgeryProtection();
+                });
             });
         }
 

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Duende.Bff
 {
-    internal static class Extensions
+    public static class Extensions
     {
         public static void CheckForBffMiddleware(this HttpContext context, BffOptions options)
         {
