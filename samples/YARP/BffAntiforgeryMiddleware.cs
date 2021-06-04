@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Duende.Bff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Yarp.ReverseProxy.Middleware;
+using Yarp.ReverseProxy.Model;
 
 namespace YARP.Sample
 {

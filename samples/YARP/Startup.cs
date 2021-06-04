@@ -3,20 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Threading.Tasks;
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Yarp.ReverseProxy.Abstractions;
-using Yarp.ReverseProxy.Abstractions.Config;
-using Yarp.ReverseProxy.Middleware;
-using Yarp.ReverseProxy.RuntimeModel;
+using Yarp.ReverseProxy.Configuration;
 using Yarp.Sample;
 using YARP.Sample;
 
@@ -51,7 +45,18 @@ namespace Host5
                             Path = "/api/{**catch-all}"
                         }
                     }
-                    .WithAccessToken(TokenType.User)
+                    .WithAccessToken(TokenType.User),
+                    new RouteConfig()
+                        {
+                            RouteId = "api2",
+                            ClusterId = "cluster1",
+                        
+                            Match = new RouteMatch
+                            {
+                                Path = "/api2/{**catch-all}"
+                            }
+                        }
+                        .WithAccessToken(TokenType.Client)
                 },
                 new[]
                 {
@@ -150,13 +155,6 @@ namespace Host5
                     pipeline.AddAntiforgeryProtection();
                 });
             });
-        }
-
-        private Task CustomProxyStep(HttpContext context, Func<Task> next)
-        {
-            var feature = context.Features.Get<IReverseProxyFeature>();
-
-            return next();
         }
     }
 }

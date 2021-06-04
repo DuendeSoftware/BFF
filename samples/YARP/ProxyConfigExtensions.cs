@@ -4,8 +4,7 @@
 using System.Collections.Generic;
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
-using Yarp.ReverseProxy.Abstractions;
-using Yarp.ReverseProxy.Middleware;
+using Yarp.ReverseProxy.Configuration;
 
 namespace YARP.Sample
 {

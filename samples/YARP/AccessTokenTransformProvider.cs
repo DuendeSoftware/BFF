@@ -2,15 +2,11 @@
 // // See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Duende.Bff;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
-using Yarp.ReverseProxy.Abstractions;
-using Yarp.ReverseProxy.Abstractions.Config;
-using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
+using Yarp.ReverseProxy.Transforms;
+using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace YARP.Sample
 {
