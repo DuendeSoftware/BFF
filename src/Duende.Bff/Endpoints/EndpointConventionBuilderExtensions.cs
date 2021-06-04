@@ -17,11 +17,9 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder)
+        public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder, bool disableAntiForgeryCheck = false)
         {
-            return builder.WithMetadata(new BffApiAttribute());
+            return builder.WithMetadata(new BffApiAttribute(disableAntiForgeryCheck));
         }
-        
-        
     }
 }

@@ -18,16 +18,6 @@ namespace Duende.Bff
         public PathString ManagementBasePath { get; set; } = "/bff";
 
         /// <summary>
-        /// Specifies whether the local API endpoints require the antiforgery header
-        /// </summary>
-        public bool RequireAntiforgeryHeaderForLocalApis { get; set; } = true;
-        
-        /// <summary>
-        /// Specifies whether the remote API endpoints require the antiforgery header
-        /// </summary>
-        public bool RequireAntiforgeryHeaderForRemoteApis { get; set; } = true;
-        
-        /// <summary>
         /// Flag that specifies if the *sid* claim needs to be present in the logout request as query string parameter. 
         /// Used to prevent cross site request forgery.
         /// Defaults to true.

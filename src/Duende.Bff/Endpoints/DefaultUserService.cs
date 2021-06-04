@@ -47,17 +47,6 @@ namespace Duende.Bff
         {
             context.CheckForBffMiddleware(Options);
 
-            if (Options.RequireAntiforgeryHeaderForLocalApis)
-            {
-                if (!context.CheckAntiForgeryHeader(Options))
-                {
-                    Logger.AntiForgeryValidationFailed("user");
-
-                    context.Response.StatusCode = 401;
-                    return;
-                }
-            }
-
             var result = await context.AuthenticateAsync();
 
             if (!result.Succeeded)
