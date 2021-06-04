@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using Duende.Bff;
-using Microsoft.AspNetCore.Builder;
 using Yarp.ReverseProxy.Configuration;
 
 namespace YarpHost
@@ -23,7 +22,7 @@ namespace YarpHost
                 metadata = new();
             }
 
-            metadata.TryAdd("Duende.Bff.TokenType", tokenType.ToString());
+            metadata.TryAdd(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
             
             return config with { Metadata = metadata };
         }
@@ -41,7 +40,7 @@ namespace YarpHost
                 metadata = new();
             }
 
-            metadata.TryAdd("Duende.Bff.TokenType", tokenType.ToString());
+            metadata.TryAdd(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
             
             return config with { Metadata = metadata };
         }

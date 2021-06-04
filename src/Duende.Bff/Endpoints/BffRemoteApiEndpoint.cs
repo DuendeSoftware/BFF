@@ -44,51 +44,13 @@ namespace Duende.Bff
                 string token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
-                    switch (metadata.RequiredTokenType)
+                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value);
+                    if (string.IsNullOrWhiteSpace(token))
                     {
-                        case TokenType.Client:
-                        {
-                            token = await context.GetClientAccessTokenAsync();
-                            if (string.IsNullOrWhiteSpace(token))
-                            {
-                                logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                        logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
 
-                                context.Response.StatusCode = 401;
-                                return;
-                            }
-
-                            break;
-                        }
-                        case TokenType.User:
-                        {
-                            token = await context.GetUserAccessTokenAsync();
-                            if (string.IsNullOrWhiteSpace(token))
-                            {
-                                logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
-
-                                context.Response.StatusCode = 401;
-                                return;
-                            }
-
-                            break;
-                        }
-                        case TokenType.UserOrClient:
-                        {
-                            token = await context.GetUserAccessTokenAsync();
-                            if (string.IsNullOrWhiteSpace(token))
-                            {
-                                token = await context.GetClientAccessTokenAsync();
-                                if (string.IsNullOrWhiteSpace(token))
-                                {
-                                    logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
-
-                                    context.Response.StatusCode = 401;
-                                    return;
-                                }
-                            }
-
-                            break;
-                        }
+                        context.Response.StatusCode = 401;
+                        return;
                     }
                 }
 

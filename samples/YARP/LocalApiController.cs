@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace YarpHost
 {
     [Route("local")]
+    //[BffApi]
     public class LocalApiController : ControllerBase
     {
         public IActionResult Get()

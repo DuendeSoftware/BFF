@@ -24,41 +24,26 @@ namespace YarpHost
         {
             string value = null;
             
-            if ((transformBuildContext.Route.Metadata?.TryGetValue("Duende.Bff.TokenType", out value) ?? false)
-                || (transformBuildContext.Cluster?.Metadata?.TryGetValue("Duende.Bff.TokenType", out value) ?? false))
+            if ((transformBuildContext.Route.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false)
+                || (transformBuildContext.Cluster?.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false))
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException("A non-empty Duende.Bff.TokenType value is required");
+                    throw new ArgumentException("A non-empty Duende.Bff.Yarp.TokenType metadata value is required");
                 }
 
                 if (!TokenType.TryParse(value, true, out TokenType tokenType))
                 {
-                    throw new ArgumentException("Invalid value for Duende.Bff.TokenType");
+                    throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
                 }
 
                 transformBuildContext.AddRequestTransform(async transformContext =>
                 {
-                    string token;
-
-                    if (tokenType == TokenType.User)
-                    {
-                        token = await transformContext.HttpContext.GetUserAccessTokenAsync();
-                    }
-                    else if (tokenType == TokenType.Client)
-                    {
-                        token = await transformContext.HttpContext.GetClientAccessTokenAsync();
-                    }
-                    else
-                    {
-                        token = await transformContext.HttpContext.GetUserAccessTokenAsync();
-
-                        if (string.IsNullOrEmpty(token))
-                        {
-                            token = await transformContext.HttpContext.GetClientAccessTokenAsync();
-                        }
-                    }
-
+                    var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+                    
+                    // todo
+                    // logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                    
                     if (!string.IsNullOrEmpty(token))
                     {
                         transformContext.ProxyRequest.Headers.Authorization =

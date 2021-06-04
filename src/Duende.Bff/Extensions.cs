@@ -3,6 +3,8 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
 namespace Duende.Bff
@@ -26,6 +28,31 @@ namespace Duende.Bff
         {
             var antiForgeryHeader = context.Request.Headers[options.AntiForgeryHeaderName].FirstOrDefault();
             return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
+        }
+
+        public static async Task<string> GetManagedAccessToken(this HttpContext context, TokenType tokenType)
+        {
+            string token;
+
+            if (tokenType == TokenType.User)
+            {
+                token = await context.GetUserAccessTokenAsync();
+            }
+            else if (tokenType == TokenType.Client)
+            {
+                token = await context.GetClientAccessTokenAsync();
+            }
+            else
+            {
+                token = await context.GetUserAccessTokenAsync();
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    token = await context.GetClientAccessTokenAsync();
+                }
+            }
+
+            return token;
         }
     }
 }

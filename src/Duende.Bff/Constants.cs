@@ -6,6 +6,11 @@ namespace Duende.Bff
     public static class Constants
     {
         internal const string BffMiddlewareMarker = "Duende.Bff.BffMiddlewareMarker";
+
+        public static class Yarp
+        {
+            public const string TokenTypeMetadata = "Duende.Bff.Yarp.TokenType";
+        }
         
         /// <summary>
         /// Custom claim types used by Duende.BFF
