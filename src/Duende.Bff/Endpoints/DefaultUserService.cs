@@ -47,7 +47,7 @@ namespace Duende.Bff
         {
             context.CheckForBffMiddleware(Options);
 
-            if (Options.RequireAntiforgeryHeaderForUserEndpoint)
+            if (Options.RequireAntiforgeryHeaderForLocalApis)
             {
                 if (!context.CheckAntiForgeryHeader(Options))
                 {

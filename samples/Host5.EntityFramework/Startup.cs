@@ -98,7 +98,7 @@ namespace Host5.EntityFramework
                 // local APIs
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsLocalBffApiEndpoint();
+                    .AsBffApiEndpoint();
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();

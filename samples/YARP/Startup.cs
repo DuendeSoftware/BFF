@@ -11,10 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Yarp.ReverseProxy.Configuration;
-using Yarp.Sample;
-using YARP.Sample;
 
-namespace Host5
+namespace YarpHost
 {
     public class Startup
     {
@@ -145,15 +143,13 @@ namespace Host5
                 // local APIs
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsLocalBffApiEndpoint();
+                    .AsBffApiEndpoint();
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
 
-                endpoints.MapReverseProxy(pipeline =>
-                {
-                    pipeline.AddAntiforgeryProtection();
-                });
+                endpoints.MapReverseProxy()
+                    .AsBffApiEndpoint();
             });
         }
     }

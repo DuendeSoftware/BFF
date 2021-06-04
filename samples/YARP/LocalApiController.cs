@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Host5
+namespace YarpHost
 {
     [Route("local")]
     public class LocalApiController : ControllerBase

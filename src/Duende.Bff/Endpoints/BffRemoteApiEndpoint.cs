@@ -26,7 +26,6 @@ namespace Duende.Bff
         {
             return async context =>
             {
-                var options = context.RequestServices.GetRequiredService<BffOptions>();
                 var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger(LogCategories.RemoteApiEndpoints);
 
@@ -40,17 +39,6 @@ namespace Duende.Bff
                 if (metadata == null)
                 {
                     throw new InvalidOperationException("API endoint is missing BFF metadata");
-                }
-
-                if (metadata.RequireAntiForgeryHeader)
-                {
-                    if (!context.CheckAntiForgeryHeader(options))
-                    {
-                        logger.AntiForgeryValidationFailed(localPath);
-
-                        context.Response.StatusCode = 401;
-                        return;
-                    }
                 }
 
                 string token = null;

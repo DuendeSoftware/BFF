@@ -81,7 +81,7 @@ namespace Host5
             {
                 endpoints.MapControllers()
                     .RequireAuthorization()
-                    .AsLocalBffApiEndpoint();
+                    .AsBffApiEndpoint();
                 
                 endpoints.MapBffManagementEndpoints();
 

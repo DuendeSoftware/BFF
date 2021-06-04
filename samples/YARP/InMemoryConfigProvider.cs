@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Yarp.ReverseProxy.Configuration;
 
-namespace Yarp.Sample
+namespace YarpHost
 {
     /// <summary>
     /// Extends the IReverseProxyBuilder to support the InMemoryConfigProvider

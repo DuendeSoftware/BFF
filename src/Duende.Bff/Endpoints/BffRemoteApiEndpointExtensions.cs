@@ -3,6 +3,7 @@
 
 using System.Linq;
 using Duende.Bff;
+using Yarp.ReverseProxy;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -28,6 +29,17 @@ namespace Microsoft.AspNetCore.Builder
             });
 
             return builder;
+        }
+
+        /// <summary>
+        /// Annotates a YARP endpoint with the BFF remote API metadata
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static ReverseProxyConventionBuilder RequireAntiforgeryProtection(
+            this ReverseProxyConventionBuilder builder)
+        {
+            return builder.WithMetadata(new BffRemoteApiEndpointMetadata());
         }
         
         /// <summary>

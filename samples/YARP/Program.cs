@@ -8,7 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace Host5
+namespace YarpHost
 {
     public class Program
     {

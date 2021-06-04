@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
-namespace YARP.Sample
+namespace YarpHost
 {
     internal class AccessTokenTransformProvider : ITransformProvider
     {

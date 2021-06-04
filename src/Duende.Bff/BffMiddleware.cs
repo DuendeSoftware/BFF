@@ -49,15 +49,35 @@ namespace Duende.Bff.Endpoints
                 return;
             }
             
-            var localEndoint = endpoint.Metadata.GetMetadata<BffLocalApiEndpointAttribute>();
+            var localEndoint = endpoint.Metadata.GetMetadata<BffApiAttribute>();
             if (localEndoint is { DisableAntiForgeryCheck: false })
             {
-                if (!context.CheckAntiForgeryHeader(_options))
+                if (_options.RequireAntiforgeryHeaderForLocalApis)
                 {
-                    _logger.AntiForgeryValidationFailed(context.Request.Path);
+                    if (!context.CheckAntiForgeryHeader(_options))
+                    {
+                        _logger.AntiForgeryValidationFailed(context.Request.Path);
+
+                        context.Response.StatusCode = 401;
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                var remoteEndpoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
+                if (remoteEndpoint is { RequireAntiForgeryHeader: true })
+                {
+                    if (_options.RequireAntiforgeryHeaderForRemoteApis)
+                    {
+                        if (!context.CheckAntiForgeryHeader(_options))
+                        {
+                            _logger.AntiForgeryValidationFailed(context.Request.Path);
                         
-                    context.Response.StatusCode = 401;
-                    return;
+                            context.Response.StatusCode = 401;
+                            return;
+                        }    
+                    }
                 }
             }
 

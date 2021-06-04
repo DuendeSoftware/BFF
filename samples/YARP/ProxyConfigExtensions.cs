@@ -6,7 +6,7 @@ using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Yarp.ReverseProxy.Configuration;
 
-namespace YARP.Sample
+namespace YarpHost
 {
     public static class ProxyConfigExtensions
     {
@@ -44,11 +44,6 @@ namespace YARP.Sample
             metadata.TryAdd("Duende.Bff.TokenType", tokenType.ToString());
             
             return config with { Metadata = metadata };
-        }
-
-        public static IApplicationBuilder AddAntiforgeryProtection(this IReverseProxyApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<BffAntiforgeryMiddleware>();
         }
     }
 }

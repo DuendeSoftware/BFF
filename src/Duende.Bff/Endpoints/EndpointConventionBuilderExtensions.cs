@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using Duende.Bff;
+using Yarp.ReverseProxy;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -16,9 +17,11 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IEndpointConventionBuilder AsLocalBffApiEndpoint(this IEndpointConventionBuilder builder)
+        public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder)
         {
-            return builder.WithMetadata(new BffLocalApiEndpointAttribute());
+            return builder.WithMetadata(new BffApiAttribute());
         }
+        
+        
     }
 }
