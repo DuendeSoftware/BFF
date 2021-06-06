@@ -8,9 +8,10 @@ namespace YarpHost
 {
     public static class ReverseProxyEndpointConventionBuilderExtensions
     {
-        public static ReverseProxyConventionBuilder AsBffApiEndpoint(this ReverseProxyConventionBuilder builder)
+        public static ReverseProxyConventionBuilder AsBffApiEndpoint(this ReverseProxyConventionBuilder builder,
+            bool requireAntiforgeryCheck = true)
         {
-            return builder.WithMetadata(new BffApiAttribute());
+            return builder.WithMetadata(new BffApiAttribute(requireAntiforgeryCheck));
         }
     }
 }
