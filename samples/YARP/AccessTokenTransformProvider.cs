@@ -12,6 +12,13 @@ namespace YarpHost
 {
     internal class AccessTokenTransformProvider : ITransformProvider
     {
+        private readonly BffOptions _options;
+
+        public AccessTokenTransformProvider(BffOptions options)
+        {
+            _options = options;
+        }
+        
         public void ValidateRoute(TransformRouteValidationContext context)
         {
         }
@@ -39,6 +46,8 @@ namespace YarpHost
 
                 transformBuildContext.AddRequestTransform(async transformContext =>
                 {
+                    transformContext.HttpContext.CheckForBffMiddleware(_options);
+                    
                     var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
                     
                     // todo
