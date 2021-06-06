@@ -53,8 +53,8 @@ namespace Duende.Bff.Endpoints
             var localEndpointMetadata = endpoint.Metadata.GetOrderedMetadata<BffApiAttribute>();
             if (localEndpointMetadata.Any())
             {
-                var skipLocalAntiForgeryCheck = localEndpointMetadata.First().DisableAntiForgeryCheck;
-                if (!skipLocalAntiForgeryCheck)
+                var requireLocalAntiForgeryCheck = localEndpointMetadata.First().RequireAntiForgeryCheck;
+                if (requireLocalAntiForgeryCheck)
                 {
                     if (!context.CheckAntiForgeryHeader(_options))
                     {

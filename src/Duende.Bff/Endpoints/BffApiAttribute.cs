@@ -7,23 +7,23 @@ namespace Duende.Bff
 {
     /// <summary>
     /// Decorates a controller as a local BFF API endpoint
-    /// This allows the BFF midleware to automatically add the antiforgery header checks as well as 302 to 401 conversion
+    /// This allows the BFF midleware to automatically add the anti-forgery header checks as well as 302 to 401 conversion
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class BffApiAttribute : Attribute
     {
         /// <summary>
-        /// specifies if anti-forgery check should be disbled (not recommended)
+        /// specifies if anti-forgery check is required
         /// </summary>
-        public bool DisableAntiForgeryCheck { get; }
+        public bool RequireAntiForgeryCheck { get; }
 
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="disableAntiForgeryCheck"></param>
-        public BffApiAttribute(bool disableAntiForgeryCheck = false)
+        /// <param name="requireAntiForgeryCheck">Specifies if the antiforgery header gets checked</param>
+        public BffApiAttribute(bool requireAntiForgeryCheck = true)
         {
-            DisableAntiForgeryCheck = disableAntiForgeryCheck;
+            RequireAntiForgeryCheck = requireAntiForgeryCheck;
         }
     }
 }

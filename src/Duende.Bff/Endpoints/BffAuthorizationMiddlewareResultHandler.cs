@@ -47,7 +47,8 @@ namespace Duende.Bff
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return Task.CompletedTask;
             }
-            else if (authorizeResult.Forbidden)
+
+            if (authorizeResult.Forbidden)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Task.CompletedTask;
