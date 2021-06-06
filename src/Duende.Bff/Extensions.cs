@@ -13,7 +13,7 @@ namespace Duende.Bff
     {
         public static void CheckForBffMiddleware(this HttpContext context, BffOptions options)
         {
-            if (options.EnforceBffMiddlewareOnManagementEndpoints)
+            if (options.EnforceBffMiddleware)
             {
                 var found = context.Items.TryGetValue(Constants.BffMiddlewareMarker, out _);
                 if (!found)

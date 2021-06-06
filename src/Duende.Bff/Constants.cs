@@ -7,8 +7,14 @@ namespace Duende.Bff
     {
         internal const string BffMiddlewareMarker = "Duende.Bff.BffMiddlewareMarker";
 
+        /// <summary>
+        /// Constants used for YARP
+        /// </summary>
         public static class Yarp
         {
+            /// <summary>
+            /// Name of toke type metadata
+            /// </summary>
             public const string TokenTypeMetadata = "Duende.Bff.Yarp.TokenType";
         }
         
