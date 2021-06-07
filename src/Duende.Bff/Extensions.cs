@@ -3,15 +3,17 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
 namespace Duende.Bff
 {
-    internal static class Extensions
+    public static class Extensions
     {
         public static void CheckForBffMiddleware(this HttpContext context, BffOptions options)
         {
-            if (options.EnforceBffMiddlewareOnManagementEndpoints)
+            if (options.EnforceBffMiddleware)
             {
                 var found = context.Items.TryGetValue(Constants.BffMiddlewareMarker, out _);
                 if (!found)
@@ -26,6 +28,31 @@ namespace Duende.Bff
         {
             var antiForgeryHeader = context.Request.Headers[options.AntiForgeryHeaderName].FirstOrDefault();
             return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
+        }
+
+        public static async Task<string> GetManagedAccessToken(this HttpContext context, TokenType tokenType)
+        {
+            string token;
+
+            if (tokenType == TokenType.User)
+            {
+                token = await context.GetUserAccessTokenAsync();
+            }
+            else if (tokenType == TokenType.Client)
+            {
+                token = await context.GetClientAccessTokenAsync();
+            }
+            else
+            {
+                token = await context.GetUserAccessTokenAsync();
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    token = await context.GetClientAccessTokenAsync();
+                }
+            }
+
+            return token;
         }
     }
 }

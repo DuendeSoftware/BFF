@@ -169,7 +169,7 @@ namespace Duende.Bff.Tests.TestHosts
                         context.Response.ContentType = "application/json";
                         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                     })
-                    .AsLocalBffApiEndpoint();
+                    .AsBffApiEndpoint();
 
                 endpoints.Map("/local_authz", async context =>
                     {
@@ -202,14 +202,14 @@ namespace Duende.Bff.Tests.TestHosts
                         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                     })
                     .RequireAuthorization()
-                    .AsLocalBffApiEndpoint();
+                    .AsBffApiEndpoint();
 
 
                 endpoints.Map("/always_fail_authz_non_bff_endpoint", context => { return Task.CompletedTask; })
                     .RequireAuthorization("AlwaysFail");
 
                 endpoints.Map("/always_fail_authz", context => { return Task.CompletedTask; })
-                    .AsLocalBffApiEndpoint()
+                    .AsBffApiEndpoint()
                     .RequireAuthorization("AlwaysFail");
 
 
@@ -218,7 +218,7 @@ namespace Duende.Bff.Tests.TestHosts
 
                 endpoints.MapRemoteBffApiEndpoint("/api_user_no_csrf", _apiHost.Url())
                     .RequireAccessToken()
-                    .DisableAntiforgeryProtection();
+                    .DisableAntiForgeryProtection();
 
                 endpoints.MapRemoteBffApiEndpoint("/api_client", _apiHost.Url())
                     .RequireAccessToken(TokenType.Client);

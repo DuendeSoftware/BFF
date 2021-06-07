@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ namespace Duende.Bff.Endpoints
             _options = options;
             _logger = logger;
         }
-        
+
         /// <summary>
         /// Request processing
         /// </summary>
@@ -39,37 +40,56 @@ namespace Duende.Bff.Endpoints
         {
             // add marker so we can determine if middleware has run later in the pipeline
             context.Items.Add(Constants.BffMiddlewareMarker, true);
-            
+
             // inbound: add CSRF check for local APIs 
-            
+
             var endpoint = context.GetEndpoint();
             if (endpoint == null)
             {
                 await _next(context);
                 return;
             }
-            
-            var localEndoint = endpoint.Metadata.GetMetadata<BffLocalApiEndpointAttribute>();
-            if (localEndoint is { DisableAntiForgeryCheck: false })
+
+            var localEndpointMetadata = endpoint.Metadata.GetOrderedMetadata<BffApiAttribute>();
+            if (localEndpointMetadata.Any())
             {
-                if (!context.CheckAntiForgeryHeader(_options))
+                var requireLocalAntiForgeryCheck = localEndpointMetadata.First().RequireAntiForgeryCheck;
+                if (requireLocalAntiForgeryCheck)
                 {
-                    _logger.AntiForgeryValidationFailed(context.Request.Path);
-                        
-                    context.Response.StatusCode = 401;
-                    return;
+                    if (!context.CheckAntiForgeryHeader(_options))
+                    {
+                        _logger.AntiForgeryValidationFailed(context.Request.Path);
+
+                        context.Response.StatusCode = 401;
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                var remoteEndpoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
+                if (remoteEndpoint is { RequireAntiForgeryHeader: true })
+                {
+                    if (!context.CheckAntiForgeryHeader(_options))
+                    {
+                        _logger.AntiForgeryValidationFailed(context.Request.Path);
+
+                        context.Response.StatusCode = 401;
+                        return;
+                    }
                 }
             }
 
             await _next(context);
-            
+
             // outbound: for .NET Core 3.1 - we assume that an API will never return a 302
             // if a 302 is returned, that must be the challenge to the OIDC provider
             // we convert this to a 401
             // in .NET 5 we can use the AuthorizationMiddlewareResultHandler for this logic
-            
+
 #if NETCOREAPP3_1
             var remoteEndoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
+            var localEndoint = endpoint.Metadata.GetMetadata<BffApiAttribute>();
 
             if (localEndoint != null || remoteEndoint != null)
             {

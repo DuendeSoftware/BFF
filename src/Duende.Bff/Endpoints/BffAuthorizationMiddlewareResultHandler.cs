@@ -35,7 +35,7 @@ namespace Duende.Bff
             var endpoint = context.GetEndpoint();
             
             var remoteApi = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
-            var localApi = endpoint.Metadata.GetMetadata<BffLocalApiEndpointAttribute>();
+            var localApi = endpoint.Metadata.GetMetadata<BffApiAttribute>();
 
             if (remoteApi == null && localApi == null)
             {
@@ -47,7 +47,8 @@ namespace Duende.Bff
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return Task.CompletedTask;
             }
-            else if (authorizeResult.Forbidden)
+
+            if (authorizeResult.Forbidden)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Task.CompletedTask;

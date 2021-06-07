@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,8 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Yarp.ReverseProxy.Configuration;
 
-namespace Host5
+namespace YarpHost
 {
     public class Startup
     {
@@ -25,6 +27,49 @@ namespace Host5
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var builder = services.AddReverseProxy()
+                .AddTransforms<AccessTokenTransformProvider>();
+
+            builder.LoadFromMemory(
+                new[]
+                {
+                    new RouteConfig()
+                    {
+                        RouteId = "api",
+                        ClusterId = "cluster1",
+                        
+                        Match = new RouteMatch
+                        {
+                            Path = "/api/{**catch-all}"
+                        }
+                    }
+                    .WithAccessToken(TokenType.User),
+                    new RouteConfig()
+                        {
+                            RouteId = "api2",
+                            ClusterId = "cluster1",
+                        
+                            Match = new RouteMatch
+                            {
+                                Path = "/api2/{**catch-all}"
+                            }
+                        }
+                        .WithAccessToken(TokenType.Client)
+                },
+                new[]
+                {
+                    new ClusterConfig
+                    {
+                        ClusterId = "cluster1",
+
+                        Destinations = new Dictionary<string, DestinationConfig>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "destination1", new DestinationConfig() { Address = "https://localhost:5010" } },
+                        }
+                    }
+                });
+
+
             // Add BFF services to DI - also add server-side session management
             services.AddBff()
                 .AddServerSideSessions();
@@ -43,20 +88,20 @@ namespace Host5
                 {
                     // set session lifetime
                     options.ExpireTimeSpan = TimeSpan.FromHours(8);
-                    
+
                     // sliding or absolute
                     options.SlidingExpiration = false;
-                    
+
                     // host prefixed cookie name
                     options.Cookie.Name = "__Host-spa5";
-                    
+
                     // strict SameSite handling
                     options.Cookie.SameSite = SameSiteMode.Strict;
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = "https://localhost:5001";
-                    
+
                     // confidential client using code flow + PKCE
                     options.ClientId = "spa";
                     options.ClientSecret = "secret";
@@ -86,10 +131,10 @@ namespace Host5
 
             app.UseAuthentication();
             app.UseRouting();
-            
+
             // adds antiforgery protection for local APIs
             app.UseBff();
-            
+
             // adds authorization for local and remote API endpoints
             app.UseAuthorization();
 
@@ -102,13 +147,9 @@ namespace Host5
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
-                
-                // proxy endpoint for cross-site APIs
-                // all calls to /api/* will be forwarded to the remote API
-                // user or client access token will be attached in API call
-                // user access token will be managed automatically using the refresh token
-                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                    .RequireAccessToken(TokenType.UserOrClient);
+
+                endpoints.MapReverseProxy()
+                    .AsBffApiEndpoint();
             });
         }
     }

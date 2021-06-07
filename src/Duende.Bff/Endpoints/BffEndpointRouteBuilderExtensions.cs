@@ -74,7 +74,8 @@ namespace Microsoft.AspNetCore.Builder
             
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.UserPath, ProcessWith<IUserService>);
+            endpoints.MapGet(options.UserPath, ProcessWith<IUserService>)
+                .AsBffApiEndpoint();
         }
 
         /// <summary>

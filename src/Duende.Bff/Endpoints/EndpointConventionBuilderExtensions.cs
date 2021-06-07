@@ -15,10 +15,11 @@ namespace Microsoft.AspNetCore.Builder
         /// This metadata is used by the BFF middleware.
         /// </summary>
         /// <param name="builder"></param>
+        /// <param name="requireAntiForgeryCheck">Specifies if the antiforgery header gets checked</param>
         /// <returns></returns>
-        public static IEndpointConventionBuilder AsLocalBffApiEndpoint(this IEndpointConventionBuilder builder)
+        public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder, bool requireAntiForgeryCheck = true)
         {
-            return builder.WithMetadata(new BffLocalApiEndpointAttribute());
+            return builder.WithMetadata(new BffApiAttribute(requireAntiForgeryCheck));
         }
     }
 }

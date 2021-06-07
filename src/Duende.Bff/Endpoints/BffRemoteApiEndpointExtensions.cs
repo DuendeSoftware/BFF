@@ -3,6 +3,7 @@
 
 using System.Linq;
 using Duende.Bff;
+using Yarp.ReverseProxy;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -12,12 +13,12 @@ namespace Microsoft.AspNetCore.Builder
     public static class BffRemoteApiEndpointExtensions
     {
         /// <summary>
-        /// Disables the antiforgery header check
+        /// Disables the anti-forgery header check
         /// </summary>
         /// <param name="builder"></param>
         /// <typeparam name="TBuilder"></typeparam>
         /// <returns></returns>
-        public static TBuilder DisableAntiforgeryProtection<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
+        public static TBuilder DisableAntiForgeryProtection<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
         {
             builder.Add(endpointBuilder =>
             {
@@ -29,7 +30,7 @@ namespace Microsoft.AspNetCore.Builder
 
             return builder;
         }
-        
+
         /// <summary>
         /// Specifies the access tokens requirements for an endpoint
         /// </summary>

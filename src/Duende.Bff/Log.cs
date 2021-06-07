@@ -15,7 +15,7 @@ namespace Duende.Bff
     internal static class EventIds
     {
         public static readonly EventId AccessTokenMissing = new (1, "AccessTokenMissing");
-        public static readonly EventId AntiforgeryValidationFailed = new (2, "AntiforgeryValidationFailed");
+        public static readonly EventId AntiForgeryValidationFailed = new (2, "AntiForgeryValidationFailed");
         public static readonly EventId ProxyError = new (3, "ProxyError");
         public static readonly EventId BackChannelLogout = new (4, "BackChannelLogout");
         public static readonly EventId BackChannelLogoutError = new (5, "BackChannelLogoutError");
@@ -30,7 +30,7 @@ namespace Duende.Bff
 
         private static readonly Action<ILogger, string, Exception> _antiForgeryValidationFailed = LoggerMessage.Define<string>(
             LogLevel.Error,
-            EventIds.AntiforgeryValidationFailed,
+            EventIds.AntiForgeryValidationFailed,
             "Anti-forgery validation failed. local path: '{localPath}'");
         
         private static readonly Action<ILogger, string, string, Exception> _proxyResponseError = LoggerMessage.Define<string, string>(

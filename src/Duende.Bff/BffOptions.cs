@@ -18,11 +18,6 @@ namespace Duende.Bff
         public PathString ManagementBasePath { get; set; } = "/bff";
 
         /// <summary>
-        /// Specifies whether the user endpoint requires the antiforgery header
-        /// </summary>
-        public bool RequireAntiforgeryHeaderForUserEndpoint { get; set; } = true;
-        
-        /// <summary>
         /// Flag that specifies if the *sid* claim needs to be present in the logout request as query string parameter. 
         /// Used to prevent cross site request forgery.
         /// Defaults to true.
@@ -83,7 +78,7 @@ namespace Duende.Bff
         /// <summary>
         /// Specifies if the management endpoints check that the BFF middleware is added to the pipeline.
         /// </summary>
-        public bool EnforceBffMiddlewareOnManagementEndpoints { get; set; } = true;
+        public bool EnforceBffMiddleware { get; set; } = true;
 
         /// <summary>
         /// License key
