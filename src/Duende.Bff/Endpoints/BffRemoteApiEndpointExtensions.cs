@@ -13,25 +13,6 @@ namespace Microsoft.AspNetCore.Builder
     public static class BffRemoteApiEndpointExtensions
     {
         /// <summary>
-        /// Disables the anti-forgery header check
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <typeparam name="TBuilder"></typeparam>
-        /// <returns></returns>
-        public static TBuilder DisableAntiForgeryProtection<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder
-        {
-            builder.Add(endpointBuilder =>
-            {
-                var metadata =
-                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
-                
-                metadata.RequireAntiForgeryHeader = false;
-            });
-
-            return builder;
-        }
-
-        /// <summary>
         /// Specifies the access tokens requirements for an endpoint
         /// </summary>
         /// <param name="builder"></param>

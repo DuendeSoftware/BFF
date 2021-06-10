@@ -101,14 +101,15 @@ namespace Microsoft.AspNetCore.Builder
         public static IEndpointConventionBuilder MapRemoteBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,
             PathString localPath, 
-            string apiAddress)
+            string apiAddress, 
+            bool requireAntiForgeryCheck = true)
         {
             endpoints.CheckLicense();
             
             return endpoints.Map(
                     localPath.Add("/{**catch-all}").Value,
                     BffRemoteApiEndpoint.Map(localPath, apiAddress))
-                .WithMetadata(new BffRemoteApiEndpointMetadata());
+                .WithMetadata(new BffRemoteApiEndpointMetadata { RequireAntiForgeryHeader =  requireAntiForgeryCheck });
 
         }
         

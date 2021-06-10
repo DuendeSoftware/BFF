@@ -216,9 +216,8 @@ namespace Duende.Bff.Tests.TestHosts
                 endpoints.MapRemoteBffApiEndpoint("/api_user", _apiHost.Url())
                     .RequireAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint("/api_user_no_csrf", _apiHost.Url())
-                    .RequireAccessToken()
-                    .DisableAntiForgeryProtection();
+                endpoints.MapRemoteBffApiEndpoint("/api_user_no_csrf", _apiHost.Url(), requireAntiForgeryCheck: false)
+                    .RequireAccessToken();
 
                 endpoints.MapRemoteBffApiEndpoint("/api_client", _apiHost.Url())
                     .RequireAccessToken(TokenType.Client);

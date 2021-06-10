@@ -34,21 +34,21 @@ namespace YarpHost
                 new[]
                 {
                     new RouteConfig()
-                    {
-                        RouteId = "api",
-                        ClusterId = "cluster1",
-                        
-                        Match = new RouteMatch
                         {
-                            Path = "/api/{**catch-all}"
+                            RouteId = "api",
+                            ClusterId = "cluster1",
+
+                            Match = new RouteMatch
+                            {
+                                Path = "/api/{**catch-all}"
+                            }
                         }
-                    }
-                    .WithAccessToken(TokenType.User),
+                        .WithAccessToken(TokenType.User),
                     new RouteConfig()
                         {
                             RouteId = "api2",
                             ClusterId = "cluster1",
-                        
+
                             Match = new RouteMatch
                             {
                                 Path = "/api2/{**catch-all}"
@@ -147,9 +147,9 @@ namespace YarpHost
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
-
-                endpoints.MapReverseProxy()
-                    .AsBffApiEndpoint();
+                
+                // adds BFF enhanced YARP
+                endpoints.MapBffReverseProxy();
             });
         }
     }
