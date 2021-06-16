@@ -170,6 +170,45 @@ namespace Duende.Bff.Tests.TestHosts
                         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                     })
                     .AsBffApiEndpoint();
+                
+                endpoints.Map("/local_anon_no_csrf", async context =>
+                    {
+                        // capture body if present
+                        var body = default(string);
+                        if (context.Request.HasJsonContentType())
+                        {
+                            using (var sr = new StreamReader(context.Request.Body))
+                            {
+                                body = await sr.ReadToEndAsync();
+                            }
+                        }
+
+                        // capture request headers
+                        var requestHeaders = new Dictionary<string, List<string>>();
+                        foreach (var header in context.Request.Headers)
+                        {
+                            var values = new List<string>(header.Value.Select(v => v));
+                            requestHeaders.Add(header.Key, values);
+                        }
+
+                        var response = new ApiResponse(
+                            context.Request.Method,
+                            context.Request.Path.Value,
+                            context.User.FindFirst(("sub"))?.Value,
+                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                        {
+                            Body = body,
+                            RequestHeaders = requestHeaders
+                        };
+
+                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
+                        LocalApiStatusCodeToReturn = null;
+
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                    })
+                    .AsBffApiEndpoint(requireAntiForgeryCheck: false);
 
                 endpoints.Map("/local_authz", async context =>
                     {
@@ -204,6 +243,39 @@ namespace Duende.Bff.Tests.TestHosts
                     .RequireAuthorization()
                     .AsBffApiEndpoint();
 
+                endpoints.Map("/local_authz_no_csrf", async context =>
+                    {
+                        var sub = context.User.FindFirst(("sub"))?.Value;
+                        if (sub == null) throw new Exception("sub is missing");
+
+                        var body = default(string);
+                        if (context.Request.HasJsonContentType())
+                        {
+                            using (var sr = new StreamReader(context.Request.Body))
+                            {
+                                body = await sr.ReadToEndAsync();
+                            }
+                        }
+
+                        var response = new ApiResponse(
+                            context.Request.Method,
+                            context.Request.Path.Value,
+                            sub,
+                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                        {
+                            Body = body
+                        };
+
+                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
+                        LocalApiStatusCodeToReturn = null;
+
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                    })
+                    .RequireAuthorization()
+                    .AsBffApiEndpoint(requireAntiForgeryCheck: false);
+
 
                 endpoints.Map("/always_fail_authz_non_bff_endpoint", context => { return Task.CompletedTask; })
                     .RequireAuthorization("AlwaysFail");
@@ -213,24 +285,32 @@ namespace Duende.Bff.Tests.TestHosts
                     .RequireAuthorization("AlwaysFail");
 
 
-                endpoints.MapRemoteBffApiEndpoint("/api_user", _apiHost.Url())
+                endpoints.MapRemoteBffApiEndpoint(
+                        "/api_user", _apiHost.Url())
                     .RequireAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint("/api_user_no_csrf", _apiHost.Url(), requireAntiForgeryCheck: false)
+                endpoints.MapRemoteBffApiEndpoint(
+                        "/api_user_no_csrf", _apiHost.Url(), requireAntiForgeryCheck: false)
                     .RequireAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint("/api_client", _apiHost.Url())
+                endpoints.MapRemoteBffApiEndpoint(
+                        "/api_client", _apiHost.Url())
                     .RequireAccessToken(TokenType.Client);
 
-                endpoints.MapRemoteBffApiEndpoint("/api_user_or_client", _apiHost.Url())
+                endpoints.MapRemoteBffApiEndpoint(
+                        "/api_user_or_client", _apiHost.Url())
                     .RequireAccessToken(TokenType.UserOrClient);
 
-                endpoints.MapRemoteBffApiEndpoint("/api_user_or_anon", _apiHost.Url())
+                endpoints.MapRemoteBffApiEndpoint(
+                        "/api_user_or_anon", _apiHost.Url())
                     .WithOptionalUserAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint("/api_anon_only", _apiHost.Url());
+                endpoints.MapRemoteBffApiEndpoint(
+                    "/api_anon_only", _apiHost.Url());
 
-                endpoints.Map("/not_bff_endpoint", BffRemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
+                endpoints.Map(
+                    "/not_bff_endpoint", 
+                    BffRemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
             });
 
             app.Map("/invalid_endpoint",

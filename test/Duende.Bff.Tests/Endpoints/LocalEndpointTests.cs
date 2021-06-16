@@ -16,7 +16,7 @@ namespace Duende.Bff.Tests.Endpoints
     public class LocalEndpointTests : BffIntegrationTestBase
     {
         [Fact]
-        public async Task calls_to_local_endpoint_should_succeed()
+        public async Task calls_to_authorized_local_endpoint_should_succeed()
         {
             await BffHost.BffLoginAsync("alice");
 
@@ -32,16 +32,50 @@ namespace Duende.Bff.Tests.Endpoints
             apiResult.Path.Should().Be("/local_authz");
             apiResult.Sub.Should().Be("alice");
         }
+        
+        [Fact]
+        public async Task calls_to_authorized_local_endpoint_without_csrf_should_succeed()
+        {
+            await BffHost.BffLoginAsync("alice");
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_authz_no_csrf"));
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/local_authz_no_csrf");
+            apiResult.Sub.Should().Be("alice");
+        }
+        
+        [Fact]
+        public async Task unauthenticated_calls_to_authorized_local_endpoint_should_fail()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_authz"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
 
         [Fact]
         public async Task calls_to_local_endpoint_should_require_csrf()
         {
-            await BffHost.BffLoginAsync("alice");
-
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_anon"));
             var response = await BffHost.BrowserClient.SendAsync(req);
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+        
+        [Fact]
+        public async Task calls_to_local_endpoint_without_antiforgery_should_not_require_csrf()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_anon_no_csrf"));
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
