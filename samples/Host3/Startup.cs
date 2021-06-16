@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.IdentityModel.Tokens.Jwt;
+using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -86,7 +87,7 @@ namespace Host5
                 endpoints.MapBffManagementEndpoints();
 
                 endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                    .RequireAccessToken();
+                    .RequireAccessToken(TokenType.UserOrClient);
             });
         }
     }
