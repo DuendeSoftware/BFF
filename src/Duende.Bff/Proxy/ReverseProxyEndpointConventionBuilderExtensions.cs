@@ -6,7 +6,7 @@ using Duende.Bff;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace YarpHost
+namespace Duende.Bff
 {
     public static class ReverseProxyEndpointConventionBuilderExtensions
     {

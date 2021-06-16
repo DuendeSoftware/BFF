@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Authentication;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
-namespace YarpHost
+namespace Duende.Bff
 {
-    internal class AccessTokenTransformProvider : ITransformProvider
+    public class AccessTokenTransformProvider : ITransformProvider
     {
         private readonly BffOptions _options;
 

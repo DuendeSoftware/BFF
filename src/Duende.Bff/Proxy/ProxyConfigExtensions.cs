@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Duende.Bff;
 using Yarp.ReverseProxy.Configuration;
 
-namespace YarpHost
+namespace Duende.Bff
 {
     public static class ProxyConfigExtensions
     {
