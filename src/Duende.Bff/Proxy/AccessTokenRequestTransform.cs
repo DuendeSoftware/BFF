@@ -4,7 +4,7 @@
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
+using Yarp.ReverseProxy.Transforms;
 
 namespace Duende.Bff
 {

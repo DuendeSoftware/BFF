@@ -3,9 +3,9 @@
 
 using System.Linq;
 using Microsoft.Net.Http.Headers;
-using Yarp.ReverseProxy.Abstractions.Config;
-using Yarp.ReverseProxy.Service.Proxy;
-using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
+using Yarp.ReverseProxy.Forwarder;
+using Yarp.ReverseProxy.Transforms;
+using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace Duende.Bff
 {

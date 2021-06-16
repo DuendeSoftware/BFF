@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Builder
             configureAction?.Invoke(opts);
             services.AddSingleton(opts);
 
-            services.AddHttpProxy();
+            services.AddHttpForwarder();
 
             services.AddAccessTokenManagement();
             
