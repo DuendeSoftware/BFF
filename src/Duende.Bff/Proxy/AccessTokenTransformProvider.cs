@@ -10,27 +10,38 @@ using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace Duende.Bff
 {
+    /// <summary>
+    /// Transform provider to attach an access token to forwarded calls
+    /// </summary>
     public class AccessTokenTransformProvider : ITransformProvider
     {
         private readonly BffOptions _options;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="options"></param>
         public AccessTokenTransformProvider(BffOptions options)
         {
             _options = options;
         }
-        
+
+        /// <inheritdoc />
         public void ValidateRoute(TransformRouteValidationContext context)
         {
         }
 
+        /// <inheritdoc />
         public void ValidateCluster(TransformClusterValidationContext context)
         {
         }
 
+        /// <inheritdoc />
         public void Apply(TransformBuilderContext transformBuildContext)
         {
             string value = null;
             
+            // todo: what to do with conflicting values?
             if ((transformBuildContext.Route.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false)
                 || (transformBuildContext.Cluster?.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false))
             {

@@ -19,12 +19,16 @@ namespace Duende.Bff
         /// </summary>
         protected readonly BffOptions Options;
 
+        /// <summary>
+        /// The YARP transform builder
+        /// </summary>
         protected readonly ITransformBuilder TransformBuilder;
 
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">The BFF options</param>
+        /// <param name="transformBuilder">The YARP transform builder</param>
         public DefaultHttpTransformerFactory(BffOptions options, ITransformBuilder transformBuilder)
         {
             Options = options;
