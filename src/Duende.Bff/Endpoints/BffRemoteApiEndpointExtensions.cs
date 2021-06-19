@@ -3,7 +3,6 @@
 
 using System.Linq;
 using Duende.Bff;
-using Yarp.ReverseProxy;
 
 namespace Microsoft.AspNetCore.Builder
 {

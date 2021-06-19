@@ -1,7 +1,6 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System;
 using Duende.Bff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -97,6 +96,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="endpoints"></param>
         /// <param name="localPath"></param>
         /// <param name="apiAddress"></param>
+        /// <param name="requireAntiForgeryCheck"></param>
         /// <returns></returns>
         public static IEndpointConventionBuilder MapRemoteBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,

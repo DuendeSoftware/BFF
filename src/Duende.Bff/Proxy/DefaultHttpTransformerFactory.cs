@@ -3,9 +3,9 @@
 
 using System.Linq;
 using Microsoft.Net.Http.Headers;
-using Yarp.ReverseProxy.Abstractions.Config;
-using Yarp.ReverseProxy.Service.Proxy;
-using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
+using Yarp.ReverseProxy.Forwarder;
+using Yarp.ReverseProxy.Transforms;
+using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace Duende.Bff
 {
@@ -20,47 +20,50 @@ namespace Duende.Bff
         protected readonly BffOptions Options;
 
         /// <summary>
+        /// The YARP transform builder
+        /// </summary>
+        protected readonly ITransformBuilder TransformBuilder;
+
+        /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="options"></param>
-        public DefaultHttpTransformerFactory(BffOptions options)
+        /// <param name="options">The BFF options</param>
+        /// <param name="transformBuilder">The YARP transform builder</param>
+        public DefaultHttpTransformerFactory(BffOptions options, ITransformBuilder transformBuilder)
         {
             Options = options;
+            TransformBuilder = transformBuilder;
         }
         
         /// <inheritdoc />
         public virtual HttpTransformer CreateTransformer(string localPath, string accessToken = null)
         {
-            var context = new TransformBuilderContext
+            return TransformBuilder.Create(context =>
             {
-                CopyRequestHeaders = false
-            };
-         
-            context.RequestTransforms.Add( new PathStringTransform(Options.PathTransformMode, localPath));
-            context.RequestTransforms.Add(new ForwardHeadersRequestTransform(new[] { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType }));
-            
-            if (Options.ForwardedHeaders.Any())
-            {
-                context.RequestTransforms.Add(new ForwardHeadersRequestTransform(Options.ForwardedHeaders));
-            }
+                context.CopyRequestHeaders = false;
 
-            if (Options.AddXForwardedHeaders)
-            {
-                context.AddXForwarded(append: Options.ForwardIncomingXForwardedHeaders);
-            }
-            
-            if (!string.IsNullOrWhiteSpace(accessToken))
-            {
-                context.RequestTransforms.Add(new AccessTokenRequestTransform(accessToken));
-            }
-            
-            return new StructuredTransformer(
-                context.CopyRequestHeaders,
-                context.CopyResponseHeaders,
-                context.CopyResponseTrailers,
-                context.RequestTransforms,
-                context.ResponseTransforms,
-                context.ResponseTrailersTransforms);
+                // todo: should x-forwarded be added by default?
+                context.UseDefaultForwarders = false;
+
+                context.RequestTransforms.Add(new PathStringTransform(Options.PathTransformMode, localPath));
+                context.RequestTransforms.Add(new ForwardHeadersRequestTransform(new[]
+                    { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType }));
+
+                if (Options.ForwardedHeaders.Any())
+                {
+                    context.RequestTransforms.Add(new ForwardHeadersRequestTransform(Options.ForwardedHeaders));
+                }
+
+                if (Options.AddXForwardedHeaders)
+                {
+                    context.AddXForwarded(append: Options.ForwardIncomingXForwardedHeaders);
+                }
+
+                if (!string.IsNullOrWhiteSpace(accessToken))
+                {
+                    context.RequestTransforms.Add(new AccessTokenRequestTransform(accessToken));
+                }
+            });
         }
     }
 }

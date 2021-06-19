@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
-using Yarp.ReverseProxy.Service.RuntimeModel.Transforms;
+using Yarp.ReverseProxy.Transforms;
 
 namespace Duende.Bff
 {
@@ -44,7 +44,7 @@ namespace Duende.Bff
 
                 if (_headerNames.Contains(headerName, StringComparer.OrdinalIgnoreCase))
                 {
-                    RequestUtilities.AddHeader(context.ProxyRequest, headerName, headerValue);    
+                    AddHeader(context, headerName, headerValue);
                 }
             }
 

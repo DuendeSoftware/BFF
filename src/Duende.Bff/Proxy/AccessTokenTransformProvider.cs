@@ -3,34 +3,47 @@
 
 using System;
 using System.Net.Http.Headers;
-using Duende.Bff;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
-namespace YarpHost
+namespace Duende.Bff
 {
-    internal class AccessTokenTransformProvider : ITransformProvider
+    /// <summary>
+    /// Transform provider to attach an access token to forwarded calls
+    /// </summary>
+    public class AccessTokenTransformProvider : ITransformProvider
     {
         private readonly BffOptions _options;
+        private readonly ILogger _logger;
 
-        public AccessTokenTransformProvider(BffOptions options)
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
+        public AccessTokenTransformProvider(BffOptions options, ILogger<AccessTokenTransformProvider> logger)
         {
             _options = options;
+            _logger = logger;
         }
-        
+
+        /// <inheritdoc />
         public void ValidateRoute(TransformRouteValidationContext context)
         {
         }
 
+        /// <inheritdoc />
         public void ValidateCluster(TransformClusterValidationContext context)
         {
         }
 
+        /// <inheritdoc />
         public void Apply(TransformBuilderContext transformBuildContext)
         {
             string value = null;
             
+            // todo: what to do with conflicting values?
             if ((transformBuildContext.Route.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false)
                 || (transformBuildContext.Cluster?.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false))
             {
@@ -50,13 +63,14 @@ namespace YarpHost
                     
                     var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
                     
-                    // todo
-                    // logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
-                    
                     if (!string.IsNullOrEmpty(token))
                     {
                         transformContext.ProxyRequest.Headers.Authorization =
                             new AuthenticationHeaderValue("Bearer", token);
+                    }
+                    else
+                    {
+                        _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
                     }
                 });
             }

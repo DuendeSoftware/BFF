@@ -2,13 +2,21 @@
 // // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Duende.Bff;
 using Yarp.ReverseProxy.Configuration;
 
-namespace YarpHost
+namespace Duende.Bff
 {
+    /// <summary>
+    /// Extension methods for YARP configuration
+    /// </summary>
     public static class ProxyConfigExtensions
     {
+        /// <summary>
+        /// Adds BFF access token metadata to a route configuration
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="tokenType"></param>
+        /// <returns></returns>
         public static RouteConfig WithAccessToken(this RouteConfig config, TokenType tokenType)
         {
             Dictionary<string, string> metadata;
@@ -27,6 +35,12 @@ namespace YarpHost
             return config with { Metadata = metadata };
         }
         
+        /// <summary>
+        /// Adds BFF access token metadata to a cluster configuration
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="tokenType"></param>
+        /// <returns></returns>
         public static ClusterConfig WithAccessToken(this ClusterConfig config, TokenType tokenType)
         {
             Dictionary<string, string> metadata;

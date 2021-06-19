@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Yarp.ReverseProxy.Service.Proxy;
+using Yarp.ReverseProxy.Forwarder;
 
 namespace Duende.Bff
 {
@@ -62,16 +62,17 @@ namespace Duende.Bff
                     }
                 }
 
-                var proxy = context.RequestServices.GetRequiredService<IHttpProxy>();
+                var proxy = context.RequestServices.GetRequiredService<IHttpForwarder>();
                 var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
                 var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
                 
                 var httpClient = clientFactory.CreateClient(localPath);
                 var transformer = transformerFactory.CreateTransformer(localPath, token);
 
-                await proxy.ProxyAsync(context, apiAddress, httpClient, new RequestProxyOptions(), transformer);
+                await proxy.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
 
-                var errorFeature = context.Features.Get<IProxyErrorFeature>();
+                // todo: check if return value hanlding is better
+                var errorFeature = context.Features.Get<IForwarderErrorFeature>();
                 if (errorFeature != null)
                 {
                     var error = errorFeature.Error;
