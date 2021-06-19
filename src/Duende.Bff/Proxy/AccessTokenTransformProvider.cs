@@ -3,8 +3,6 @@
 
 using System;
 using System.Net.Http.Headers;
-using Duende.Bff;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
