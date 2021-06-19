@@ -44,7 +44,7 @@ namespace Duende.Bff
 
                 if (_headerNames.Contains(headerName, StringComparer.OrdinalIgnoreCase))
                 {
-                    RequestUtilities.AddHeader(context.ProxyRequest, headerName, headerValue);    
+                    AddHeader(context, headerName, headerValue);
                 }
             }
 
