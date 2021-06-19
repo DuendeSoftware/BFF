@@ -5,6 +5,7 @@ using System;
 using System.Net.Http.Headers;
 using Duende.Bff;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
@@ -16,14 +17,17 @@ namespace Duende.Bff
     public class AccessTokenTransformProvider : ITransformProvider
     {
         private readonly BffOptions _options;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="options"></param>
-        public AccessTokenTransformProvider(BffOptions options)
+        /// <param name="logger"></param>
+        public AccessTokenTransformProvider(BffOptions options, ILogger<AccessTokenTransformProvider> logger)
         {
             _options = options;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -61,13 +65,14 @@ namespace Duende.Bff
                     
                     var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
                     
-                    // todo
-                    // logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
-                    
                     if (!string.IsNullOrEmpty(token))
                     {
                         transformContext.ProxyRequest.Headers.Authorization =
                             new AuthenticationHeaderValue("Bearer", token);
+                    }
+                    else
+                    {
+                        _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
                     }
                 });
             }
