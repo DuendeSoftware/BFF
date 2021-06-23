@@ -15,7 +15,7 @@ namespace Duende.Bff.EntityFramework
         /// Ctor
         /// </summary>
         /// <param name="options"></param>
-        public SessionDbContext(DbContextOptions options) : base(options)
+        public SessionDbContext(DbContextOptions<SessionDbContext> options) : base(options)
         {
         }
 
