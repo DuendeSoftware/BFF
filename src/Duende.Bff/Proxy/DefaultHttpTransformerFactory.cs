@@ -56,7 +56,14 @@ namespace Duende.Bff
 
                 if (Options.AddXForwardedHeaders)
                 {
-                    context.AddXForwarded(append: Options.ForwardIncomingXForwardedHeaders);
+                    var action = ForwardedTransformActions.Set;
+                    
+                    if (Options.ForwardIncomingXForwardedHeaders)
+                    {
+                        action = ForwardedTransformActions.Append;
+                    }
+                    
+                    context.AddXForwarded(action);
                 }
 
                 if (!string.IsNullOrWhiteSpace(accessToken))
