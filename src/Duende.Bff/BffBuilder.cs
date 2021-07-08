@@ -37,11 +37,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public BffBuilder AddServerSideSessions()
         {
-            Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieTicketStore>();
-            Services.AddTransient<IServerTicketStore, ServerSideTicketStore>();
-            Services.AddTransient<ISessionRevocationService, SessionRevocationService>();
-
-            Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
+            AddServerSideSessions<InMemoryUserSessionStore>();
 
             return this;
         }
@@ -54,8 +50,10 @@ namespace Microsoft.AspNetCore.Builder
         public BffBuilder AddServerSideSessions<T>()
             where T : class, IUserSessionStore
         {
-            AddServerSideSessions();
-            Services.AddTransient<IUserSessionStore, T>();
+            Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieTicketStore>();
+            Services.AddTransient<IServerTicketStore, ServerSideTicketStore>();
+            Services.AddTransient<ISessionRevocationService, SessionRevocationService>();
+            Services.TryAddSingleton<IUserSessionStore, T>();
 
             return this;
         }
