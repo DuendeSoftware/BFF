@@ -1,7 +1,5 @@
 ﻿const loginUrl = "/bff/login";
 const userUrl = "/bff/user";
-const localApiUrl = "/local";
-const remoteApiUrl = "/api";
 let logoutUrl = "/bff/logout";
 
 async function onLoad() {
@@ -42,8 +40,8 @@ function logout() {
     window.location = logoutUrl;
 }
 
-async function callLocalApi() {
-    var req = new Request(localApiUrl, {
+async function callUserToken() {
+    var req = new Request("/user_api", {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -56,8 +54,8 @@ async function callLocalApi() {
     }
 }
 
-async function callCrossApi() {
-    var req = new Request(remoteApiUrl + "/foo", {
+async function callClientToken() {
+    var req = new Request("/client_api", {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -69,12 +67,30 @@ async function callCrossApi() {
         showApi(await resp.json());
     }
 }
+
+async function callNoToken() {
+    var req = new Request("/anon_api", {
+        headers: new Headers({
+            'X-CSRF': '1'
+        })
+    })
+    var resp = await fetch(req);
+
+    log("API Result: " + resp.status);
+    if (resp.ok) {
+        showApi(await resp.json());
+    }
+}
+
 
 
 document.querySelector(".login").addEventListener("click", login, false);
-document.querySelector(".call_cross").addEventListener("click", callCrossApi, false);
-document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
+
+document.querySelector(".call_user").addEventListener("click", callUserToken, false);
+document.querySelector(".call_client").addEventListener("click", callClientToken, false);
+document.querySelector(".call_anon").addEventListener("click", callNoToken, false);
+
 
 
 function showApi() {
