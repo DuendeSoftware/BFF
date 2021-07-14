@@ -2,6 +2,8 @@
 // // See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
@@ -41,39 +43,47 @@ namespace Duende.Bff
         /// <inheritdoc />
         public void Apply(TransformBuilderContext transformBuildContext)
         {
-            string value = null;
-            
-            // todo: what to do with conflicting values?
-            if ((transformBuildContext.Route.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false)
-                || (transformBuildContext.Cluster?.Metadata?.TryGetValue(Constants.Yarp.TokenTypeMetadata, out value) ?? false))
+            var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+            var clusterValue =
+                transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+
+            // no metadata
+            if (string.IsNullOrEmpty(routeValue) && string.IsNullOrEmpty(clusterValue))
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentException("A non-empty Duende.Bff.Yarp.TokenType metadata value is required");
-                }
-
-                if (!TokenType.TryParse(value, true, out TokenType tokenType))
-                {
-                    throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
-                }
-
-                transformBuildContext.AddRequestTransform(async transformContext =>
-                {
-                    transformContext.HttpContext.CheckForBffMiddleware(_options);
-                    
-                    var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
-                    
-                    if (!string.IsNullOrEmpty(token))
-                    {
-                        transformContext.ProxyRequest.Headers.Authorization =
-                            new AuthenticationHeaderValue("Bearer", token);
-                    }
-                    else
-                    {
-                        _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
-                    }
-                });
+                return;
             }
+
+            var values = new HashSet<string>();
+            if (!string.IsNullOrEmpty(routeValue)) values.Add(routeValue);
+            if (!string.IsNullOrEmpty(clusterValue)) values.Add(clusterValue);
+
+            if (values.Count > 1)
+            {
+                throw new ArgumentException(
+                    "Mismatching Duende.Bff.Yarp.TokenType route or cluster metadata values found");
+            }
+            
+            if (!TokenType.TryParse(values.First(), true, out TokenType tokenType))
+            {
+                throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
+            }
+
+            transformBuildContext.AddRequestTransform(async transformContext =>
+            {
+                transformContext.HttpContext.CheckForBffMiddleware(_options);
+
+                var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    transformContext.ProxyRequest.Headers.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+                }
+                else
+                {
+                    _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
+                }
+            });
         }
     }
 }

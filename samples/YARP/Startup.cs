@@ -35,26 +35,34 @@ namespace YarpHost
                 {
                     new RouteConfig()
                         {
-                            RouteId = "api",
+                            RouteId = "api_user",
                             ClusterId = "cluster1",
 
                             Match = new RouteMatch
                             {
-                                Path = "/api/{**catch-all}"
+                                Path = "/user_api/{**catch-all}"
                             }
-                        }
-                        .WithAccessToken(TokenType.User),
+                        }.WithAccessToken(TokenType.User),
                     new RouteConfig()
                         {
-                            RouteId = "api2",
+                            RouteId = "api_client",
                             ClusterId = "cluster1",
 
                             Match = new RouteMatch
                             {
-                                Path = "/api2/{**catch-all}"
+                                Path = "/client_api/{**catch-all}"
+                            }
+                        }.WithAccessToken(TokenType.Client),
+                    new RouteConfig()
+                        {
+                            RouteId = "api_anon",
+                            ClusterId = "cluster1",
+
+                            Match = new RouteMatch
+                            {
+                                Path = "/anon_api/{**catch-all}"
                             }
                         }
-                        .WithAccessToken(TokenType.Client)
                 },
                 new[]
                 {
