@@ -50,7 +50,7 @@ On the server-side though (and especially in our case with ASP.NET Core), we hav
 
 ### Enter Duende.BFF
 
-Duende.BFF is Nuget package that adds all the necessary features required to solve above problems to an ASP.NET Core host. It provides services for session and token management, API endpoint protection and logout notifications to your web-based frontends like SPAs or Blazor WASM applications. Let's have a look at the building blocks.
+Duende.BFF is NuGet package that adds all the necessary features required to solve above problems to an ASP.NET Core host. It provides services for session and token management, API endpoint protection and logout notifications to your web-based frontends like SPAs or Blazor WASM applications. Let's have a look at the building blocks.
 
 
 
@@ -246,7 +246,7 @@ If you have questions about licensing, please [contact](https://duendesoftware.c
 
 ### Where can I get it?
 
-[Duende.BFF](https://www.nuget.org/packages/Duende.BFF) is a Nuget Package and is currently in Preview 1. We also added a template for the .NET CLI [here](https://github.com/DuendeSoftware/IdentityServer.Templates). Source code and samples can be found [here](https://github.com/DuendeSoftware/BFF).
+[Duende.BFF](https://www.nuget.org/packages/Duende.BFF) is a NuGet Package and is currently in Release Candidate 3. We also added a template for the .NET CLI [here](https://github.com/DuendeSoftware/IdentityServer.Templates). Source code and samples can be found [here](https://github.com/DuendeSoftware/BFF).
 
 We would love to get your [feedback](https://github.com/DuendeSoftware/IdentityServer/discussions) and plan to release v1 around May. 
 
