@@ -49,6 +49,15 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task<string> StoreAsync(AuthenticationTicket ticket)
         {
+            // it's possible that the user re-triggered OIDC (somehow) prior to
+            // the session DB records being cleaned up, so we should preemptively remove
+            // conflicting session records for this sub/sid combination
+            await _store.DeleteUserSessionsAsync(new UserSessionsFilter
+            {
+                SubjectId = ticket.GetSubjectId(),
+                SessionId = ticket.GetSessionId()
+            });
+
             var key = CryptoRandom.CreateUniqueId(format: CryptoRandom.OutputFormat.Hex);
 
             var session = new UserSession

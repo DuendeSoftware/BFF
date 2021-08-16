@@ -348,7 +348,11 @@ namespace Duende.Bff.Tests.TestHosts
         public async Task<HttpResponseMessage> BffLoginAsync(string sub, string sid = null)
         {
             await _identityServerHost.CreateIdentityServerSessionCookieAsync(sub, sid);
+            return await BffOidcLoginAsync();
+        }
 
+        public async Task<HttpResponseMessage> BffOidcLoginAsync()
+        {
             var response = await BrowserClient.GetAsync(Url("/bff/login"));
             response.StatusCode.Should().Be(302); // authorize
             response.Headers.Location.ToString().ToLowerInvariant().Should()
