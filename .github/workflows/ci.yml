@@ -23,12 +23,17 @@ jobs:
     steps:
     - uses: actions/checkout@af513c7a016048ae468971c52ed77d9562c7c819
     
-    - name: Setup dotnet (main)
+    - name: Setup dotnet v6 (main)
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.100-rc.1.21458.32'
+  
+    - name: Setup dotnet v5 (testing)
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
       
-    - name: Setup dotnet (testing)
+    - name: Setup dotnet v3.1 (testing)
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x'
