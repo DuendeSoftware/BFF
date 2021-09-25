@@ -64,11 +64,6 @@ namespace Duende.Bff
         public bool ForwardIncomingXForwardedHeaders { get; set; } = false;
         
         /// <summary>
-        /// Specifies additional headers to forward to remote API endpoints.
-        /// </summary>
-        public ISet<string> ForwardedHeaders { get; set; } = new HashSet<string>();
-
-        /// <summary>
         /// Specifies how the path for remote API endpoints gets transformed.
         /// Defaults to removing the configured local prefix.
         /// </summary>
