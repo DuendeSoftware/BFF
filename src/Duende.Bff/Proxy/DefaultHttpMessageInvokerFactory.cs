@@ -4,6 +4,8 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
+using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Forwarder;
 
 namespace Duende.Bff
 {
@@ -23,13 +25,20 @@ namespace Duende.Bff
         {
             return Clients.GetOrAdd(localPath, (key) =>
             {
-                return new HttpMessageInvoker(new SocketsHttpHandler
+                var socketsHandler = new SocketsHttpHandler
                 {
                     UseProxy = false,
                     AllowAutoRedirect = false,
                     AutomaticDecompression = DecompressionMethods.None,
                     UseCookies = false
-                });
+                };
+
+                // propagates the current Activity to the downstream service
+                var handler = new ActivityPropagationHandler(
+                    ActivityContextHeaders.BaggageAndCorrelationContext, 
+                    socketsHandler);
+                
+                return new HttpMessageInvoker(handler);
             });
         }
     }
