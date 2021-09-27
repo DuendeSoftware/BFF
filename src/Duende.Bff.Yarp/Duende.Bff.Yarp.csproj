@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <LangVersion>9.0</LangVersion>
+
+        <PackageTags>OAuth 2.0;OpenID Connect;Security;BFF;IdentityServer;ASP.NET Core;SPA;Blazor</PackageTags>
+        <Description>Backend for frontend (BFF) host for ASP.NET Core (YARP integration)</Description>
+
+        <Authors>Duende Software</Authors>
+        <Company>Duende Software</Company>
+        <Copyright>Duende Software</Copyright>
+        <Product>Duende BFF</Product>
+
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/DuendeSoftware/BFF</PackageProjectUrl>
+        <PackageReleaseNotes>https://github.com/DuendeSoftware/BFF/releases</PackageReleaseNotes>
+
+        <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+        <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+        <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+        <DebugType>embedded</DebugType>
+
+        <AssemblyName>Duende.BFF.Yarp</AssemblyName>
+
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-preview.12.21451.3" />
+        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
+    </ItemGroup>
+
+</Project>
