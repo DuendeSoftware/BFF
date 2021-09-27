@@ -51,26 +51,6 @@ namespace Duende.Bff
         public string AntiForgeryHeaderValue { get; set; } = "1";
 
         /// <summary>
-        /// Specifies if X-Forwarded headers are automatically added to calls to remote API endpoints.
-        /// Defaults to true.
-        /// </summary>
-        public bool AddXForwardedHeaders { get; set; } = true;
-        
-        /// <summary>
-        /// Specifies if incoming XForwarded headers should be forwarded.
-        /// Make sure you only forward headers from sources you trust.
-        /// Defaults to false.
-        /// </summary>
-        public bool ForwardIncomingXForwardedHeaders { get; set; } = false;
-        
-        /// <summary>
-        /// Specifies how the path for remote API endpoints gets transformed.
-        /// Defaults to removing the configured local prefix.
-        /// </summary>
-        public PathStringTransform.PathTransformMode PathTransformMode { get; set; } =
-            PathStringTransform.PathTransformMode.RemovePrefix;
-
-        /// <summary>
         /// Specifies if the management endpoints check that the BFF middleware is added to the pipeline.
         /// </summary>
         public bool EnforceBffMiddleware { get; set; } = true;
