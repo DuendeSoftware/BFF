@@ -40,20 +40,18 @@ namespace Duende.Bff
         {
             return TransformBuilder.Create(context =>
             {
-                context.CopyRequestHeaders = false;
-
-                // todo: should x-forwarded be added by default?
+                // apply default YARP logic for forwarding headers
+                context.CopyRequestHeaders = true;
+                
+                // use our config options to apply x-forwarded-*
                 context.UseDefaultForwarders = false;
-
+                
+                // always remove cookie header since this contains the session
+                context.RequestTransforms.Add(new RequestHeaderRemoveTransform("Cookie"));
+                
+                // transform path
                 context.RequestTransforms.Add(new PathStringTransform(Options.PathTransformMode, localPath));
-                context.RequestTransforms.Add(new ForwardHeadersRequestTransform(new[]
-                    { HeaderNames.Accept, HeaderNames.ContentLength, HeaderNames.ContentType }));
-
-                if (Options.ForwardedHeaders.Any())
-                {
-                    context.RequestTransforms.Add(new ForwardHeadersRequestTransform(Options.ForwardedHeaders));
-                }
-
+                
                 if (Options.AddXForwardedHeaders)
                 {
                     var action = ForwardedTransformActions.Set;

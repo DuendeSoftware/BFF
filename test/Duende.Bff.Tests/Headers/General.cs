@@ -28,10 +28,9 @@ namespace Duende.Bff.Tests.Headers
         }
         
         [Fact]
-        public async Task custom_header_should_not_be_forwarded_by_default()
+        public async Task custom_header_should_be_forwarded()
         {
             BffHost.BffOptions.AddXForwardedHeaders = false;
-            
             await BffHost.InitializeAsync();
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
@@ -43,30 +42,6 @@ namespace Duende.Bff.Tests.Headers
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
 
-            apiResult.RequestHeaders.Count.Should().Be(1);
-            
-            apiResult.RequestHeaders["Host"].Single().Should().Be("api");
-        }
-        
-        [Fact]
-        public async Task custom_header_should_be_forwarded_when_configured()
-        {
-            BffHost.BffOptions.AddXForwardedHeaders = false;
-            BffHost.BffOptions.ForwardedHeaders.Add("x-custom");
-            
-            await BffHost.InitializeAsync();
-
-            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
-            req.Headers.Add("x-csrf", "1");
-            req.Headers.Add("x-custom", "custom");
-            var response = await BffHost.BrowserClient.SendAsync(req);
-
-            response.IsSuccessStatusCode.Should().BeTrue();
-            var json = await response.Content.ReadAsStringAsync();
-            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-
-            apiResult.RequestHeaders.Count.Should().Be(2);
-            
             apiResult.RequestHeaders["Host"].Single().Should().Be("api");
             apiResult.RequestHeaders["x-custom"].Single().Should().Be("custom");
         }
@@ -75,8 +50,6 @@ namespace Duende.Bff.Tests.Headers
         public async Task custom_header_should_be_forwarded_and_xforwarded_headers_should_be_created()
         {
             BffHost.BffOptions.AddXForwardedHeaders = true;
-            BffHost.BffOptions.ForwardedHeaders.Add("x-custom");
-            
             await BffHost.InitializeAsync();
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
@@ -87,9 +60,7 @@ namespace Duende.Bff.Tests.Headers
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-
-            apiResult.RequestHeaders.Count.Should().Be(4);
-
+            
             apiResult.RequestHeaders["X-Forwarded-Host"].Single().Should().Be("app");
             apiResult.RequestHeaders["X-Forwarded-Proto"].Single().Should().Be("https");
             apiResult.RequestHeaders["Host"].Single().Should().Be("api");
@@ -101,8 +72,6 @@ namespace Duende.Bff.Tests.Headers
         {
             BffHost.BffOptions.AddXForwardedHeaders = true;
             BffHost.BffOptions.ForwardIncomingXForwardedHeaders = true;
-            BffHost.BffOptions.ForwardedHeaders.Add("x-custom");
-            
             await BffHost.InitializeAsync();
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
@@ -114,8 +83,6 @@ namespace Duende.Bff.Tests.Headers
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-
-            apiResult.RequestHeaders.Count.Should().Be(4);
 
             apiResult.RequestHeaders["X-Forwarded-Proto"].Single().Should().Be("https");
             apiResult.RequestHeaders["Host"].Single().Should().Be("api");
