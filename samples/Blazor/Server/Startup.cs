@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using Duende.Bff;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace Blazor.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBff()
+                .AddReverseProxy()
                 .AddServerSideSessions();
             
             services.AddControllers();

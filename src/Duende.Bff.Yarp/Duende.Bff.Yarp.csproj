@@ -45,4 +45,8 @@
         <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Duende.Bff\Duende.Bff.csproj" />
+    </ItemGroup>
+
 </Project>

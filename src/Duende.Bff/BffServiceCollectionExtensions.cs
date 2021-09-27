@@ -32,10 +32,6 @@ namespace Microsoft.AspNetCore.Builder
 
             services.AddAccessTokenManagement();
             
-            // reverse proxy related
-            services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
-            services.TryAddSingleton<IHttpTransformerFactory, DefaultHttpTransformerFactory>();
-
             // management endpoints
             services.AddTransient<ILoginService, DefaultLoginService>();
             services.AddTransient<ILogoutService, DefaultLogoutService>();
