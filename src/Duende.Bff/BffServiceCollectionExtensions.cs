@@ -28,8 +28,6 @@ namespace Microsoft.AspNetCore.Builder
             configureAction?.Invoke(opts);
             services.AddSingleton(opts);
 
-            services.AddHttpForwarder();
-
             services.AddAccessTokenManagement();
             
             // management endpoints

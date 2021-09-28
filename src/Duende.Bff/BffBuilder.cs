@@ -60,20 +60,6 @@ namespace Microsoft.AspNetCore.Builder
             return this;
         }
         
-        // todo: add as extension to YARP project
-        /// <summary>
-        /// Adds a custom factory to create HTTP clients for remote BFF API endpoints
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        // public BffBuilder AddHttpMessageInvokerFactory<T>()
-        //     where T : class, IHttpMessageInvokerFactory
-        // {
-        //     Services.AddTransient<IHttpMessageInvokerFactory, T>();
-        //
-        //     return this;
-        // }
-        
         /// <summary>
         /// Configures the HTTP client used to do backchannel calls to the token service for token lifetime management
         /// </summary>

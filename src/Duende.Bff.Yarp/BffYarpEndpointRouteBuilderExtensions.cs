@@ -17,15 +17,9 @@ namespace Microsoft.AspNetCore.Builder
     /// </summary>
     public static class BffYarpEndpointRouteBuilderExtensions
     {
-        internal static bool _licenseChecked;
+        // todo
+        //internal static bool _licenseChecked;
         
-        private static Task ProcessWith<T>(HttpContext context)
-            where T : IBffEndpointService
-        {
-            var service = context.RequestServices.GetRequiredService<T>();
-            return service.ProcessRequestAsync(context);
-        }
-
         /// <summary>
         /// Adds a remote BFF API endpoint
         /// </summary>

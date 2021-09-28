@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using Yarp.ReverseProxy.Transforms;
 
 namespace Duende.Bff
 {
