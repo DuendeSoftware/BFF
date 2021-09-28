@@ -93,7 +93,7 @@ namespace Blazor.Server
             {
                 endpoints.MapBffManagementEndpoints();
                 
-                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
+                endpoints.MapRemoteApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken(TokenType.UserOrClient);
                 
                 endpoints.MapRazorPages();

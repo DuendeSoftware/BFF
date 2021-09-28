@@ -109,7 +109,7 @@ namespace Host5.EntityFramework
                 // all calls to /api/* will be forwarded to the remote API
                 // user or client access token will be attached in API call
                 // user access token will be managed automatically using the refresh token
-                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
+                endpoints.MapRemoteApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken(TokenType.UserOrClient);
             });
         }

@@ -282,27 +282,27 @@ namespace Duende.Bff.Tests.TestHosts
                     .RequireAuthorization("AlwaysFail");
 
 
-                endpoints.MapRemoteBffApiEndpoint(
+                endpoints.MapRemoteApiEndpoint(
                         "/api_user", _apiHost.Url())
                     .RequireAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint(
+                endpoints.MapRemoteApiEndpoint(
                         "/api_user_no_csrf", _apiHost.Url(), requireAntiForgeryCheck: false)
                     .RequireAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint(
+                endpoints.MapRemoteApiEndpoint(
                         "/api_client", _apiHost.Url())
                     .RequireAccessToken(TokenType.Client);
 
-                endpoints.MapRemoteBffApiEndpoint(
+                endpoints.MapRemoteApiEndpoint(
                         "/api_user_or_client", _apiHost.Url())
                     .RequireAccessToken(TokenType.UserOrClient);
 
-                endpoints.MapRemoteBffApiEndpoint(
+                endpoints.MapRemoteApiEndpoint(
                         "/api_user_or_anon", _apiHost.Url())
                     .WithOptionalUserAccessToken();
 
-                endpoints.MapRemoteBffApiEndpoint(
+                endpoints.MapRemoteApiEndpoint(
                     "/api_anon_only", _apiHost.Url());
 
                 endpoints.Map(
