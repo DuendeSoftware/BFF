@@ -41,6 +41,7 @@ namespace Microsoft.AspNetCore.Builder
             Services.AddTransient<IServerTicketStore, ServerSideTicketStore>();
             Services.AddTransient<ISessionRevocationService, SessionRevocationService>();
 
+            // only add if not already in DI
             Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
 
             return this;
@@ -54,10 +55,8 @@ namespace Microsoft.AspNetCore.Builder
         public BffBuilder AddServerSideSessions<T>()
             where T : class, IUserSessionStore
         {
-            AddServerSideSessions();
             Services.AddTransient<IUserSessionStore, T>();
-
-            return this;
+            return AddServerSideSessions();
         }
         
         /// <summary>

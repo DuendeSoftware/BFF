@@ -35,8 +35,7 @@ namespace Duende.Bff.EntityFramework
         public static BffBuilder AddEntityFrameworkServerSideSessions(this BffBuilder bffBuilder, Action<DbContextOptionsBuilder> action)
         {
             bffBuilder.Services.AddDbContext<SessionDbContext>(action);
-            bffBuilder.Services.AddTransient<IUserSessionStore, UserSessionStore>();
-            return bffBuilder.AddServerSideSessions();
+            return bffBuilder.AddServerSideSessions<UserSessionStore>();
         }
     }
 }
