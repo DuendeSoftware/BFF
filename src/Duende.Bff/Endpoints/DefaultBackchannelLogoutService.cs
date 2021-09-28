@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Duende.Bff.Logging;
 
 namespace Duende.Bff
 {
@@ -67,7 +68,7 @@ namespace Duende.Bff
                             // these are the sub & sid to signout
                             var sub = user.FindFirst("sub")?.Value;
                             var sid = user.FindFirst("sid")?.Value;
-
+                            
                             _logger.BackChannelLogout(sub ?? "missing", sid ?? "missing");
                             
                             await _userSession.RevokeSessionsAsync(new UserSessionsFilter 

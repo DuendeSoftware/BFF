@@ -14,6 +14,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Duende.Bff.Tests.TestHosts
@@ -64,6 +65,7 @@ namespace Duende.Bff.Tests.TestHosts
                 });
 
             bff.AddServerSideSessions();
+            bff.AddRemoteApis();
 
             services.AddAuthentication(options =>
                 {
@@ -106,11 +108,6 @@ namespace Duende.Bff.Tests.TestHosts
 
         private void Configure(IApplicationBuilder app)
         {
-            // app.Use(async (ctx, next) =>
-            // {
-            //     ctx.Connection.RemoteIpAddress = IPAddress.IPv6Loopback;
-            // });
-
             if (_useForwardedHeaders)
             {
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -310,11 +307,11 @@ namespace Duende.Bff.Tests.TestHosts
 
                 endpoints.Map(
                     "/not_bff_endpoint", 
-                    BffRemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
+                    RemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
             });
 
             app.Map("/invalid_endpoint",
-                invalid => invalid.Use(next => BffRemoteApiEndpoint.Map("/invalid_endpoint", _apiHost.Url())));
+                invalid => invalid.Use(next => RemoteApiEndpoint.Map("/invalid_endpoint", _apiHost.Url())));
         }
 
         public async Task<bool> GetIsUserLoggedInAsync(string userQuery = null)

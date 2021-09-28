@@ -3,7 +3,7 @@
 
 using System.Net.Http;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Factory for creating a HTTP message invoker for outgoing remote BFF API calls

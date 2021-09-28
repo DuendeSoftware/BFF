@@ -3,6 +3,7 @@
 
 using System;
 using Duende.Bff;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,7 @@ namespace Host5
         {
             // Add BFF services to DI - also add server-side session management
             services.AddBff()
+                .AddRemoteApis()
                 .AddServerSideSessions();
 
             // local APIs

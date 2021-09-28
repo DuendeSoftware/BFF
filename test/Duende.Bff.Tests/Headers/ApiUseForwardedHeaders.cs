@@ -50,24 +50,5 @@ namespace Duende.Bff.Tests.Headers
             var host = apiResult.RequestHeaders["Host"].Single();
             host.Should().Be("app");
         }
-        
-        [Fact]
-        public async Task forwarded_host_name_should_propagate_to_api()
-        {
-            BffHost.BffOptions.ForwardIncomingXForwardedHeaders = true;
-            await BffHost.InitializeAsync();
-            
-            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
-            req.Headers.Add("x-csrf", "1");
-            req.Headers.Add("X-Forwarded-Host", "external");
-            var response = await BffHost.BrowserClient.SendAsync(req);
-
-            response.IsSuccessStatusCode.Should().BeTrue();
-            var json = await response.Content.ReadAsStringAsync();
-            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
-
-            var host = apiResult.RequestHeaders["Host"].Single();
-            host.Should().Be("external");
-        }
     }
 }

@@ -38,7 +38,6 @@ namespace Duende.Bff.Tests.Headers
         [Fact]
         public async Task forwarded_host_name_without_header_forwarding_propagate_to_api()
         {
-            BffHost.BffOptions.ForwardIncomingXForwardedHeaders = false;
             await BffHost.InitializeAsync();
             
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));
@@ -57,7 +56,6 @@ namespace Duende.Bff.Tests.Headers
         [Fact]
         public async Task forwarded_host_name_with_header_forwarding_should_propagate_to_api()
         {
-            BffHost.BffOptions.ForwardIncomingXForwardedHeaders = true;
             await BffHost.InitializeAsync();
             
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_anon_only/test"));

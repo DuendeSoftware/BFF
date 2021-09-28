@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Yarp.ReverseProxy.Transforms;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Adds an access token to outgoing requests

@@ -28,14 +28,8 @@ namespace Microsoft.AspNetCore.Builder
             configureAction?.Invoke(opts);
             services.AddSingleton(opts);
 
-            services.AddHttpForwarder();
-
             services.AddAccessTokenManagement();
             
-            // reverse proxy related
-            services.TryAddSingleton<IHttpMessageInvokerFactory, DefaultHttpMessageInvokerFactory>();
-            services.TryAddSingleton<IHttpTransformerFactory, DefaultHttpTransformerFactory>();
-
             // management endpoints
             services.AddTransient<ILoginService, DefaultLoginService>();
             services.AddTransient<ILogoutService, DefaultLogoutService>();

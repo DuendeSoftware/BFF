@@ -3,7 +3,7 @@
 
 using Yarp.ReverseProxy.Forwarder;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Factory for creating a HTTP transformer for outgoing remote BFF API calls

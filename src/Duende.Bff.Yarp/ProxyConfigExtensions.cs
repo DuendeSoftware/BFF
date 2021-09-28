@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Yarp.ReverseProxy.Configuration;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Extension methods for YARP configuration

@@ -3,6 +3,7 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using Duende.Bff;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,7 @@ namespace Host5
             services.AddControllers();
             
             services.AddBff()
+                .AddRemoteApis()
                 .AddServerSideSessions();
             
             services.AddAuthentication(options =>

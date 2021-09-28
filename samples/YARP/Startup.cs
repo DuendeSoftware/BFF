@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Duende.Bff;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

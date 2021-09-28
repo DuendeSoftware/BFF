@@ -2,18 +2,20 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using Duende.Bff.Logging;
+using Duende.Bff.Yarp.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Forwarder;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Remote BFF API endpoint
     /// </summary>
-    public static class BffRemoteApiEndpoint
+    public static class RemoteApiEndpoint
     {
         /// <summary>
         /// Endpoint logic
@@ -62,14 +64,14 @@ namespace Duende.Bff
                     }
                 }
 
-                var proxy = context.RequestServices.GetRequiredService<IHttpForwarder>();
+                var forwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
                 var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
                 var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
                 
                 var httpClient = clientFactory.CreateClient(localPath);
                 var transformer = transformerFactory.CreateTransformer(localPath, token);
 
-                await proxy.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
+                await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
 
                 // todo: check if return value hanlding is better
                 var errorFeature = context.Features.Get<IForwarderErrorFeature>();

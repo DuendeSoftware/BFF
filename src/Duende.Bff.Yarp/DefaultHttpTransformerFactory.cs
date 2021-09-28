@@ -7,7 +7,7 @@ using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Default HTTP transformer implementation
@@ -43,27 +43,15 @@ namespace Duende.Bff
                 // apply default YARP logic for forwarding headers
                 context.CopyRequestHeaders = true;
                 
-                // use our config options to apply x-forwarded-*
-                context.UseDefaultForwarders = false;
+                // use YARP default logic for x-forwarded headers
+                context.UseDefaultForwarders = true;
                 
                 // always remove cookie header since this contains the session
                 context.RequestTransforms.Add(new RequestHeaderRemoveTransform("Cookie"));
                 
-                // transform path
-                context.RequestTransforms.Add(new PathStringTransform(Options.PathTransformMode, localPath));
+                // transform path to remove prefix
+                context.RequestTransforms.Add(new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath));
                 
-                if (Options.AddXForwardedHeaders)
-                {
-                    var action = ForwardedTransformActions.Set;
-                    
-                    if (Options.ForwardIncomingXForwardedHeaders)
-                    {
-                        action = ForwardedTransformActions.Append;
-                    }
-                    
-                    context.AddXForwarded(action);
-                }
-
                 if (!string.IsNullOrWhiteSpace(accessToken))
                 {
                     context.RequestTransforms.Add(new AccessTokenRequestTransform(accessToken));

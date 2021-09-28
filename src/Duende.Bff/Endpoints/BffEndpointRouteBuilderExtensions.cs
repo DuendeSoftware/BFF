@@ -89,29 +89,6 @@ namespace Microsoft.AspNetCore.Builder
 
             endpoints.MapPost(options.BackChannelLogoutPath, ProcessWith<IBackchannelLogoutService>);
         }
-
-        /// <summary>
-        /// Adds a remote BFF API endpoint
-        /// </summary>
-        /// <param name="endpoints"></param>
-        /// <param name="localPath"></param>
-        /// <param name="apiAddress"></param>
-        /// <param name="requireAntiForgeryCheck"></param>
-        /// <returns></returns>
-        public static IEndpointConventionBuilder MapRemoteBffApiEndpoint(
-            this IEndpointRouteBuilder endpoints,
-            PathString localPath, 
-            string apiAddress, 
-            bool requireAntiForgeryCheck = true)
-        {
-            endpoints.CheckLicense();
-            
-            return endpoints.Map(
-                    localPath.Add("/{**catch-all}").Value,
-                    BffRemoteApiEndpoint.Map(localPath, apiAddress))
-                .WithMetadata(new BffRemoteApiEndpointMetadata { RequireAntiForgeryHeader =  requireAntiForgeryCheck });
-
-        }
         
         internal static void CheckLicense(this IEndpointRouteBuilder endpoints)
         {

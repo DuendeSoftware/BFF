@@ -1,5 +1,6 @@
 using Duende.Bff;
 using Duende.Bff.EntityFramework;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,7 @@ namespace Host5.EntityFramework
             // Add BFF services to DI - also add server-side session management
             var cn = _configuration.GetConnectionString("db");
             services.AddBff()
+                .AddRemoteApis()
                 .AddEntityFrameworkServerSideSessions(options=> {
                     //options.UseSqlServer(cn);
                     options.UseSqlite(cn);

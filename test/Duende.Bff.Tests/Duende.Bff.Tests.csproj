@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Duende.Bff\Duende.Bff.csproj" />
+    <ProjectReference Include="..\..\src\Duende.Bff.Yarp\Duende.Bff.Yarp.csproj" />
   </ItemGroup>
 
 </Project>

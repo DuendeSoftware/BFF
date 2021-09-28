@@ -7,7 +7,7 @@ using System.Net.Http;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Forwarder;
 
-namespace Duende.Bff
+namespace Duende.Bff.Yarp
 {
     /// <summary>
     /// Default implementation of the message invoker factory.
