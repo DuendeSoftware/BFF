@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="apiAddress"></param>
         /// <param name="requireAntiForgeryCheck"></param>
         /// <returns></returns>
-        public static IEndpointConventionBuilder MapRemoteApiEndpoint(
+        public static IEndpointConventionBuilder MapRemoteBffApiEndpoint(
             this IEndpointRouteBuilder endpoints,
             PathString localPath, 
             string apiAddress, 

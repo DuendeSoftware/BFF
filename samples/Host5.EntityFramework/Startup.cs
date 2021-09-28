@@ -31,7 +31,7 @@ namespace Host5.EntityFramework
             // Add BFF services to DI - also add server-side session management
             var cn = _configuration.GetConnectionString("db");
             services.AddBff()
-                .AddReverseProxy()
+                .AddRemoteApis()
                 .AddEntityFrameworkServerSideSessions(options=> {
                     //options.UseSqlServer(cn);
                     options.UseSqlite(cn);
@@ -109,7 +109,7 @@ namespace Host5.EntityFramework
                 // all calls to /api/* will be forwarded to the remote API
                 // user or client access token will be attached in API call
                 // user access token will be managed automatically using the refresh token
-                endpoints.MapRemoteApiEndpoint("/api", "https://localhost:5010")
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken(TokenType.UserOrClient);
             });
         }

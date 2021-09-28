@@ -31,7 +31,7 @@ namespace Host5
             services.AddControllers();
             
             services.AddBff()
-                .AddReverseProxy()
+                .AddRemoteApis()
                 .AddServerSideSessions();
             
             services.AddAuthentication(options =>
@@ -88,7 +88,7 @@ namespace Host5
                 
                 endpoints.MapBffManagementEndpoints();
 
-                endpoints.MapRemoteApiEndpoint("/api", "https://localhost:5010")
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken(TokenType.UserOrClient);
             });
         }

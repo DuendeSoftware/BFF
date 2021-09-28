@@ -25,7 +25,7 @@ namespace Blazor.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBff()
-                .AddReverseProxy()
+                .AddRemoteApis()
                 .AddServerSideSessions();
             
             services.AddControllers();
@@ -93,7 +93,7 @@ namespace Blazor.Server
             {
                 endpoints.MapBffManagementEndpoints();
                 
-                endpoints.MapRemoteApiEndpoint("/api", "https://localhost:5010")
+                endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken(TokenType.UserOrClient);
                 
                 endpoints.MapRazorPages();

@@ -17,7 +17,7 @@ namespace Duende.Bff.Yarp
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static BffBuilder AddReverseProxy(this BffBuilder builder)
+        public static BffBuilder AddRemoteApis(this BffBuilder builder)
         {
             builder.Services.AddHttpForwarder();
 
