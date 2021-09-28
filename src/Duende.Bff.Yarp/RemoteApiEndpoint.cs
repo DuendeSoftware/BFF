@@ -64,14 +64,14 @@ namespace Duende.Bff.Yarp
                     }
                 }
 
-                var proxy = context.RequestServices.GetRequiredService<IHttpForwarder>();
+                var forwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
                 var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
                 var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
                 
                 var httpClient = clientFactory.CreateClient(localPath);
                 var transformer = transformerFactory.CreateTransformer(localPath, token);
 
-                await proxy.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
+                await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
 
                 // todo: check if return value hanlding is better
                 var errorFeature = context.Features.Get<IForwarderErrorFeature>();

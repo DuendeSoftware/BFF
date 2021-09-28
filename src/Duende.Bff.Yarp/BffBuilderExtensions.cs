@@ -10,7 +10,7 @@ namespace Duende.Bff.Yarp
     /// <summary>
     /// YARP related DI extension methods
     /// </summary>
-    public static class BffYarpBuilderExtensions
+    public static class BffBuilderExtensions
     {
         /// <summary>
         /// Adds the services required for the YARP HTTP forwarder
