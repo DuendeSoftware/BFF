@@ -15,14 +15,8 @@ namespace Host5
 {
     public class Startup
     {
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup()
         {
-            _configuration = configuration;
-            _environment = environment;
-            
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
         
@@ -66,11 +60,8 @@ namespace Host5
 
         public void Configure(IApplicationBuilder app)
         {
-            if (_environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseDeveloperExceptionPage();
+                
             app.UseDefaultFiles();
             app.UseStaticFiles();
 

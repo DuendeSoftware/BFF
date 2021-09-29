@@ -17,15 +17,6 @@ namespace YarpHost
 {
     public class Startup
     {
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            _configuration = configuration;
-            _environment = environment;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             var builder = services.AddReverseProxy()
@@ -35,35 +26,35 @@ namespace YarpHost
                 new[]
                 {
                     new RouteConfig()
-                        {
-                            RouteId = "api_user",
-                            ClusterId = "cluster1",
+                    {
+                        RouteId = "api_user",
+                        ClusterId = "cluster1",
 
-                            Match = new RouteMatch
-                            {
-                                Path = "/user_api/{**catch-all}"
-                            }
-                        }.WithAccessToken(TokenType.User),
-                    new RouteConfig()
+                        Match = new RouteMatch
                         {
-                            RouteId = "api_client",
-                            ClusterId = "cluster1",
-
-                            Match = new RouteMatch
-                            {
-                                Path = "/client_api/{**catch-all}"
-                            }
-                        }.WithAccessToken(TokenType.Client),
-                    new RouteConfig()
-                        {
-                            RouteId = "api_anon",
-                            ClusterId = "cluster1",
-
-                            Match = new RouteMatch
-                            {
-                                Path = "/anon_api/{**catch-all}"
-                            }
+                            Path = "/user_api/{**catch-all}"
                         }
+                    }.WithAccessToken(TokenType.User),
+                    new RouteConfig()
+                    {
+                        RouteId = "api_client",
+                        ClusterId = "cluster1",
+
+                        Match = new RouteMatch
+                        {
+                            Path = "/client_api/{**catch-all}"
+                        }
+                    }.WithAccessToken(TokenType.Client),
+                    new RouteConfig()
+                    {
+                        RouteId = "api_anon",
+                        ClusterId = "cluster1",
+
+                        Match = new RouteMatch
+                        {
+                            Path = "/anon_api/{**catch-all}"
+                        }
+                    }
                 },
                 new[]
                 {
@@ -156,7 +147,7 @@ namespace YarpHost
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
-                
+
                 // adds BFF enhanced YARP
                 endpoints.MapBffReverseProxy();
             });
