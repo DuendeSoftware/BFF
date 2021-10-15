@@ -30,13 +30,16 @@
         <DebugType>embedded</DebugType>
 
         <AssemblyName>Duende.BFF.Yarp</AssemblyName>
+        
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <VersionSuffix>rc.5</VersionSuffix>
 
         <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-preview.12.21451.3" />
-        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />
+<!--        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />-->
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     </ItemGroup>
 
