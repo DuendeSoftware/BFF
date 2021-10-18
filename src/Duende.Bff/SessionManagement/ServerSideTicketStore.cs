@@ -12,20 +12,6 @@ using Microsoft.Extensions.Logging;
 namespace Duende.Bff
 {
     /// <summary>
-    /// Extends ITicketStore with additional query APIs.
-    /// </summary>
-    public interface IServerTicketStore : ITicketStore
-    {
-        /// <summary>
-        /// Returns the AuthenticationTickets for the UserSessionsFilter.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
-        /// <returns></returns>
-        Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
-    }
-
-    /// <summary>
     /// IUserSession-backed ticket store
     /// </summary>
     public class ServerSideTicketStore : IServerTicketStore
