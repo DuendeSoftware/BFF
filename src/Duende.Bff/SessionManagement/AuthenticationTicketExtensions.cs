@@ -3,6 +3,8 @@
 
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +27,6 @@ namespace Duende.Bff
         /// <summary>
         /// Extracts a subject identifier
         /// </summary>
-        /// <param name="ticket"></param>
-        /// <returns></returns>
         public static string GetSubjectId(this AuthenticationTicket ticket)
         {
             return ticket.Principal.FindFirst(JwtClaimTypes.Subject)?.Value ??
@@ -38,8 +38,6 @@ namespace Duende.Bff
         /// <summary>
         /// Extracts the session ID
         /// </summary>
-        /// <param name="ticket"></param>
-        /// <returns></returns>
         public static string GetSessionId(this AuthenticationTicket ticket)
         {
             return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
@@ -48,8 +46,6 @@ namespace Duende.Bff
         /// <summary>
         /// Extracts the issuance time
         /// </summary>
-        /// <param name="ticket"></param>
-        /// <returns></returns>
         public static DateTime GetIssued(this AuthenticationTicket ticket)
         {
             return ticket.Properties.IssuedUtc?.UtcDateTime ?? DateTime.UtcNow;
@@ -58,8 +54,6 @@ namespace Duende.Bff
         /// <summary>
         /// Extracts the expiration time
         /// </summary>
-        /// <param name="ticket"></param>
-        /// <returns></returns>
         public static DateTime? GetExpiration(this AuthenticationTicket ticket)
         {
             return ticket.Properties.ExpiresUtc?.UtcDateTime;
@@ -68,8 +62,6 @@ namespace Duende.Bff
         /// <summary>
         /// Converts a ClaimsPrincipalLite to ClaimsPrincipal
         /// </summary>
-        /// <param name="principal"></param>
-        /// <returns></returns>
         private static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
         {
             var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
@@ -81,8 +73,6 @@ namespace Duende.Bff
         /// <summary>
         /// Converts a ClaimsPrincipal to ClaimsPrincipalLite
         /// </summary>
-        /// <param name="principal"></param>
-        /// <returns></returns>
         private static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
         {
             var claims = principal.Claims.Select(
@@ -105,9 +95,7 @@ namespace Duende.Bff
         /// <summary>
         /// Serializes and AuthenticationTicket to a string
         /// </summary>
-        /// <param name="ticket"></param>
-        /// <returns></returns>
-        public static string Serialize(this AuthenticationTicket ticket)
+        public static string Serialize(this AuthenticationTicket ticket, IDataProtector protector)
         {
             var data = new AuthenticationTicketLite
             {
@@ -115,22 +103,42 @@ namespace Duende.Bff
                 User = ticket.Principal.ToClaimsPrincipalLite(),
                 Items = ticket.Properties.Items
             };
+
+            var payload = JsonSerializer.Serialize(data, _jsonOptions);
+            payload = protector.Protect(payload);
             
-            // todo: data protect? PII, etc?
-            var value = JsonSerializer.Serialize(data, _jsonOptions);
+            var envelope = new Envelope { Version = 1, Payload = payload };
+            var value = JsonSerializer.Serialize(envelope, _jsonOptions);
+
             return value;
         }
         
         /// <summary>
-        /// Deserializes a UserSession to an AuthenticationTicket
+        /// Deserializes a UserSession's Ticket to an AuthenticationTicket
         /// </summary>
-        /// <param name="session"></param>
-        /// <returns></returns>
-        public static AuthenticationTicket Deserialize(this UserSession session)
+        public static AuthenticationTicket Deserialize(this UserSession session, IDataProtector protector, ILogger logger)
         {
             try
             {
-                var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(session.Ticket, _jsonOptions);
+                var envelope = JsonSerializer.Deserialize<Envelope>(session.Ticket, _jsonOptions);
+                if (envelope.Version != 1)
+                {
+                    logger.LogWarning("Deserializing AuthenticationTicket envelope found incorrect version for key {key}.", session.Key);
+                    return null;
+                }
+
+                string payload;
+                try
+                {
+                    payload = protector.Unprotect(envelope.Payload);
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError(ex, "Failed to unprotect AuthenticationTicket payload for key {key}", session.Key);
+                    return null;
+                }
+
+                var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(payload, _jsonOptions);
 
                 var user = ticket.User.ToClaimsPrincipal();
                 var properties = new AuthenticationProperties(ticket.Items);
@@ -147,11 +155,12 @@ namespace Duende.Bff
 
                 return new AuthenticationTicket(user, properties, ticket.Scheme);
             }
-            catch 
+            catch (Exception ex)
             {
                 // failed deserialize
+                logger.LogError(ex, "Failed to deserialize UserSession payload for key {key}", session.Key);
             }
-            
+
             return null;
         }
 
@@ -221,6 +230,22 @@ namespace Duende.Bff
             /// The claims
             /// </summary>
             public ClaimLite[] Claims { get; init; }
+        }
+
+        /// <summary>
+        /// Envelope for serialized data
+        /// </summary>
+        public class Envelope
+        {
+            /// <summary>
+            /// Version
+            /// </summary>
+            public int Version { get; set; }
+
+            /// <summary>
+            /// Payload
+            /// </summary>
+            public string Payload { get; set; }
         }
     }
 
