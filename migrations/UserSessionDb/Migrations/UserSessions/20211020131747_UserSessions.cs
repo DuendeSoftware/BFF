@@ -11,7 +11,7 @@ namespace UserSessionDb.Migrations.UserSessions
                 name: "UserSessions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ApplicationName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
                     Renewed = table.Column<DateTime>(type: "TEXT", nullable: false),

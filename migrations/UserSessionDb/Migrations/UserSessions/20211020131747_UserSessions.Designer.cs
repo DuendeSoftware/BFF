@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UserSessionDb.Migrations.UserSessions
 {
     [DbContext(typeof(SessionDbContext))]
-    [Migration("20210505203547_UserSessions")]
+    [Migration("20211020131747_UserSessions")]
     partial class UserSessions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace UserSessionDb.Migrations.UserSessions
 
             modelBuilder.Entity("Duende.Bff.EntityFramework.UserSessionEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
