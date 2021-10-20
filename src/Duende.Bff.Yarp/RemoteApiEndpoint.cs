@@ -73,7 +73,6 @@ namespace Duende.Bff.Yarp
 
                 await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
 
-                // todo: check if return value hanlding is better
                 var errorFeature = context.Features.Get<IForwarderErrorFeature>();
                 if (errorFeature != null)
                 {

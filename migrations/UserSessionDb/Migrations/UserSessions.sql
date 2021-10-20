@@ -24,7 +24,7 @@ CREATE UNIQUE INDEX "IX_UserSessions_ApplicationName_SessionId" ON "UserSessions
 CREATE UNIQUE INDEX "IX_UserSessions_ApplicationName_SubjectId_SessionId" ON "UserSessions" ("ApplicationName", "SubjectId", "SessionId");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20210505203547_UserSessions', '5.0.0');
+VALUES ('20211020131747_UserSessions', '5.0.0');
 
 COMMIT;
 

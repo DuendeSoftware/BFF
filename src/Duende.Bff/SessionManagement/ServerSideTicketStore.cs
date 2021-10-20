@@ -1,48 +1,39 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff
 {
-    /// <summary>
-    /// Extends ITicketStore with additional query APIs.
-    /// </summary>
-    public interface IServerTicketStore : ITicketStore
-    {
-        /// <summary>
-        /// Returns the AuthenticationTickets for the UserSessionsFilter.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
-        /// <returns></returns>
-        Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
-    }
-
     /// <summary>
     /// IUserSession-backed ticket store
     /// </summary>
     public class ServerSideTicketStore : IServerTicketStore
     {
         private readonly IUserSessionStore _store;
+        private readonly IDataProtector _protector;
         private readonly ILogger<ServerSideTicketStore> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="store"></param>
+        /// <param name="dataProtectionProvider"></param>
         /// <param name="logger"></param>
         public ServerSideTicketStore(
             IUserSessionStore store,
+            IDataProtectionProvider dataProtectionProvider,
             ILogger<ServerSideTicketStore> logger)
         {
             _store = store;
+            _protector = dataProtectionProvider.CreateProtector("Duende.Bff.ServerSideTicketStore");
             _logger = logger;
         }
 
@@ -68,7 +59,7 @@ namespace Duende.Bff
                 Expires = ticket.GetExpiration(),
                 SubjectId = ticket.GetSubjectId(),
                 SessionId = ticket.GetSessionId(),
-                Ticket = ticket.Serialize()
+                Ticket = ticket.Serialize(_protector)
             };
 
             await _store.CreateUserSessionAsync(session);
@@ -82,9 +73,9 @@ namespace Duende.Bff
             var session = await _store.GetUserSessionAsync(key);
             if (session == null) return null;
             
-            var ticket = session.Deserialize();
+            var ticket = session.Deserialize(_protector, _logger);
             if (ticket != null) return ticket;
-                
+
             // if we failed to get a ticket, then remove DB record 
             _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
             await RemoveAsync(key);
@@ -93,13 +84,28 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public Task RenewAsync(string key, AuthenticationTicket ticket)
+        public async Task RenewAsync(string key, AuthenticationTicket ticket)
         {
-            // todo: discuss updating sub and sid?
-            return _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
+            var session = await _store.GetUserSessionAsync(key);
+            if (session == null)
+            {
+                throw new InvalidOperationException($"No matching item in store for key `{key}`");
+            }
+
+            if (session.SubjectId != ticket.GetSubjectId())
+            {
+                throw new InvalidOperationException($"Subject id claim value does not match ticket in database for key `{key}`");
+            }
+            
+            if (session.SessionId != ticket.GetSessionId())
+            {
+                throw new InvalidOperationException($"Session id claim value does not match ticket in database for key `{key}`");
+            }
+
+            await _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
                 Renewed = ticket.GetIssued(),
                 Expires = ticket.GetExpiration(),
-                Ticket = ticket.Serialize()
+                Ticket = ticket.Serialize(_protector)
             });
         }
 
@@ -109,12 +115,7 @@ namespace Duende.Bff
             return _store.DeleteUserSessionAsync(key);
         }
 
-        /// <summary>
-        /// Returns the AuthenticationTickets for the UserSessionsFilter.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken)
         {
             var list = new List<AuthenticationTicket>();
@@ -122,8 +123,17 @@ namespace Duende.Bff
             var sessions = await _store.GetUserSessionsAsync(filter, cancellationToken);
             foreach(var session in sessions)
             {
-                var ticket = session.Deserialize();
-                list.Add(ticket);
+                var ticket = session.Deserialize(_protector, _logger);
+                if (ticket != null)
+                {
+                    list.Add(ticket);
+                }
+                else
+                {
+                    // if we failed to get a ticket, then remove DB record 
+                    _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", session.Key);
+                    await RemoveAsync(session.Key);
+                }
             }
 
             return list;

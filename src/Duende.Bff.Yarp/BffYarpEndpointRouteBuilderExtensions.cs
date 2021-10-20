@@ -4,11 +4,7 @@
 using Duende.Bff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using Duende.Bff.Endpoints;
 using Duende.Bff.Yarp;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -17,9 +13,6 @@ namespace Microsoft.AspNetCore.Builder
     /// </summary>
     public static class BffYarpEndpointRouteBuilderExtensions
     {
-        // todo
-        //internal static bool _licenseChecked;
-        
         /// <summary>
         /// Adds a remote BFF API endpoint
         /// </summary>

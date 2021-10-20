@@ -21,7 +21,7 @@ namespace Duende.Bff
         public DateTime? Expires { get; set; }
 
         /// <summary>
-        /// The ticket
+        /// The serialized ticket
         /// </summary>
         public string Ticket { get; set; }
 

@@ -215,3 +215,5 @@ tempkey.jwk
 keys
 *.key
 Duende.BFF.db
+*.db-shm
+*.db-wal
