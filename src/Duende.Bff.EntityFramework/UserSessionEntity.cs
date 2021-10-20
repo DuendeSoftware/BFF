@@ -11,7 +11,7 @@ namespace Duende.Bff.EntityFramework
         /// <summary>
         /// Id for record in database
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Discriminator to allow multiple applications to share the user session table.
