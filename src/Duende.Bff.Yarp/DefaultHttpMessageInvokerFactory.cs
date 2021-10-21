@@ -34,11 +34,12 @@ namespace Duende.Bff.Yarp
                 };
 
                 // propagates the current Activity to the downstream service
-                var handler = new ActivityPropagationHandler(
-                    ActivityContextHeaders.BaggageAndCorrelationContext, 
-                    socketsHandler);
+                // todo: has been removed in RC.1 - needs replacement
+                // var handler = new ActivityPropagationHandler(
+                //     ActivityContextHeaders.BaggageAndCorrelationContext, 
+                //     socketsHandler);
                 
-                return new HttpMessageInvoker(handler);
+                return new HttpMessageInvoker(socketsHandler);
             });
         }
     }

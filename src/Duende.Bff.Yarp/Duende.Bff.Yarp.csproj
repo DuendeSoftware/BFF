@@ -38,7 +38,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-preview.12.21451.3" />
+        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-rc.1.21520.4" />
 <!--        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />-->
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     </ItemGroup>
