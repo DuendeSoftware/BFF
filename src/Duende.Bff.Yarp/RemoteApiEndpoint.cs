@@ -4,6 +4,7 @@
 using System;
 using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,9 +25,10 @@ namespace Duende.Bff.Yarp
         /// </summary>
         /// <param name="localPath">The local path (e.g. /api)</param>
         /// <param name="apiAddress">The remote address (e.g. https://api.myapp.com/foo)</param>
+        /// <param name="userAccessTokenParameters"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static RequestDelegate Map(string localPath, string apiAddress)
+        public static RequestDelegate Map(string localPath, string apiAddress, UserAccessTokenParameters userAccessTokenParameters = null)
         {
             return async context =>
             {

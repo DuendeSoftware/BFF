@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Duende.Bff.Endpoints;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Builder
