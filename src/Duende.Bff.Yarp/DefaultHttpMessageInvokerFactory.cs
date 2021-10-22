@@ -33,13 +33,15 @@ namespace Duende.Bff.Yarp
                     UseCookies = false
                 };
 
-                // propagates the current Activity to the downstream service
-                // todo: has been removed in RC.1 - needs replacement
-                // var handler = new ActivityPropagationHandler(
-                //     ActivityContextHeaders.BaggageAndCorrelationContext, 
-                //     socketsHandler);
                 
+#if NETCOREAPP3_1 || NET5_0
+                // propagates the current Activity to the downstream service on .NET Core 3.1 and 5.0
+                var handler = new ActivityPropagationHandler(socketsHandler);
+                return new HttpMessageInvoker(handler);
+#else
+                // for .NET 6+ this feature is built-in to SocketsHandler directly
                 return new HttpMessageInvoker(socketsHandler);
+#endif
             });
         }
     }
