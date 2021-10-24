@@ -32,7 +32,7 @@
         <AssemblyName>Duende.BFF.Yarp</AssemblyName>
         
         <VersionPrefix>1.0.0</VersionPrefix>
-        <VersionSuffix>rc.5</VersionSuffix>
+        <VersionSuffix>rc.6</VersionSuffix>
 
         <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
     </PropertyGroup>
