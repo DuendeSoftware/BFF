@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Builder
     public static class BffEndpointRouteBuilderExtensions
     {
         internal static bool _licenseChecked;
-        
+
         private static Task ProcessWith<T>(HttpContext context)
             where T : IBffEndpointService
         {

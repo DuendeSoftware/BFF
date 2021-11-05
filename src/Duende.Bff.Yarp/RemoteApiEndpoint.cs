@@ -17,6 +17,8 @@ namespace Duende.Bff.Yarp
     /// </summary>
     public static class RemoteApiEndpoint
     {
+        private const string AuthSchemeKey = ".AuthScheme";
+
         /// <summary>
         /// Endpoint logic
         /// </summary>
@@ -34,7 +36,7 @@ namespace Duende.Bff.Yarp
                 var endpoint = context.GetEndpoint();
                 if (endpoint == null)
                 {
-                    throw new InvalidOperationException("endoint not found");
+                    throw new InvalidOperationException("endpoint not found");
                 }
 
                 var metadata = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
@@ -46,7 +48,22 @@ namespace Duende.Bff.Yarp
                 string token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
-                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value);
+                    UserAccessTokenParameters paramsCopied = new UserAccessTokenParameters();
+
+                    if (metadata.BffUserAccessTokenParameters != null && !string.IsNullOrEmpty(metadata.BffUserAccessTokenParameters.SignInScheme))
+                    {
+                        paramsCopied.Resource = metadata.BffUserAccessTokenParameters.Resource;
+                        paramsCopied.SignInScheme = metadata.BffUserAccessTokenParameters.SignInScheme;
+                        paramsCopied.ForceRenewal = metadata.BffUserAccessTokenParameters.ForceRenewal;
+
+                        var result = await context.AuthenticateAsync(metadata.BffUserAccessTokenParameters.SignInScheme);
+                        if (result.Properties != null && result.Properties.Items.TryGetValue(AuthSchemeKey, out var authenticatedScheme))
+                        {
+                            paramsCopied.ChallengeScheme = authenticatedScheme;
+                        }
+                    }
+
+                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, paramsCopied);
                     if (string.IsNullOrWhiteSpace(token))
                     {
                         logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);

@@ -22,5 +22,10 @@ namespace Duende.Bff
         /// Require presence of anti-forgery header
         /// </summary>
         public bool RequireAntiForgeryHeader { get; set; } = true;
+
+        /// <summary>
+        /// Maps to UserAccessTokenParameters and included if set
+        /// </summary>
+        public BffUserAccessTokenParameters BffUserAccessTokenParameters { get; set; }
     }
 }
