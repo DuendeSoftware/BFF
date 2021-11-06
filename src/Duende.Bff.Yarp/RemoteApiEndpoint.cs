@@ -50,18 +50,20 @@ namespace Duende.Bff.Yarp
                 string token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
-                    UserAccessTokenParameters paramsCopied = new UserAccessTokenParameters();
+                    var userAccessTokenParameters = new UserAccessTokenParameters();
 
-                    if (metadata.BffUserAccessTokenParameters != null && !string.IsNullOrEmpty(metadata.BffUserAccessTokenParameters.SignInScheme))
+                    if (metadata.BffUserAccessTokenParameters != null)
                     {
-                        paramsCopied.Resource = metadata.BffUserAccessTokenParameters.Resource;
-                        paramsCopied.SignInScheme = metadata.BffUserAccessTokenParameters.SignInScheme;
-                        paramsCopied.ForceRenewal = metadata.BffUserAccessTokenParameters.ForceRenewal;
+                        userAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
 
-                        var result = await context.AuthenticateAsync(metadata.BffUserAccessTokenParameters.SignInScheme);
-                        if (result.Properties != null && result.Properties.Items.TryGetValue(AuthSchemeKey, out var authenticatedScheme))
+                        if (userAccessTokenParameters.SignInScheme != null)
                         {
-                            paramsCopied.ChallengeScheme = authenticatedScheme;
+                            var result = await context.AuthenticateAsync(userAccessTokenParameters.SignInScheme);
+                            if (result.Properties != null &&
+                                result.Properties.Items.TryGetValue(AuthSchemeKey, out var authenticatedScheme))
+                            {
+                                userAccessTokenParameters.ChallengeScheme = authenticatedScheme;
+                            }
                         }
                     }
 

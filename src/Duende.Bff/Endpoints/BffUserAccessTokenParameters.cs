@@ -1,37 +1,60 @@
-namespace Duende.Bff
+using IdentityModel.AspNetCore.AccessTokenManagement;
+
+namespace Duende.Bff;
+
+/// <summary>
+/// Additional optional parameters for a user access token request
+/// </summary>
+public class BffUserAccessTokenParameters
 {
     /// <summary>
-    /// Additional optional parameters for a user access token request
+    /// All properties are private with the sole intention being the transfer to a UserAccessTokenParameters via ToUserAccessTokenParameters
     /// </summary>
-    public class BffUserAccessTokenParameters
+    /// <param name="signInScheme"></param>
+    /// <param name="challengeScheme"></param>
+    /// <param name="forceRenewal"></param>
+    /// <param name="resource"></param>
+    public BffUserAccessTokenParameters(string signInScheme = null, string challengeScheme = null, bool forceRenewal = false, string resource = null)
     {
-        public BffUserAccessTokenParameters(string signInScheme = null, string challengeScheme = null,
-            bool forceRenewal = false, string resource = null)
+        SignInScheme = signInScheme;
+        ChallengeScheme = challengeScheme;
+        ForceRenewal = forceRenewal;
+        Resource = resource;
+    }
+
+    /// <summary>
+    /// Overrides the default sign-in scheme. This information may be used for state management.
+    /// </summary>
+    private string SignInScheme { get; }
+
+    /// <summary>
+    /// Overrides the default challenge scheme. This information may be used for deriving token service configuration.
+    /// </summary>
+    private string ChallengeScheme { get; }
+
+    /// <summary>
+    /// Force renewal of token.
+    /// </summary>
+    private bool ForceRenewal { get; }
+
+    /// <summary>
+    /// Specifies the resource parameter.
+    /// </summary>
+    private string Resource { get; }
+
+    /// <summary>
+    /// Retrieve a UserAccessTokenParameters
+    /// </summary>
+    /// <returns></returns>
+    public UserAccessTokenParameters ToUserAccessTokenParameters()
+    {
+        return new UserAccessTokenParameters()
         {
-            SignInScheme = signInScheme;
-            ChallengeScheme = challengeScheme;
-            ForceRenewal = forceRenewal;
-            Resource = resource;
-        }
+            SignInScheme = this.SignInScheme,
+            ChallengeScheme = this.ChallengeScheme,
+            ForceRenewal = this.ForceRenewal,
+            Resource = this.Resource
+        };
 
-        /// <summary>
-        /// Overrides the default sign-in scheme. This information may be used for state management.
-        /// </summary>
-        public string SignInScheme { get; }
-
-        /// <summary>
-        /// Overrides the default challenge scheme. This information may be used for deriving token service configuration.
-        /// </summary>
-        public string ChallengeScheme { get; }
-
-        /// <summary>
-        /// Force renewal of token.
-        /// </summary>
-        public bool ForceRenewal { get; }
-
-        /// <summary>
-        /// Specifies the resource parameter.
-        /// </summary>
-        public string Resource { get; set; }
     }
 }
