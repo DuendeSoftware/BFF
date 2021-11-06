@@ -50,24 +50,24 @@ namespace Duende.Bff.Yarp
                 string token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
-                    var userAccessTokenParameters = new UserAccessTokenParameters();
+                    var toUserAccessTokenParameters = new UserAccessTokenParameters();
 
                     if (metadata.BffUserAccessTokenParameters != null)
                     {
-                        userAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
+                        toUserAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
 
-                        if (userAccessTokenParameters.SignInScheme != null)
+                        if (toUserAccessTokenParameters.SignInScheme != null)
                         {
-                            var result = await context.AuthenticateAsync(userAccessTokenParameters.SignInScheme);
+                            var result = await context.AuthenticateAsync(toUserAccessTokenParameters.SignInScheme);
                             if (result.Properties != null &&
                                 result.Properties.Items.TryGetValue(AuthSchemeKey, out var authenticatedScheme))
                             {
-                                userAccessTokenParameters.ChallengeScheme = authenticatedScheme;
+                                toUserAccessTokenParameters.ChallengeScheme = authenticatedScheme;
                             }
                         }
                     }
 
-                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, paramsCopied);
+                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, toUserAccessTokenParameters);
                     if (string.IsNullOrWhiteSpace(token))
                     {
                         logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
