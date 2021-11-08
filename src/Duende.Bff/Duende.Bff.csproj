@@ -1,51 +1,45 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>9.0</LangVersion>
+    <PropertyGroup>
+        <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <LangVersion>9.0</LangVersion>
+        
+        <AssemblyName>Duende.BFF</AssemblyName>
+        
+        <PackageTags>OAuth 2.0;OpenID Connect;Security;BFF;IdentityServer;ASP.NET Core;SPA;Blazor</PackageTags>
+        <Description>Backend for frontend (BFF) host for ASP.NET Core</Description>
 
-    <PackageTags>OAuth 2.0;OpenID Connect;Security;BFF;IdentityServer;ASP.NET Core;SPA;Blazor</PackageTags>
-    <Description>Backend for frontend (BFF) host for ASP.NET Core</Description>
-    
-    <Authors>Duende Software</Authors>
-    <Company>Duende Software</Company>
-    <Copyright>Duende Software</Copyright>
-    <Product>Duende BFF</Product>
+        <Authors>Duende Software</Authors>
+        <Company>Duende Software</Company>
+        <Copyright>Duende Software</Copyright>
+        <Product>Duende BFF</Product>
 
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/DuendeSoftware/BFF</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/DuendeSoftware/BFF/releases</PackageReleaseNotes>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
-     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/DuendeSoftware/BFF</PackageProjectUrl>
+        <PackageReleaseNotes>https://github.com/DuendeSoftware/BFF/releases</PackageReleaseNotes>
 
-     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
-     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <DebugType>embedded</DebugType>
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+    </PropertyGroup>
 
-     <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
-     <DebugType>embedded</DebugType>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
 
-     <AssemblyName>Duende.BFF</AssemblyName>
-     
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    
-    <PackageReference Include="IdentityModel.AspNetCore" Version="4.0.0" />
+        <PackageReference Include="IdentityModel.AspNetCore" Version="4.0.0"/>
 
-    <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
+        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
-    <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../icon.png" Pack="true" Visible="false" PackagePath=""/>
+    </ItemGroup>
 
 </Project>
