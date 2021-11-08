@@ -126,6 +126,20 @@ namespace Duende.Bff.Tests.SessionManagement
         public async Task user_endpoint_when_uservalidate_renews_and_sliding_flag_is_passed_cookie_should_not_slide()
         {
             var shouldRenew = false;
+            
+            #if NET6_0_OR_GREATER
+            BffHost.OnConfigureServices += services =>
+            {
+                services.Configure<CookieAuthenticationOptions>("cookie", options =>
+                {
+                    options.Events.OnCheckSlidingExpiration = ctx =>
+                    {
+                        ctx.ShouldRenew = shouldRenew;
+                        return Task.CompletedTask;
+                    };
+                });
+            };
+            #else
             BffHost.OnConfigureServices += services =>
             {
                 services.Configure<CookieAuthenticationOptions>("cookie", options =>
@@ -137,6 +151,8 @@ namespace Duende.Bff.Tests.SessionManagement
                     };
                 });
             };
+            #endif
+            
             await BffHost.InitializeAsync();
 
             await BffHost.BffLoginAsync("alice");
