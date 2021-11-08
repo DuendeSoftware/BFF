@@ -18,17 +18,14 @@ namespace Duende.Bff.Yarp
     /// </summary>
     public static class RemoteApiEndpoint
     {
-        private const string AuthSchemeKey = ".AuthScheme";
-
         /// <summary>
         /// Endpoint logic
         /// </summary>
         /// <param name="localPath">The local path (e.g. /api)</param>
         /// <param name="apiAddress">The remote address (e.g. https://api.myapp.com/foo)</param>
-        /// <param name="userAccessTokenParameters"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static RequestDelegate Map(string localPath, string apiAddress, UserAccessTokenParameters userAccessTokenParameters = null)
+        public static RequestDelegate Map(string localPath, string apiAddress)
         {
             return async context =>
             {
@@ -47,26 +44,16 @@ namespace Duende.Bff.Yarp
                     throw new InvalidOperationException("API endoint is missing BFF metadata");
                 }
 
+                UserAccessTokenParameters toUserAccessTokenParameters = null;
+
+                if (metadata.BffUserAccessTokenParameters != null)
+                {
+                    toUserAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
+                }
+
                 string token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
-                    var toUserAccessTokenParameters = new UserAccessTokenParameters();
-
-                    if (metadata.BffUserAccessTokenParameters != null)
-                    {
-                        toUserAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
-
-                        if (toUserAccessTokenParameters.SignInScheme != null)
-                        {
-                            var result = await context.AuthenticateAsync(toUserAccessTokenParameters.SignInScheme);
-                            if (result.Properties != null &&
-                                result.Properties.Items.TryGetValue(AuthSchemeKey, out var authenticatedScheme))
-                            {
-                                toUserAccessTokenParameters.ChallengeScheme = authenticatedScheme;
-                            }
-                        }
-                    }
-
                     token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, toUserAccessTokenParameters);
                     if (string.IsNullOrWhiteSpace(token))
                     {
