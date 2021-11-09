@@ -130,7 +130,10 @@ namespace Duende.Bff.EntityFramework.Tests
         public async Task DeleteUserSessionAsync_for_valid_key_should_succeed()
         {
             await _subject.CreateUserSessionAsync(new UserSession { 
-                Key = "key123"
+                Key = "key123",
+                SubjectId = "sub",
+                SessionId = "session",
+                Ticket = "ticket",
             });
             _database.UserSessions.Count().Should().Be(1);
 
@@ -150,31 +153,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -189,31 +204,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -226,31 +253,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -265,31 +304,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -302,31 +353,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -341,31 +404,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -396,31 +471,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -434,31 +521,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -471,31 +570,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -509,31 +620,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -546,31 +669,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
@@ -584,31 +719,43 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub1",
                 SessionId = "sid1_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_1",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_2",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub2",
                 SessionId = "sid2_3",
             });
             await _subject.CreateUserSessionAsync(new UserSession
             {
+                Key = Guid.NewGuid().ToString(),
+                Ticket = "ticket",
                 SubjectId = "sub3",
                 SessionId = "sid3_1",
             });
