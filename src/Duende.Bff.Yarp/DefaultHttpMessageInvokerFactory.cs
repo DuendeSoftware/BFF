@@ -34,7 +34,7 @@ namespace Duende.Bff.Yarp
                 };
 
                 
-#if NETCOREAPP3_1 || NET5_0
+#if !NET6_0_OR_GREATER
                 // propagates the current Activity to the downstream service on .NET Core 3.1 and 5.0
                 var handler = new ActivityPropagationHandler(socketsHandler);
                 return new HttpMessageInvoker(handler);

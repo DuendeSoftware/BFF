@@ -26,16 +26,12 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DebugType>embedded</DebugType>
         <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
-        
-        <VersionPrefix>1.1.0</VersionPrefix>
-        <VersionSuffix>preview.1</VersionSuffix>
-        
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-rc.1.21520.4"/>
-        <!--        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />-->
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0"/>
+        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0" PrivateAssets="All"/>
     </ItemGroup>
 
     <ItemGroup>
