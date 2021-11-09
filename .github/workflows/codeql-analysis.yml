@@ -37,8 +37,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     
-    - name: Setup dotnet (main)
+    - name: Setup dotnet
       uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
       
     - run: dotnet --info
 

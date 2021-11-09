@@ -51,6 +51,9 @@ namespace Duende.Bff
         {
             var ticket = await Inner.RetrieveAsync(key);
 
+            // if we're in .NET 6 or beyond, this logic is instead handled in the cookie handler
+            // OnCheckSlidingExpiration callback implemented by our PostConfigureSlidingExpirationCheck
+#if !NET6_0_OR_GREATER
             // allows the client-side app to request that the cookie does not slide on the user endpoint
             // this only works if we're implementing the a ticket store, as we can suppress the behavior
             // by explicitly setting the AllowRefresh on the ticket
@@ -62,6 +65,7 @@ namespace Duende.Bff
                     ticket.Properties.AllowRefresh = false;
                 }
             }
+#endif
 
             return ticket;
         }

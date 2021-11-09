@@ -40,7 +40,12 @@ namespace Microsoft.AspNetCore.Builder
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
 
             // cookie configuration
+            #if NET6_0_OR_GREATER
+            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureSlidingExpirationCheck>();
+            #else
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
+            #endif
+            
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
 
             #if NET5_0_OR_GREATER
