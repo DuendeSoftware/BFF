@@ -2,12 +2,20 @@
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu />
+        <NavMenu/>
     </div>
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    <strong>Hello, @context.User.Identity.Name!</strong>
+                    <a href="@context.User.FindFirst("bff:logout_url")?.Value">Log out</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="bff/login">Log in</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">

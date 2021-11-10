@@ -6,6 +6,40 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddBff();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = "cookie";
+        options.DefaultChallengeScheme = "oidc";
+        options.DefaultSignOutScheme = "oidc";
+    })
+    .AddCookie("cookie", options =>
+    {
+        options.Cookie.Name = "__Host-blazor";
+        options.Cookie.SameSite = SameSiteMode.Strict;
+    })
+    .AddOpenIdConnect("oidc", options =>
+    {
+        options.Authority = "https://localhost:5001";
+
+        // confidential client using code flow + PKCE
+        options.ClientId = "spa";
+        options.ClientSecret = "secret";
+        options.ResponseType = "code";
+        options.ResponseMode = "query";
+
+        options.MapInboundClaims = false;
+        options.GetClaimsFromUserInfoEndpoint = true;
+        options.SaveTokens = true;
+
+        // request scopes + refresh tokens
+        options.Scope.Clear();
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("api");
+        options.Scope.Add("offline_access");
+    });
 
 var app = builder.Build();
 
@@ -27,8 +61,11 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseBff();
+app.UseAuthorization();
 
-
+app.MapBffManagementEndpoints();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");

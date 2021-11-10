@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0" />
+    
+    
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Duende.Bff\Duende.Bff.csproj" />
     <ProjectReference Include="..\Client\Blazor6.Client.csproj" />
     <ProjectReference Include="..\Shared\Blazor6.Shared.csproj" />
   </ItemGroup>

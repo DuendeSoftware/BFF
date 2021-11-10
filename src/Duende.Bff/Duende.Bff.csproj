@@ -34,7 +34,7 @@
         <PackageReference Include="IdentityModel.AspNetCore" Version="4.0.0" />
 
         <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
