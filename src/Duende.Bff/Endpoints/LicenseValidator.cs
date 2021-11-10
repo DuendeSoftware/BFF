@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -209,7 +211,11 @@ namespace Duende.Bff.Endpoints
 
             public override string ToString()
             {
+#if NET6_0_OR_GREATER
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+#else
                 return JsonSerializer.Serialize(this, new JsonSerializerOptions { IgnoreNullValues = true });
+#endif
             }
         }
     }
