@@ -1,9 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(NETCoreSdkPortableRuntimeIdentifier)' != 'osx-arm64' ">
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition=" '$(NETCoreSdkPortableRuntimeIdentifier)' == 'osx-arm64' ">
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
