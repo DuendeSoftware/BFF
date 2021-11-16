@@ -21,7 +21,7 @@ namespace Host5
             services.AddBff()
                 .AddRemoteApis()
                 .AddServerSideSessions();
-
+            
             // local APIs
             services.AddControllers();
 
