@@ -14,11 +14,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CsQuery.Implementation;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Duende.Bff.Tests.TestHosts
 {
@@ -108,7 +105,7 @@ namespace Duende.Bff.Tests.TestHosts
                 options.AddPolicy("AlwaysFail", policy => { policy.RequireAssertion(ctx => false); });
             });
         }
-        
+
         private void Configure(IApplicationBuilder app)
         {
             if (_useForwardedHeaders)
