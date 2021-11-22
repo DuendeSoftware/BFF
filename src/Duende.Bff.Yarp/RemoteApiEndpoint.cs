@@ -68,7 +68,7 @@ namespace Duende.Bff.Yarp
                 {
                     if (metadata.OptionalUserToken)
                     {
-                        token = await context.GetUserAccessTokenAsync();
+                        token = await context.GetUserAccessTokenAsync(toUserAccessTokenParameters);
                     }
                 }
 
