@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -30,13 +31,13 @@ namespace Duende.Bff
             return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
         }
 
-        public static async Task<string> GetManagedAccessToken(this HttpContext context, TokenType tokenType)
+        public static async Task<string> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserAccessTokenParameters userAccessTokenParameters = null)
         {
             string token;
 
             if (tokenType == TokenType.User)
             {
-                token = await context.GetUserAccessTokenAsync();
+                token = await context.GetUserAccessTokenAsync(userAccessTokenParameters);
             }
             else if (tokenType == TokenType.Client)
             {
@@ -44,7 +45,7 @@ namespace Duende.Bff
             }
             else
             {
-                token = await context.GetUserAccessTokenAsync();
+                token = await context.GetUserAccessTokenAsync(userAccessTokenParameters);
 
                 if (string.IsNullOrEmpty(token))
                 {

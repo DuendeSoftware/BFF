@@ -15,6 +15,7 @@ namespace Duende.Bff.Tests.TestHosts
         protected readonly IdentityServerHost IdentityServerHost;
         protected ApiHost ApiHost;
         protected BffHost BffHost;
+        protected BffHostUsingResourceNamedTokens BffHostWithNamedTokens;
 
         public BffIntegrationTestBase()
         {
@@ -57,6 +58,9 @@ namespace Duende.Bff.Tests.TestHosts
 
             BffHost = new BffHost(IdentityServerHost, ApiHost, "spa");
             BffHost.InitializeAsync().Wait();
+
+            BffHostWithNamedTokens = new BffHostUsingResourceNamedTokens(IdentityServerHost, ApiHost, "spa");
+            BffHostWithNamedTokens.InitializeAsync().Wait();
         }
 
         public async Task Login(string sub)

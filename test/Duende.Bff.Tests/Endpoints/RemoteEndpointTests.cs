@@ -47,6 +47,37 @@ namespace Duende.Bff.Tests.Endpoints
         }
 
         [Fact]
+        public async Task calls_to_remote_endpoint_with_useraccesstokenparameters_having_stored_named_token_should_forward_user_to_api()
+        {
+            var loginResponse = await BffHostWithNamedTokens.BffLoginAsync("alice");
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHostWithNamedTokens.Url("/api_user_with_useraccesstokenparameters_having_stored_named_token/test"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await BffHostWithNamedTokens.BrowserClient.SendAsync(req);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/test");
+            apiResult.Sub.Should().Be("alice");
+            apiResult.ClientId.Should().Be("spa");
+        }
+
+        [Fact]
+        public async Task calls_to_remote_endpoint_with_useraccesstokenparameters_having_not_stored_corresponding_named_token_finds_no_matching_token_should_fail()
+        {
+            var loginResponse = await BffHostWithNamedTokens.BffLoginAsync("alice");
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_user_with_useraccesstokenparameters_having_not_stored_named_token/test"));
+            req.Headers.Add("x-csrf", "1");
+
+            Func<Task> f = () => BffHostWithNamedTokens.BrowserClient.SendAsync(req);
+            f.Should().Throw<Exception>();
+        }
+
+        [Fact]
         public async Task put_to_remote_endpoint_should_forward_user_to_api()
         {
             await BffHost.BffLoginAsync("alice");

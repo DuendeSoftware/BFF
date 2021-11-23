@@ -14,12 +14,15 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CsQuery.Implementation;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Duende.Bff.Tests.TestHosts
 {
-    public class BffHost : GenericHost
+    public class BffHostUsingResourceNamedTokens : GenericHost
     {
         public int? LocalApiStatusCodeToReturn { get; set; }
 
@@ -30,7 +33,7 @@ namespace Duende.Bff.Tests.TestHosts
 
         public BffOptions BffOptions { get; set; } = new();
 
-        public BffHost(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId,
+        public BffHostUsingResourceNamedTokens(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId,
             string baseAddress = "https://app", bool useForwardedHeaders = false)
             : base(baseAddress)
         {
@@ -74,6 +77,11 @@ namespace Duende.Bff.Tests.TestHosts
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
+                    options.Events.OnUserInformationReceived = async context =>
+                    {
+                        await StoreNamedTokensAsync((context.ProtocolMessage.AccessToken, context.ProtocolMessage.RefreshToken), context.Properties, context.ProtocolMessage.IdToken);
+                    };
+
                     options.Authority = _identityServerHost.Url();
 
                     options.ClientId = _clientId;
@@ -106,6 +114,13 @@ namespace Duende.Bff.Tests.TestHosts
             });
         }
 
+        public static async Task StoreNamedTokensAsync((string accessToken, string refreshToken) userTokens, AuthenticationProperties authenticationProperties, string identityToken = null)
+        {
+            var tokens = new List<AuthenticationToken>();
+            tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.AccessToken}::named_token_stored", Value = userTokens.accessToken });
+            authenticationProperties.StoreTokens(tokens);
+        }
+
         private void Configure(IApplicationBuilder app)
         {
             if (_useForwardedHeaders)
@@ -129,184 +144,15 @@ namespace Duende.Bff.Tests.TestHosts
             {
                 endpoints.MapBffManagementEndpoints();
 
-                endpoints.Map("/local_anon", async context =>
-                    {
-                        // capture body if present
-                        var body = default(string);
-                        if (context.Request.HasJsonContentType())
-                        {
-                            using (var sr = new StreamReader(context.Request.Body))
-                            {
-                                body = await sr.ReadToEndAsync();
-                            }
-                        }
-
-                        // capture request headers
-                        var requestHeaders = new Dictionary<string, List<string>>();
-                        foreach (var header in context.Request.Headers)
-                        {
-                            var values = new List<string>(header.Value.Select(v => v));
-                            requestHeaders.Add(header.Key, values);
-                        }
-
-                        var response = new ApiResponse(
-                            context.Request.Method,
-                            context.Request.Path.Value,
-                            context.User.FindFirst(("sub"))?.Value,
-                            context.User.FindFirst(("client_id"))?.Value,
-                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
-                        {
-                            Body = body,
-                            RequestHeaders = requestHeaders
-                        };
-
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
-
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                    })
-                    .AsBffApiEndpoint();
-                
-                endpoints.Map("/local_anon_no_csrf", async context =>
-                    {
-                        // capture body if present
-                        var body = default(string);
-                        if (context.Request.HasJsonContentType())
-                        {
-                            using (var sr = new StreamReader(context.Request.Body))
-                            {
-                                body = await sr.ReadToEndAsync();
-                            }
-                        }
-
-                        // capture request headers
-                        var requestHeaders = new Dictionary<string, List<string>>();
-                        foreach (var header in context.Request.Headers)
-                        {
-                            var values = new List<string>(header.Value.Select(v => v));
-                            requestHeaders.Add(header.Key, values);
-                        }
-
-                        var response = new ApiResponse(
-                            context.Request.Method,
-                            context.Request.Path.Value,
-                            context.User.FindFirst(("sub"))?.Value,
-                            context.User.FindFirst(("client_id"))?.Value,
-                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
-                        {
-                            Body = body,
-                            RequestHeaders = requestHeaders
-                        };
-
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
-
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                    })
-                    .AsBffApiEndpoint(requireAntiForgeryCheck: false);
-
-                endpoints.Map("/local_authz", async context =>
-                    {
-                        var sub = context.User.FindFirst(("sub"))?.Value;
-                        if (sub == null) throw new Exception("sub is missing");
-
-                        var body = default(string);
-                        if (context.Request.HasJsonContentType())
-                        {
-                            using (var sr = new StreamReader(context.Request.Body))
-                            {
-                                body = await sr.ReadToEndAsync();
-                            }
-                        }
-
-                        var response = new ApiResponse(
-                            context.Request.Method,
-                            context.Request.Path.Value,
-                            sub,
-                            context.User.FindFirst(("client_id"))?.Value,
-                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
-                        {
-                            Body = body
-                        };
-
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
-
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                    })
-                    .RequireAuthorization()
-                    .AsBffApiEndpoint();
-
-                endpoints.Map("/local_authz_no_csrf", async context =>
-                    {
-                        var sub = context.User.FindFirst(("sub"))?.Value;
-                        if (sub == null) throw new Exception("sub is missing");
-
-                        var body = default(string);
-                        if (context.Request.HasJsonContentType())
-                        {
-                            using (var sr = new StreamReader(context.Request.Body))
-                            {
-                                body = await sr.ReadToEndAsync();
-                            }
-                        }
-
-                        var response = new ApiResponse(
-                            context.Request.Method,
-                            context.Request.Path.Value,
-                            sub,
-                            context.User.FindFirst(("client_id"))?.Value,
-                            context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
-                        {
-                            Body = body
-                        };
-
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
-
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-                    })
-                    .RequireAuthorization()
-                    .AsBffApiEndpoint(requireAntiForgeryCheck: false);
-
-
-                endpoints.Map("/always_fail_authz_non_bff_endpoint", context => { return Task.CompletedTask; })
-                    .RequireAuthorization("AlwaysFail");
-
-                endpoints.Map("/always_fail_authz", context => { return Task.CompletedTask; })
-                    .AsBffApiEndpoint()
-                    .RequireAuthorization("AlwaysFail");
-
                 endpoints.MapRemoteBffApiEndpoint(
-                        "/api_user", _apiHost.Url())
+                        "/api_user_with_useraccesstokenparameters_having_stored_named_token", _apiHost.Url())
+                    .WithUserAccessTokenParameter(new BffUserAccessTokenParameters("cookie", null, true, "named_token_stored"))
                     .RequireAccessToken();
 
                 endpoints.MapRemoteBffApiEndpoint(
-                        "/api_user_no_csrf", _apiHost.Url(), requireAntiForgeryCheck: false)
+                        "/api_user_with_useraccesstokenparameters_having_not_stored_named_token", _apiHost.Url())
+                    .WithUserAccessTokenParameter(new BffUserAccessTokenParameters("cookie", null, true, "named_token_not_stored"))
                     .RequireAccessToken();
-
-                endpoints.MapRemoteBffApiEndpoint(
-                        "/api_client", _apiHost.Url())
-                    .RequireAccessToken(TokenType.Client);
-
-                endpoints.MapRemoteBffApiEndpoint(
-                        "/api_user_or_client", _apiHost.Url())
-                    .RequireAccessToken(TokenType.UserOrClient);
-
-                endpoints.MapRemoteBffApiEndpoint(
-                        "/api_user_or_anon", _apiHost.Url())
-                    .WithOptionalUserAccessToken();
-
-                endpoints.MapRemoteBffApiEndpoint(
-                    "/api_anon_only", _apiHost.Url());
-
-                endpoints.Map(
-                    "/not_bff_endpoint", 
-                    RemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
             });
 
             app.Map("/invalid_endpoint",

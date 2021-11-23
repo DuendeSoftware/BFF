@@ -4,6 +4,7 @@
 using System;
 using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +35,7 @@ namespace Duende.Bff.Yarp
                 var endpoint = context.GetEndpoint();
                 if (endpoint == null)
                 {
-                    throw new InvalidOperationException("endoint not found");
+                    throw new InvalidOperationException("endpoint not found");
                 }
 
                 var metadata = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
@@ -43,10 +44,17 @@ namespace Duende.Bff.Yarp
                     throw new InvalidOperationException("API endoint is missing BFF metadata");
                 }
 
+                UserAccessTokenParameters toUserAccessTokenParameters = null;
+
+                if (metadata.BffUserAccessTokenParameters != null)
+                {
+                    toUserAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
+                }
+
                 string token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
-                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value);
+                    token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, toUserAccessTokenParameters);
                     if (string.IsNullOrWhiteSpace(token))
                     {
                         logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
@@ -60,7 +68,7 @@ namespace Duende.Bff.Yarp
                 {
                     if (metadata.OptionalUserToken)
                     {
-                        token = await context.GetUserAccessTokenAsync();
+                        token = await context.GetUserAccessTokenAsync(toUserAccessTokenParameters);
                     }
                 }
 

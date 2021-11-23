@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Duende.Bff.Endpoints;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Builder
@@ -17,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
     public static class BffEndpointRouteBuilderExtensions
     {
         internal static bool _licenseChecked;
-        
+
         private static Task ProcessWith<T>(HttpContext context)
             where T : IBffEndpointService
         {

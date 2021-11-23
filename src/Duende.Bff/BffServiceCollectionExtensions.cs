@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var opts = new BffOptions();
             configureAction?.Invoke(opts);
-            services.AddSingleton(opts);
+            services.AddSingleton(opts);                                  
 
             services.AddAccessTokenManagement();
             

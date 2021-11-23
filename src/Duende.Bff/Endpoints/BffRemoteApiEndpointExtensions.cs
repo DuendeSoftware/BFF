@@ -49,5 +49,25 @@ namespace Microsoft.AspNetCore.Builder
 
             return builder;
         }
+
+        /// <summary>
+        /// Allows for setting a UserAccessTokenParameter
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="bffUserAccessTokenParameters"></param>
+        /// <typeparam name="TBuilder"></typeparam>
+        /// <returns></returns>
+        public static TBuilder WithUserAccessTokenParameter<TBuilder>(this TBuilder builder, BffUserAccessTokenParameters bffUserAccessTokenParameters) where TBuilder : IEndpointConventionBuilder
+        {
+            builder.Add(endpointBuilder =>
+            {
+                var metadata =
+                    endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
+
+                metadata.BffUserAccessTokenParameters = bffUserAccessTokenParameters;
+            });
+
+            return builder;
+        }
     }
 }
