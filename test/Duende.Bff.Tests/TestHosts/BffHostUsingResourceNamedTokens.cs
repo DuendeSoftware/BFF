@@ -77,9 +77,10 @@ namespace Duende.Bff.Tests.TestHosts
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Events.OnUserInformationReceived = async context =>
+                    options.Events.OnUserInformationReceived = context =>
                     {
-                        await StoreNamedTokensAsync((context.ProtocolMessage.AccessToken, context.ProtocolMessage.RefreshToken), context.Properties, context.ProtocolMessage.IdToken);
+                        StoreNamedTokens((context.ProtocolMessage.AccessToken, context.ProtocolMessage.RefreshToken), context.Properties, context.ProtocolMessage.IdToken);
+                        return Task.CompletedTask;
                     };
 
                     options.Authority = _identityServerHost.Url();
@@ -114,7 +115,7 @@ namespace Duende.Bff.Tests.TestHosts
             });
         }
 
-        public static async Task StoreNamedTokensAsync((string accessToken, string refreshToken) userTokens, AuthenticationProperties authenticationProperties, string identityToken = null)
+        public static void StoreNamedTokens((string accessToken, string refreshToken) userTokens, AuthenticationProperties authenticationProperties, string identityToken = null)
         {
             var tokens = new List<AuthenticationToken>();
             tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.AccessToken}::named_token_stored", Value = userTokens.accessToken });
