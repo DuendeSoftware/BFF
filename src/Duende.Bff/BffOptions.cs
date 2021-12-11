@@ -63,17 +63,25 @@ namespace Duende.Bff
         /// Login endpoint
         /// </summary>
         public PathString LoginPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Login);
+        
         /// <summary>
         /// Logout endpoint
         /// </summary>
         public PathString LogoutPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Logout);
+        
         /// <summary>
         /// User endpoint
         /// </summary>
         public PathString UserPath => ManagementBasePath.Add(Constants.ManagementEndpoints.User);
+        
         /// <summary>
         /// Back channel logout endpoint
         /// </summary>
         public PathString BackChannelLogoutPath => ManagementBasePath.Add(Constants.ManagementEndpoints.BackChannelLogout);
+        
+        /// <summary>
+        /// Diagnostics endpoint
+        /// </summary>
+        public PathString DiagnosticsPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Diagnostics);
     }
 }
