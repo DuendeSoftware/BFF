@@ -67,7 +67,7 @@ namespace Duende.Bff
             /// <summary>
             /// Diagnostics path
             /// </summary>
-            public const string Diagnostics = "/diag";
+            public const string Diagnostics = "/diagnostics";
         }
 
         /// <summary>
