@@ -48,18 +48,26 @@ namespace Duende.Bff
             /// Login path
             /// </summary>
             public const string Login = "/login";
+            
             /// <summary>
             /// Logout path
             /// </summary>
             public const string Logout = "/logout";
+            
             /// <summary>
             /// User path
             /// </summary>
             public const string User = "/user";
+            
             /// <summary>
             /// Back channel logout path
             /// </summary>
             public const string BackChannelLogout = "/backchannel";
+            
+            /// <summary>
+            /// Diagnostics path
+            /// </summary>
+            public const string Diagnostics = "/diagnostics";
         }
 
         /// <summary>

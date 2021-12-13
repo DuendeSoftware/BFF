@@ -35,6 +35,7 @@ namespace Microsoft.AspNetCore.Builder
             services.AddTransient<ILogoutService, DefaultLogoutService>();
             services.AddTransient<IUserService, DefaultUserService>();
             services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
+            services.AddTransient<IDiagnosticsService, DefaultDiagnosticsService>();
             
             // session management
             services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();

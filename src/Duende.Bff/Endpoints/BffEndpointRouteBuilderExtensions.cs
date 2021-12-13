@@ -36,6 +36,7 @@ namespace Microsoft.AspNetCore.Builder
             endpoints.MapBffManagementLogoutEndpoint();
             endpoints.MapBffManagementUserEndpoint();
             endpoints.MapBffManagementBackchannelEndpoint();
+            endpoints.MapBffDiagnosticsEndpoint();
         }
 
         /// <summary>
@@ -89,6 +90,19 @@ namespace Microsoft.AspNetCore.Builder
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapPost(options.BackChannelLogoutPath, ProcessWith<IBackchannelLogoutService>);
+        }
+        
+        /// <summary>
+        /// Adds the logout BFF management endpoint
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void MapBffDiagnosticsEndpoint(this IEndpointRouteBuilder endpoints)
+        {
+            endpoints.CheckLicense();
+            
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+            endpoints.MapGet(options.DiagnosticsPath, ProcessWith<IDiagnosticsService>);
         }
         
         internal static void CheckLicense(this IEndpointRouteBuilder endpoints)
