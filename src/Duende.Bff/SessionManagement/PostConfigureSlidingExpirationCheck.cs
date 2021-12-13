@@ -5,6 +5,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
@@ -18,16 +19,19 @@ namespace Duende.Bff
     {
         private readonly BffOptions _options;
         private readonly string _scheme;
-        
+        private readonly ILogger<PostConfigureSlidingExpirationCheck> _logger;
+
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="bffOptions"></param>
         /// <param name="authOptions"></param>
-        public PostConfigureSlidingExpirationCheck(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions)
+        /// <param name="logger"></param>
+        public PostConfigureSlidingExpirationCheck(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureSlidingExpirationCheck> logger)
         {
             _options = bffOptions;
             _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -51,6 +55,7 @@ namespace Duende.Bff
                     var slide = ctx.Request.Query[Constants.RequestParameters.SlideCookie];
                     if (slide == "false")
                     {
+                        _logger.LogDebug("Explicitly setting ShouldRenew=false in OnCheckSlidingExpiration due to query param suppressing slide behavior.");
                         ctx.ShouldRenew = false;
                     }
                 }

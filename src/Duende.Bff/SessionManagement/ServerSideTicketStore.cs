@@ -51,7 +51,7 @@ namespace Duende.Bff
 
             var key = CryptoRandom.CreateUniqueId(format: CryptoRandom.OutputFormat.Hex);
             
-            _logger.LogDebug("StoreAsync key {key}", key);
+            _logger.LogDebug("Creating entry in store for AuthenticationTicket, key {key}, with expiration: {expiration}", key, ticket.GetExpiration());
 
             var session = new UserSession
             {
@@ -72,26 +72,26 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task<AuthenticationTicket> RetrieveAsync(string key)
         {
-            _logger.LogDebug("RetrieveAsync key {key}", key);
+            _logger.LogDebug("Retrieve AuthenticationTicket for key {key}", key);
             await Task.Delay(500);
 
             var session = await _store.GetUserSessionAsync(key);
             if (session == null)
             {
-                _logger.LogDebug("RetrieveAsync no ticket found in store for {key}", key);
+                _logger.LogDebug("No ticket found in store for {key}", key);
                 return null;
             }
             
             var ticket = session.Deserialize(_protector, _logger);
             if (ticket != null)
             {
-                _logger.LogDebug("Ticket loaded. Expiration: {0}", ticket.GetExpiration());
+                _logger.LogDebug("Ticket loaded for key: {key}, with expiration: {expiration}", key, ticket.GetExpiration());
                 return ticket;
             }
 
             // if we failed to get a ticket, then remove DB record 
             _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
-            //await RemoveAsync(key);
+            await RemoveAsync(key);
 
             return ticket;
         }
@@ -99,8 +99,7 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task RenewAsync(string key, AuthenticationTicket ticket)
         {
-            _logger.LogDebug("RenewAsync key {key}", key);
-            _logger.LogDebug("RenewAsync new expiration {0}", ticket.GetExpiration());
+            _logger.LogDebug("Renewing AuthenticationTicket for key {key}, with expiration: {expiration}", key, ticket.GetExpiration());
 
             var session = await _store.GetUserSessionAsync(key);
             if (session == null)
@@ -118,11 +117,6 @@ namespace Duende.Bff
                 throw new InvalidOperationException($"Session id claim value does not match ticket in database for key `{key}`");
             }
 
-            if (session.Expires == ticket.GetExpiration().Value)
-            {
-                _logger.LogWarning("New ticket expiration same as old: {0} for key {key}", session.Expires, session.Key);
-            }
-
             await _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
                 Renewed = ticket.GetIssued(),
                 Expires = ticket.GetExpiration(),
@@ -133,7 +127,7 @@ namespace Duende.Bff
         /// <inheritdoc />
         public Task RemoveAsync(string key)
         {
-            _logger.LogDebug("RemoveAsync key {key}", key);
+            _logger.LogDebug("Removing AuthenticationTicket from store for key {key}", key);
 
             return _store.DeleteUserSessionAsync(key);
         }
