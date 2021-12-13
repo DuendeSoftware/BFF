@@ -2,6 +2,7 @@
 // // See LICENSE in the project root for license information.
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -17,11 +18,16 @@ namespace Duende.Bff
     {
         private readonly IWebHostEnvironment _environment;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="environment"></param>
         public DefaultDiagnosticsService(IWebHostEnvironment environment)
         {
             _environment = environment;
         }
         
+        /// <inheritdoc />
         public async Task ProcessRequestAsync(HttpContext context)
         {
             if (!_environment.IsDevelopment())
@@ -38,8 +44,20 @@ namespace Duende.Bff
                 UserAccessToken = usertoken,
                 ClientAccessToken = clientToken
             };
+            
+#if NET6_0_OR_GREATER
+            var options = new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+#else
+            var options = new JsonSerializerOptions
+            {
+                IgnoreNullValues = true
+            };
+#endif
 
-            var json = JsonSerializer.Serialize(info, new JsonSerializerOptions { IgnoreNullValues = true });
+            var json = JsonSerializer.Serialize(info, options);
 
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(json);
