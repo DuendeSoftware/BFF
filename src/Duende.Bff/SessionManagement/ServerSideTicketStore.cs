@@ -73,7 +73,6 @@ namespace Duende.Bff
         public async Task<AuthenticationTicket> RetrieveAsync(string key)
         {
             _logger.LogDebug("Retrieve AuthenticationTicket for key {key}", key);
-            await Task.Delay(500);
 
             var session = await _store.GetUserSessionAsync(key);
             if (session == null)
