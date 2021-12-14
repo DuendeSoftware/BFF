@@ -50,6 +50,8 @@ namespace Duende.Bff
             });
 
             var key = CryptoRandom.CreateUniqueId(format: CryptoRandom.OutputFormat.Hex);
+            
+            _logger.LogDebug("Creating entry in store for AuthenticationTicket, key {key}, with expiration: {expiration}", key, ticket.GetExpiration());
 
             var session = new UserSession
             {
@@ -70,11 +72,21 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task<AuthenticationTicket> RetrieveAsync(string key)
         {
+            _logger.LogDebug("Retrieve AuthenticationTicket for key {key}", key);
+
             var session = await _store.GetUserSessionAsync(key);
-            if (session == null) return null;
+            if (session == null)
+            {
+                _logger.LogDebug("No ticket found in store for {key}", key);
+                return null;
+            }
             
             var ticket = session.Deserialize(_protector, _logger);
-            if (ticket != null) return ticket;
+            if (ticket != null)
+            {
+                _logger.LogDebug("Ticket loaded for key: {key}, with expiration: {expiration}", key, ticket.GetExpiration());
+                return ticket;
+            }
 
             // if we failed to get a ticket, then remove DB record 
             _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
@@ -86,6 +98,8 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task RenewAsync(string key, AuthenticationTicket ticket)
         {
+            _logger.LogDebug("Renewing AuthenticationTicket for key {key}, with expiration: {expiration}", key, ticket.GetExpiration());
+
             var session = await _store.GetUserSessionAsync(key);
             if (session == null)
             {
@@ -112,6 +126,8 @@ namespace Duende.Bff
         /// <inheritdoc />
         public Task RemoveAsync(string key)
         {
+            _logger.LogDebug("Removing AuthenticationTicket from store for key {key}", key);
+
             return _store.DeleteUserSessionAsync(key);
         }
 

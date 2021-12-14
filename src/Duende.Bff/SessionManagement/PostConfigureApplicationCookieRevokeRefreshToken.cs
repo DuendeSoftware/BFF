@@ -1,8 +1,10 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
@@ -16,16 +18,19 @@ namespace Duende.Bff
     {
         private readonly BffOptions _options;
         private readonly string _scheme;
-        
+        private readonly ILogger<PostConfigureApplicationCookieRevokeRefreshToken> _logger;
+
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="bffOptions"></param>
         /// <param name="authOptions"></param>
-        public PostConfigureApplicationCookieRevokeRefreshToken(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions)
+        /// <param name="logger"></param>
+        public PostConfigureApplicationCookieRevokeRefreshToken(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureApplicationCookieRevokeRefreshToken> logger)
         {
             _options = bffOptions;
             _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -41,6 +46,7 @@ namespace Duende.Bff
         {
             async Task Callback(CookieSigningOutContext ctx)
             {
+                _logger.LogDebug("Revoking user's refresh tokens in OnSigningOut for subject id: {subjectId}", ctx.HttpContext.User.FindFirst(JwtClaimTypes.Subject)?.Value);
                 await ctx.HttpContext.RevokeUserRefreshTokenAsync();
                 await inner?.Invoke(ctx);
             };
