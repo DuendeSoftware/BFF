@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="JS (.NET 5)" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/Host5/Host5.csproj" />
+    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/JS5/JS5.csproj" />
     <option name="LAUNCH_PROFILE_TFM" value="net5.0" />
     <option name="LAUNCH_PROFILE_NAME" value="Host5" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="JS (.NET 3.1)" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/Host3/Host3.csproj" />
+    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/JS3/JS3.csproj" />
     <option name="LAUNCH_PROFILE_TFM" value=".NETCoreApp,Version=v3.1" />
     <option name="LAUNCH_PROFILE_NAME" value="Host3" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />

@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Host3</RootNamespace>
     </PropertyGroup>
     
     <ItemGroup>
