@@ -58,7 +58,7 @@ namespace Duende.Bff
             {
                 var claims = new List<ClaimRecord>();
                 claims.AddRange(GetUserClaims(result));
-                claims.AddRange(GetManagementClaims(result));
+                claims.AddRange(GetManagementClaims(context, result));
 
                 var json = JsonSerializer.Serialize(claims);
 
@@ -81,18 +81,21 @@ namespace Duende.Bff
         /// <summary>
         /// Collect management claims
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="authenticateResult"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<ClaimRecord> GetManagementClaims(AuthenticateResult authenticateResult)
+        protected virtual IEnumerable<ClaimRecord> GetManagementClaims(HttpContext context, AuthenticateResult authenticateResult)
         {
             var claims = new List<ClaimRecord>();
+
+            var pathBase = context.Request.PathBase;
 
             var sessionId = authenticateResult.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
             if (!String.IsNullOrWhiteSpace(sessionId))
             {
                 claims.Add(new ClaimRecord(
                     Constants.ClaimTypes.LogoutUrl,
-                    Options.ManagementBasePath.Add($"/logout?sid={UrlEncoder.Default.Encode(sessionId)}").Value));
+                    pathBase + Options.LogoutPath.Value + $"?sid={UrlEncoder.Default.Encode(sessionId)}"));
             }
 
             var expiresInSeconds =
