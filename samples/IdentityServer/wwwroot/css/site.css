@@ -1,4 +1,4 @@
-.welcome-page .logo {
+﻿.welcome-page .logo {
   width: 64px; }
 
 .icon-banner {
@@ -28,3 +28,6 @@
       height: 100px; }
   .grants-page .card label {
     font-weight: bold; }
+
+.ciba-page form {
+  display: inline; }
