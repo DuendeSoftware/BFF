@@ -11,6 +11,21 @@ namespace Duende.Bff
     public class UserSessionUpdate
     {
         /// <summary>
+        /// The subject ID
+        /// </summary>
+        public string SubjectId { get; set; }
+
+        /// <summary>
+        /// The session ID
+        /// </summary>
+        public string SessionId { get; set; }
+
+        /// <summary>
+        /// The creation time
+        /// </summary>
+        public DateTime Created { get; set; }
+        
+        /// <summary>
         /// The renewal time
         /// </summary>
         public DateTime Renewed { get; set; }
@@ -32,6 +47,9 @@ namespace Duende.Bff
         /// <returns></returns>
         public void CopyTo(UserSessionUpdate other)
         {
+            other.SubjectId = SubjectId;
+            other.SessionId = SessionId;
+            other.Created = Created;
             other.Renewed = Renewed;
             other.Expires = Expires;
             other.Ticket = Ticket;

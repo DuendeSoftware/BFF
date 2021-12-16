@@ -16,21 +16,6 @@ namespace Duende.Bff
         public string Key { get; set; }
 
         /// <summary>
-        /// The subject ID
-        /// </summary>
-        public string SubjectId { get; set; }
-        
-        /// <summary>
-        /// The session ID
-        /// </summary>
-        public string SessionId { get; set; }
-        
-        /// <summary>
-        /// The creation time
-        /// </summary>
-        public DateTime Created { get; set; }
-        
-        /// <summary>
         /// Clones the instance
         /// </summary>
         /// <returns></returns>
@@ -49,12 +34,7 @@ namespace Duende.Bff
         public void CopyTo(UserSession other)
         {
             other.Key = Key;
-            other.SubjectId = SubjectId;
-            other.SessionId = SessionId;
-            other.Created = Created;
-            other.Renewed = Renewed;
-            other.Expires = Expires;
-            other.Ticket = Ticket;
+            base.CopyTo(other);
         }
     }
 }
