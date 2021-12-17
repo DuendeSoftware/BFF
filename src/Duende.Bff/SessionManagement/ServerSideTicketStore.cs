@@ -98,25 +98,23 @@ namespace Duende.Bff
         /// <inheritdoc />
         public async Task RenewAsync(string key, AuthenticationTicket ticket)
         {
-            _logger.LogDebug("Renewing AuthenticationTicket for key {key}, with expiration: {expiration}", key, ticket.GetExpiration());
-
             var session = await _store.GetUserSessionAsync(key);
             if (session == null)
             {
                 throw new InvalidOperationException($"No matching item in store for key `{key}`");
             }
 
-            if (session.SubjectId != ticket.GetSubjectId())
-            {
-                throw new InvalidOperationException($"Subject id claim value does not match ticket in database for key `{key}`");
-            }
-            
-            if (session.SessionId != ticket.GetSessionId())
-            {
-                throw new InvalidOperationException($"Session id claim value does not match ticket in database for key `{key}`");
-            }
+            _logger.LogDebug("Renewing AuthenticationTicket for key {key}, with expiration: {expiration}", key, ticket.GetExpiration());
+
+            var sub = ticket.GetSubjectId();
+            var sid = ticket.GetSessionId();
+            var isNew = session.SubjectId != sub || session.SessionId != sid;
+            var created = isNew ? ticket.GetIssued() : session.Created;
 
             await _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
+                SubjectId = ticket.GetSubjectId(),
+                SessionId = ticket.GetSessionId(),
+                Created = created,
                 Renewed = ticket.GetIssued(),
                 Expires = ticket.GetExpiration(),
                 Ticket = ticket.Serialize(_protector)

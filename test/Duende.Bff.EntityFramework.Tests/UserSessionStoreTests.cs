@@ -95,21 +95,48 @@ namespace Duende.Bff.EntityFramework.Tests
                 Ticket = "ticket"
             });
 
-            await _subject.UpdateUserSessionAsync("key123", new UserSessionUpdate {
-                Ticket = "ticket2",
-                Renewed = new DateTime(2024, 1, 3, 5, 7, 9, DateTimeKind.Utc),
-                Expires = new DateTime(2025, 2, 4, 6, 8, 10, DateTimeKind.Utc)
-            });
+            {
+                await _subject.UpdateUserSessionAsync("key123", new UserSessionUpdate
+                {
+                    Ticket = "ticket2",
+                    SessionId = "sid",
+                    SubjectId = "sub",
+                    Created = new DateTime(2020, 3, 1, 9, 12, 33, DateTimeKind.Utc),
+                    Renewed = new DateTime(2024, 1, 3, 5, 7, 9, DateTimeKind.Utc),
+                    Expires = new DateTime(2025, 2, 4, 6, 8, 10, DateTimeKind.Utc)
+                });
 
-            var item = await _subject.GetUserSessionAsync("key123");
-            item.Should().NotBeNull();
-            item.Key.Should().Be("key123");
-            item.SubjectId.Should().Be("sub");
-            item.SessionId.Should().Be("sid");
-            item.Ticket.Should().Be("ticket2");
-            item.Created.Should().Be(new DateTime(2020, 3, 1, 9, 12, 33, DateTimeKind.Utc));
-            item.Renewed.Should().Be(new DateTime(2024, 1, 3, 5, 7, 9, DateTimeKind.Utc));
-            item.Expires.Should().Be(new DateTime(2025, 2, 4, 6, 8, 10, DateTimeKind.Utc));
+                var item = await _subject.GetUserSessionAsync("key123");
+                item.Should().NotBeNull();
+                item.Key.Should().Be("key123");
+                item.SubjectId.Should().Be("sub");
+                item.SessionId.Should().Be("sid");
+                item.Ticket.Should().Be("ticket2");
+                item.Created.Should().Be(new DateTime(2020, 3, 1, 9, 12, 33, DateTimeKind.Utc));
+                item.Renewed.Should().Be(new DateTime(2024, 1, 3, 5, 7, 9, DateTimeKind.Utc));
+                item.Expires.Should().Be(new DateTime(2025, 2, 4, 6, 8, 10, DateTimeKind.Utc));
+            }
+            {
+                await _subject.UpdateUserSessionAsync("key123", new UserSessionUpdate
+                {
+                    Ticket = "ticket3",
+                    SessionId = "sid2",
+                    SubjectId = "sub2",
+                    Created = new DateTime(2022, 3, 1, 9, 12, 33, DateTimeKind.Utc),
+                    Renewed = new DateTime(2024, 1, 3, 5, 7, 9, DateTimeKind.Utc),
+                    Expires = new DateTime(2025, 2, 4, 6, 8, 10, DateTimeKind.Utc)
+                });
+
+                var item = await _subject.GetUserSessionAsync("key123");
+                item.Should().NotBeNull();
+                item.Key.Should().Be("key123");
+                item.SubjectId.Should().Be("sub2");
+                item.SessionId.Should().Be("sid2");
+                item.Ticket.Should().Be("ticket3");
+                item.Created.Should().Be(new DateTime(2022, 3, 1, 9, 12, 33, DateTimeKind.Utc));
+                item.Renewed.Should().Be(new DateTime(2024, 1, 3, 5, 7, 9, DateTimeKind.Utc));
+                item.Expires.Should().Be(new DateTime(2025, 2, 4, 6, 8, 10, DateTimeKind.Utc));
+            }
         }
         [Fact]
         public async Task UpdateUserSessionAsync_for_invalid_key_should_succeed()
