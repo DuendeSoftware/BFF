@@ -15,7 +15,11 @@ namespace Duende.Bff.Endpoints
 {
     internal class LicenseValidator
     {
-        const string LicenseFileName = "Duende_IdentityServer_License.key";
+        static readonly string[] LicenseFileNames = new[]
+        {
+            "Duende_License.key",
+            "Duende_IdentityServer_License.key",
+        };
 
         static ILogger _logger;
         static License _license;
@@ -30,10 +34,13 @@ namespace Duende.Bff.Endpoints
 
         private static string LoadFromFile()
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), LicenseFileName);
-            if (File.Exists(path))
+            foreach (var name in LicenseFileNames)
             {
-                return File.ReadAllText(path).Trim();
+                var path = Path.Combine(Directory.GetCurrentDirectory(), name);
+                if (File.Exists(path))
+                {
+                    return File.ReadAllText(path).Trim();
+                }
             }
 
             return null;
@@ -45,12 +52,16 @@ namespace Duende.Bff.Endpoints
 
             if (_license == null)
             {
-                var message = "You do not have a valid license key for Duende IdentityServer. " +
+                var message = "You do not have a valid license key for the Duende software. " +
                               "This is allowed for development and testing scenarios. " +
                               "If you are running in production you are required to have a licensed version. Please start a conversation with us: https://duendesoftware.com/contact";
 
                 _logger.LogWarning(message);
                 return;
+            }
+            else if (!_license.BffFeature)
+            {
+                errors.Add($"Your Duende software license does not include the BFF feature.");
             }
             else
             {
@@ -62,13 +73,8 @@ namespace Duende.Bff.Endpoints
                     var diff = DateTime.UtcNow.Date.Subtract(_license.Expiration.Value.Date).TotalDays;
                     if (diff > 0 && !_license.ISVFeature)
                     {
-                        errors.Add($"Your license for Duende IdentityServer expired {diff} days ago.");
+                        errors.Add($"Your license for the Duende software expired {diff} days ago.");
                     }
-                }
-
-                if (!_license.BffFeature)
-                {
-                    errors.Add($"Your IdentityServer license does not include the BFF feature.");
                 }
             }
 
@@ -82,7 +88,7 @@ namespace Duende.Bff.Endpoints
                 if (_license != null)
                 {
                     _logger.LogError(
-                        "Please contact {licenceContact} from {licenseCompany} to obtain a valid license for Duende IdentityServer.",
+                        "Please contact {licenceContact} from {licenseCompany} to obtain a valid license for the Duende software.",
                         _license.ContactInfo, _license.CompanyName);
                 }
             }
@@ -91,14 +97,14 @@ namespace Duende.Bff.Endpoints
                 if (_license.Expiration.HasValue)
                 {
                     Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
-                    log.Invoke("You have a valid license key for Duende IdentityServer {edition} edition for use at {licenseCompany}. The license expires on {licenseExpiration}.",
+                    log.Invoke("You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}. The license expires on {licenseExpiration}.",
                         new object[] { _license.Edition, _license.CompanyName, _license.Expiration.Value.ToLongDateString() });
                 }
                 else
                 {
                     Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
                     log.Invoke(
-                        "You have a valid license key for Duende IdentityServer {edition} edition for use at {licenseCompany}.",
+                        "You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}.",
                         new object[] { _license.Edition, _license.CompanyName });
                 }
             }
