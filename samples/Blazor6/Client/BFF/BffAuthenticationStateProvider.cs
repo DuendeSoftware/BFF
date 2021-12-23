@@ -4,36 +4,36 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Blazor6.Client.BFF;
 
+// thanks to Bernd Hirschmann for this code
+// https://github.com/berhir/BlazorWebAssemblyCookieAuth
 public class BffAuthenticationStateProvider : AuthenticationStateProvider
 {
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
-    private readonly NavigationManager _navigation;
     private readonly HttpClient _client;
     private readonly ILogger<BffAuthenticationStateProvider> _logger;
 
     private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
     private ClaimsPrincipal _cachedUser = new ClaimsPrincipal(new ClaimsIdentity());
 
-    public BffAuthenticationStateProvider(NavigationManager navigation, HttpClient client,
+    public BffAuthenticationStateProvider(
+        HttpClient client,
         ILogger<BffAuthenticationStateProvider> logger)
     {
-        _navigation = navigation;
         _client = client;
         _logger = logger;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        return new AuthenticationState(await GetUser(useCache: true));
+        return new AuthenticationState(await GetUser());
     }
 
-    private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
+    private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = true)
     {
         var now = DateTimeOffset.Now;
         if (useCache && now < _userLastCheck + UserCacheRefreshInterval)
@@ -56,7 +56,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         try
         {
             _logger.LogInformation("Fetching user information.");
-            var response = await _client.GetAsync("bff/user");
+            var response = await _client.GetAsync("bff/user?slide=false");
 
             if (response.StatusCode == HttpStatusCode.OK)
             {

@@ -4,8 +4,6 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
-using Yarp.ReverseProxy.Configuration;
-using Yarp.ReverseProxy.Forwarder;
 
 namespace Duende.Bff.Yarp
 {

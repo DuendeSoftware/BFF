@@ -25,7 +25,7 @@ try
             "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
             theme: AnsiConsoleTheme.Code));
     
-    builder.Services.AddControllersWithViews();
+    builder.Services.AddControllers();
     builder.Services.AddRazorPages();
     builder.Services.AddBff();
     
@@ -73,11 +73,7 @@ try
     else
     {
         app.UseExceptionHandler("/Error");
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
     }
-    
-    app.UseHttpsRedirection();
     
     app.UseBlazorFrameworkFiles();
     app.UseStaticFiles();

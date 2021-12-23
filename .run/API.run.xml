@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="API" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
     <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/Api/Api.csproj" />
-    <option name="LAUNCH_PROFILE_TFM" value="net5.0" />
+    <option name="LAUNCH_PROFILE_TFM" value="net6.0" />
     <option name="LAUNCH_PROFILE_NAME" value="Api" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />

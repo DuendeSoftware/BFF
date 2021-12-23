@@ -3,7 +3,6 @@
 
 
 using Duende.IdentityServer.Models;
-using System.Collections.Generic;
 
 namespace IdentityServerHost
 {
