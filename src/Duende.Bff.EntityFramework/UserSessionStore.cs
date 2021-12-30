@@ -56,7 +56,22 @@ namespace Duende.Bff.EntityFramework
             if (item != null)
             {
                 _sessionDbContext.UserSessions.Remove(item);
-                await _sessionDbContext.SaveChangesAsync(cancellationToken);
+                try
+                {
+                   await _sessionDbContext.SaveChangesAsync(cancellationToken);
+                }
+                catch(DbUpdateConcurrencyException ex)
+                {
+                    // suppressing exception for concurrent deletes
+                    // https://github.com/DuendeSoftware/BFF/issues/63
+                    _logger.LogDebug("DbUpdateConcurrencyException: {error}", ex.Message);
+                    
+                    foreach (var entry in ex.Entries)
+                    {
+                        // mark detatched so another call to SaveChangesAsync won't throw again
+                        entry.State = EntityState.Detached;
+                    }
+                }
             }
             else
             {
@@ -90,7 +105,23 @@ namespace Duende.Bff.EntityFramework
             }
 
             _sessionDbContext.RemoveRange(items);
-            await _sessionDbContext.SaveChangesAsync(cancellationToken);
+
+            try
+            {
+                await _sessionDbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // suppressing exception for concurrent deletes
+                // https://github.com/DuendeSoftware/BFF/issues/63
+                _logger.LogDebug("DbUpdateConcurrencyException: {error}", ex.Message);
+
+                foreach (var entry in ex.Entries)
+                {
+                    // mark detatched so another call to SaveChangesAsync won't throw again
+                    entry.State = EntityState.Detached;
+                }
+            }
         }
 
         /// <inheritdoc/>
