@@ -806,5 +806,58 @@ namespace Duende.Bff.EntityFramework.Tests
             Func<Task> f = () => _subject.DeleteUserSessionsAsync(new UserSessionsFilter());
             f.Should().Throw<Exception>();
         }
+        
+        [Fact]
+        public async Task concurrent_deletes_with_exception_handler_and_detatching_should_succeed()
+        {
+            var dbName = Guid.NewGuid().ToString();
+            var services = new ServiceCollection();
+            services.AddBff()
+                .AddEntityFrameworkServerSideSessions(options => options.UseInMemoryDatabase(dbName));
+            var provider = services.BuildServiceProvider();
+
+            using var scope0 = provider.CreateScope();
+            var ctx0 = scope0.ServiceProvider.GetRequiredService<SessionDbContext>();
+            var key = Guid.NewGuid().ToString();
+            ctx0.UserSessions.Add(new UserSessionEntity { 
+                Key = key,
+                Ticket = "ticket",
+                ApplicationName = "app",
+                SubjectId = "sub",
+                SessionId = "sid",
+            });
+            await ctx0.SaveChangesAsync();
+            
+            using var scope1 = provider.CreateScope();
+            var ctx1 = scope1.ServiceProvider.GetRequiredService<SessionDbContext>();
+            var item1 = ctx1.UserSessions.Single(x => x.Key == key);
+            ctx1.UserSessions.Remove(item1);
+            
+            using var scope2 = provider.CreateScope();
+            var ctx2 = scope2.ServiceProvider.GetRequiredService<SessionDbContext>();
+            var item2 = ctx2.UserSessions.Single(x => x.Key == key);
+            ctx2.UserSessions.Remove(item2);
+
+            await ctx1.SaveChangesAsync();
+
+            Func<Task> f1 = async () => await ctx2.SaveChangesAsync();
+            f1.Should().Throw<DbUpdateConcurrencyException>();
+
+            try
+            {
+                await ctx2.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                foreach (var entry in ex.Entries)
+                {
+                    // mark detatched so another call to SaveChangesAsync won't throw again
+                    entry.State = EntityState.Detached;
+                }
+            }
+
+            // calling again to not throw
+            await ctx2.SaveChangesAsync();
+        }
     }
 }
