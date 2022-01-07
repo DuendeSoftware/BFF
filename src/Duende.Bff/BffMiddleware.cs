@@ -81,26 +81,31 @@ namespace Duende.Bff.Endpoints
                 }
             }
 
-            await _next(context);
-
-            // outbound: for .NET Core 3.1 - we assume that an API will never return a 302
-            // if a 302 is returned, that must be the challenge to the OIDC provider
-            // we convert this to a 401
-            // in .NET 5 we can use the AuthorizationMiddlewareResultHandler for this logic
-
 #if NETCOREAPP3_1
-            var remoteEndoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
-            var localEndoint = endpoint.Metadata.GetMetadata<BffApiAttribute>();
-
-            if (localEndoint != null || remoteEndoint != null)
+            context.Response.OnStarting(() => 
             {
-                if (context.Response.StatusCode == 302)
+                // outbound: for .NET Core 3.1 - we assume that an API will never return a 302
+                // if a 302 is returned, that must be the challenge to the OIDC provider
+                // we convert this to a 401
+                // in .NET 5 we can use the AuthorizationMiddlewareResultHandler for this logic
+
+                var remoteEndoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
+                var localEndoint = endpoint.Metadata.GetMetadata<BffApiAttribute>();
+
+                if (localEndoint != null || remoteEndoint != null)
                 {
-                    context.Response.StatusCode = 401;
-                    context.Response.Headers["Location"] = "";
+                    if (context.Response.StatusCode == 302)
+                    {
+                        context.Response.StatusCode = 401;
+                        context.Response.Headers.Remove("Location");
+                        context.Response.Headers.Remove("Set-Cookie");
+                    }
                 }
-            }
+                return Task.CompletedTask;
+            });
 #endif
+
+            await _next(context);
         }
     }
 }
