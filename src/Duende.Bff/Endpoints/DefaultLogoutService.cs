@@ -61,7 +61,7 @@ namespace Duende.Bff
             {
                 if (!Util.IsLocalUrl(returnUrl))
                 {
-                    throw new Exception("returnUrl is not application local");
+                    throw new Exception("returnUrl is not application local: " + returnUrl);
                 }
             }
 
