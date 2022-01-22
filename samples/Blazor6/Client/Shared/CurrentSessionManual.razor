@@ -1,0 +1,46 @@
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (currentUser == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (currentUser.Identity.IsAuthenticated)
+    {
+        <dl>
+            @foreach (var claim in currentUser.Claims)
+            {
+                <dt>@claim.Type</dt>
+                <dd>@claim.Value</dd>
+            }
+        </dl>
+    }
+    else
+    {
+        <h3>No session</h3>
+    }
+}
+
+
+
+@code {
+    private ClaimsPrincipal currentUser;
+    
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged += OnChange;
+        
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        currentUser = state.User;
+    }
+
+    private void OnChange(Task<AuthenticationState> task)
+    {
+        StateHasChanged();
+    }
+
+}
