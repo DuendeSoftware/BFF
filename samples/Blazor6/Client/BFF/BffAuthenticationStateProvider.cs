@@ -36,8 +36,9 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         if (user.Identity.IsAuthenticated)
         {
             _logger.LogInformation("starting background check..");
+            System.Threading.Timer timer = null;
             
-            var timer = new System.Threading.Timer(async (object stateInfo) =>
+            timer = new System.Threading.Timer(async (object stateInfo) =>
             {
                 _logger.LogInformation("background check..");
                 
@@ -46,13 +47,12 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                 {
                     _logger.LogInformation("user logged out");
                     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+                    timer.Dispose();
                 }
                 
                 _logger.LogInformation("user still logged in");
+            }, null, 1000, 5000);
             
-                //custs = await Http.GetFromJsonAsync<List<Customer>>("/api/customers");
-                //StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-            }, new System.Threading.AutoResetEvent(false), 1000, 1000);    
         }
         
         return new AuthenticationState(await GetUser());
