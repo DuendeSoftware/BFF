@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Blazor6.Client.BFF;
 
-// thanks to Bernd Hirschmann for this code
-// https://github.com/berhir/BlazorWebAssemblyCookieAuth
 public class BffAuthenticationStateProvider : AuthenticationStateProvider
 {
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
@@ -18,7 +16,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     private readonly ILogger<BffAuthenticationStateProvider> _logger;
 
     private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
-    private ClaimsPrincipal _cachedUser = new ClaimsPrincipal(new ClaimsIdentity());
+    private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
     public BffAuthenticationStateProvider(
         HttpClient client,
@@ -38,10 +36,8 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
             _logger.LogInformation("starting background check..");
             System.Threading.Timer timer = null;
             
-            timer = new System.Threading.Timer(async (object stateInfo) =>
+            timer = new Timer(async (object stateInfo) =>
             {
-                _logger.LogInformation("background check..");
-                
                 var user = await GetUser(false);
                 if (user.Identity.IsAuthenticated == false)
                 {
@@ -49,13 +45,11 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
                     timer.Dispose();
                 }
-                
-                _logger.LogInformation("user still logged in");
             }, null, 1000, 5000);
             
         }
-        
-        return new AuthenticationState(await GetUser());
+
+        return state;
     }
 
     private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = true)
