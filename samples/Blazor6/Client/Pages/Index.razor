@@ -4,14 +4,4 @@
 
 <h1>Hello, Blazor BFF!</h1>
 
-<AuthorizeView>
-    <Authorized>
-        <dl>
-            @foreach (var claim in @context.User.Claims)
-            {
-                <dt>@claim.Type</dt>
-                <dd>@claim.Value</dd>
-            }
-        </dl>
-    </Authorized>
-</AuthorizeView>
+<CurrentSession />

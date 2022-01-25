@@ -30,6 +30,31 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
+        var user = await GetUser();
+        var state = new AuthenticationState(user);
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _logger.LogInformation("starting background check..");
+            System.Threading.Timer timer = null;
+            
+            timer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                _logger.LogInformation("background check..");
+                
+                var user = await GetUser(false);
+                if (user.Identity.IsAuthenticated == false)
+                {
+                    _logger.LogInformation("user logged out");
+                    NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+                    timer.Dispose();
+                }
+                
+                _logger.LogInformation("user still logged in");
+            }, null, 1000, 5000);
+            
+        }
+        
         return new AuthenticationState(await GetUser());
     }
 
