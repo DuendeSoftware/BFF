@@ -34,19 +34,18 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         if (user.Identity.IsAuthenticated)
         {
             _logger.LogInformation("starting background check..");
-            System.Threading.Timer timer = null;
+            Timer? timer = null;
             
-            timer = new Timer(async (object stateInfo) =>
+            timer = new Timer(async _ =>
             {
-                var user = await GetUser(false);
-                if (user.Identity.IsAuthenticated == false)
+                var currentUser = await GetUser(false);
+                if (currentUser.Identity.IsAuthenticated == false)
                 {
                     _logger.LogInformation("user logged out");
-                    NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
-                    timer.Dispose();
+                    NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
+                    await timer.DisposeAsync();
                 }
             }, null, 1000, 5000);
-            
         }
 
         return state;
