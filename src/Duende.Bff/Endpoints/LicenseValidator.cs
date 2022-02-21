@@ -22,7 +22,7 @@ namespace Duende.Bff.Endpoints
         };
 
         static ILogger _logger;
-        static License _license;
+        static License? _license;
 
         public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)
         {
@@ -32,7 +32,7 @@ namespace Duende.Bff.Endpoints
             _license = ValidateKey(key);
         }
 
-        private static string LoadFromFile()
+        private static string? LoadFromFile()
         {
             foreach (var name in LicenseFileNames)
             {
@@ -110,13 +110,12 @@ namespace Duende.Bff.Endpoints
             }
         }
 
-        internal static License ValidateKey(string licenseKey)
+        internal static License? ValidateKey(string? licenseKey)
         {
             if (!String.IsNullOrWhiteSpace(licenseKey))
             {
                 var handler = new JsonWebTokenHandler();
-
-
+                
                 var rsa = new RSAParameters
                 {
                     Exponent = Convert.FromBase64String("AQAB"),
@@ -142,10 +141,8 @@ namespace Duende.Bff.Endpoints
                 {
                     return new License(new ClaimsPrincipal(validateResult.ClaimsIdentity));
                 }
-                else
-                {
-                    _logger.LogCritical(validateResult.Exception, "Error validating Duende IdentityServer license key");
-                }
+
+                _logger.LogCritical(validateResult.Exception, "Error validating Duende license key");
             }
 
             return null;

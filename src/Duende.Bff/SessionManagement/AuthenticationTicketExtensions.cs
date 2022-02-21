@@ -19,7 +19,7 @@ namespace Duende.Bff
     /// </summary>
     public static class AuthenticationTicketExtensions
     {
-        static readonly JsonSerializerOptions _jsonOptions = new()
+        static readonly JsonSerializerOptions JsonOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
@@ -104,11 +104,11 @@ namespace Duende.Bff
                 Items = ticket.Properties.Items
             };
 
-            var payload = JsonSerializer.Serialize(data, _jsonOptions);
+            var payload = JsonSerializer.Serialize(data, JsonOptions);
             payload = protector.Protect(payload);
             
             var envelope = new Envelope { Version = 1, Payload = payload };
-            var value = JsonSerializer.Serialize(envelope, _jsonOptions);
+            var value = JsonSerializer.Serialize(envelope, JsonOptions);
 
             return value;
         }
@@ -120,7 +120,7 @@ namespace Duende.Bff
         {
             try
             {
-                var envelope = JsonSerializer.Deserialize<Envelope>(session.Ticket, _jsonOptions);
+                var envelope = JsonSerializer.Deserialize<Envelope>(session.Ticket, JsonOptions);
                 if (envelope.Version != 1)
                 {
                     logger.LogWarning("Deserializing AuthenticationTicket envelope found incorrect version for key {key}.", session.Key);
@@ -138,7 +138,7 @@ namespace Duende.Bff
                     return null;
                 }
 
-                var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(payload, _jsonOptions);
+                var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(payload, JsonOptions);
 
                 var user = ticket.User.ToClaimsPrincipal();
                 var properties = new AuthenticationProperties(ticket.Items);
