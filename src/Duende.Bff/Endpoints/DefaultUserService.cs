@@ -99,7 +99,7 @@ namespace Duende.Bff
             }
 
             var expiresInSeconds =
-                authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
+                authenticateResult.Properties.ExpiresUtc!.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
             claims.Add(new ClaimRecord(
                 Constants.ClaimTypes.SessionExpiresIn,
                 Math.Round(expiresInSeconds)));

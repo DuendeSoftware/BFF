@@ -28,7 +28,7 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public Task<UserSession> GetUserSessionAsync(string key, CancellationToken cancellationToken = default)
+        public Task<UserSession?> GetUserSessionAsync(string key, CancellationToken cancellationToken = default)
         {
             _store.TryGetValue(key, out var item);
             return Task.FromResult(item?.Clone());

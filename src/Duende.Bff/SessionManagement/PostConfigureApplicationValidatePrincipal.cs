@@ -28,7 +28,7 @@ namespace Duende.Bff
         public PostConfigureApplicationValidatePrincipal(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureApplicationValidatePrincipal> logger)
         {
             _options = bffOptions;
-            _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme;
+            _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme!;
             _logger = logger;
         }
 

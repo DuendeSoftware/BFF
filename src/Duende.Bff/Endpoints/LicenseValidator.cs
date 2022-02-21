@@ -21,7 +21,7 @@ namespace Duende.Bff.Endpoints
             "Duende_IdentityServer_License.key",
         };
 
-        static ILogger _logger;
+        static ILogger? _logger;
         static License? _license;
 
         public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)

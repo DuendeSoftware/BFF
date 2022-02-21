@@ -125,7 +125,7 @@ namespace Duende.Bff.EntityFramework
         }
 
         /// <inheritdoc/>
-        public async Task<UserSession> GetUserSessionAsync(string key, CancellationToken cancellationToken)
+        public async Task<UserSession?> GetUserSessionAsync(string key, CancellationToken cancellationToken)
         {
             var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationName == _applicationDiscriminator).ToArrayAsync(cancellationToken);
             var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationName == _applicationDiscriminator);

@@ -59,8 +59,8 @@ namespace Duende.Bff
                 Created = ticket.GetIssued(),
                 Renewed = ticket.GetIssued(),
                 Expires = ticket.GetExpiration(),
-                SubjectId = ticket.GetSubjectId(),
-                SessionId = ticket.GetSessionId(),
+                SubjectId = ticket.GetSubjectId()!,
+                SessionId = ticket.GetSessionId()!,
                 Ticket = ticket.Serialize(_protector)
             };
 
@@ -78,7 +78,7 @@ namespace Duende.Bff
             if (session == null)
             {
                 _logger.LogDebug("No ticket found in store for {key}", key);
-                return null;
+                return null!;
             }
             
             var ticket = session.Deserialize(_protector, _logger);
@@ -92,7 +92,7 @@ namespace Duende.Bff
             _logger.LogWarning("Failed to deserialize authentication ticket from store, deleting record for key {key}", key);
             await RemoveAsync(key);
 
-            return ticket;
+            return ticket!;
         }
 
         /// <inheritdoc />
@@ -112,8 +112,8 @@ namespace Duende.Bff
             var created = isNew ? ticket.GetIssued() : session.Created;
 
             await _store.UpdateUserSessionAsync(key, new UserSessionUpdate {
-                SubjectId = ticket.GetSubjectId(),
-                SessionId = ticket.GetSessionId(),
+                SubjectId = ticket.GetSubjectId()!,
+                SessionId = ticket.GetSessionId()!,
                 Created = created,
                 Renewed = ticket.GetIssued(),
                 Expires = ticket.GetExpiration(),

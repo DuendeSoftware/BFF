@@ -48,7 +48,7 @@ namespace Duende.Bff
             {
                 _logger.LogDebug("Revoking user's refresh tokens in OnSigningOut for subject id: {subjectId}", ctx.HttpContext.User.FindFirst(JwtClaimTypes.Subject)?.Value);
                 await ctx.HttpContext.RevokeUserRefreshTokenAsync();
-                await inner?.Invoke(ctx);
+                await inner?.Invoke(ctx)!;
             };
 
             return Callback;

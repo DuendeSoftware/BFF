@@ -19,8 +19,8 @@ namespace Duende.Bff.Endpoints
 
         public License(ClaimsPrincipal claims)
         {
-            CompanyName = claims.FindFirst("company_name")?.Value;
-            ContactInfo = claims.FindFirst("contact_info")?.Value;
+            CompanyName = claims.FindFirst("company_name")?.Value!;
+            ContactInfo = claims.FindFirst("contact_info")?.Value!;
 
             if (Int64.TryParse(claims.FindFirst("exp")?.Value, out var exp))
             {

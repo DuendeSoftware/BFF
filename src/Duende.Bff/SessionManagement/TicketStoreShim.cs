@@ -67,7 +67,7 @@ namespace Duende.Bff
             }
 #endif
 
-            return ticket;
+            return ticket!;
         }
 
         /// <inheritdoc />
