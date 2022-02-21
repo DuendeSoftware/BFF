@@ -31,15 +31,15 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         var user = await GetUser();
         var state = new AuthenticationState(user);
 
-        if (user.Identity.IsAuthenticated)
+        if (user!.Identity!.IsAuthenticated)
         {
             _logger.LogInformation("starting background check..");
-            Timer? timer = null;
+            Timer timer = default!;
             
             timer = new Timer(async _ =>
             {
                 var currentUser = await GetUser(false);
-                if (currentUser.Identity.IsAuthenticated == false)
+                if (currentUser!.Identity!.IsAuthenticated == false)
                 {
                     _logger.LogInformation("user logged out");
                     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
@@ -85,9 +85,12 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                     "name",
                     "role");
 
-                foreach (var claim in claims)
+                if (claims != null)
                 {
-                    identity.AddClaim(new Claim(claim.Type, claim.Value.ToString()));
+                    foreach (var claim in claims)
+                    {
+                        identity.AddClaim(new Claim(claim.Type, claim.Value.ToString() ?? "no value"));
+                    }    
                 }
 
                 return new ClaimsPrincipal(identity);

@@ -13,7 +13,7 @@ namespace Host5
             var data = new
             {
                 Message = "Hello from local API",
-                User = User.FindFirst("name")?.Value ?? User.FindFirst("sub").Value
+                User = User!.FindFirst("name")?.Value ?? User!.FindFirst("sub")!.Value
             };
 
             return Ok(data);
