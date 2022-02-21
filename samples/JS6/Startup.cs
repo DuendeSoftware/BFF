@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using System.Runtime.InteropServices.ComTypes;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
@@ -71,6 +72,13 @@ namespace Host5
         {
             app.UseSerilogRequestLogging();
             app.UseDeveloperExceptionPage();
+
+            app.Use(async (ctx, next) =>
+            {
+                ctx.Items[Constants.SkipAntiforgeryCheckForRequest] = true;
+                
+                await next();
+            });
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

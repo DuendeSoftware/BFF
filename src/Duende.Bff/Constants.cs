@@ -8,6 +8,11 @@ namespace Duende.Bff
         internal const string BffMiddlewareMarker = "Duende.Bff.BffMiddlewareMarker";
 
         /// <summary>
+        /// HttpContext.Items name for indicating that antiforgery should be skipped
+        /// </summary>
+        public const string SkipAntiforgeryCheckForRequest = "Duende.Bff.SkipAntiforgeryCheckForRequest";
+
+        /// <summary>
         /// Constants used for YARP
         /// </summary>
         public static class Yarp

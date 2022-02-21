@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Duende.Bff.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
 
 namespace Duende.Bff.Endpoints
 {
@@ -69,14 +70,19 @@ namespace Duende.Bff.Endpoints
             else
             {
                 var remoteEndpoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
+                
                 if (remoteEndpoint is { RequireAntiForgeryHeader: true })
                 {
-                    if (!context.CheckAntiForgeryHeader(_options))
+                    var skipFlag = context.Items[Constants.SkipAntiforgeryCheckForRequest];
+                    if (skipFlag == null)
                     {
-                        _logger.AntiForgeryValidationFailed(context.Request.Path);
+                        if (!context.CheckAntiForgeryHeader(_options))
+                        {
+                            _logger.AntiForgeryValidationFailed(context.Request.Path);
 
-                        context.Response.StatusCode = 401;
-                        return;
+                            context.Response.StatusCode = 401;
+                            return;
+                        }
                     }
                 }
             }
