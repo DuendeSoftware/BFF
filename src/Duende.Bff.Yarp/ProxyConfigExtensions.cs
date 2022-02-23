@@ -23,23 +23,16 @@ namespace Duende.Bff.Yarp
         }
         
         /// <summary>
-        /// Adds BFF access token metadata to a route configuration
+        /// Adds anti-forgery metadata to a route configuration
         /// </summary>
         /// <param name="config"></param>
-        /// <param name="tokenType"></param>
         /// <returns></returns>
         public static RouteConfig WithAntiforgeryCheck(this RouteConfig config)
         {
             return config.WithMetadata(Constants.Yarp.AntiforgeryCheckMetadata, "true");
         }
 
-        /// <summary>
-        /// Adds metadata to a route configuration
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="tokenType"></param>
-        /// <returns></returns>
-        internal static RouteConfig WithMetadata(this RouteConfig config, string key, string value)
+        private static RouteConfig WithMetadata(this RouteConfig config, string key, string value)
         {
             Dictionary<string, string> metadata;
 

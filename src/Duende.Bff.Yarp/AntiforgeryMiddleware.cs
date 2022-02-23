@@ -9,12 +9,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff.Yarp
 {
+    /// <summary>
+    /// Middleware for YARP to check the antiforgery header
+    /// </summary>
     public class AntiforgeryMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly BffOptions _options;
         private readonly ILogger<AntiforgeryMiddleware> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="next"></param>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
         public AntiforgeryMiddleware(RequestDelegate next, BffOptions options, ILogger<AntiforgeryMiddleware> logger)
         {
             _next = next;
@@ -22,11 +31,14 @@ namespace Duende.Bff.Yarp
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get invoked for YARP requests
+        /// </summary>
+        /// <param name="context"></param>
         public async Task Invoke(HttpContext context)
         {
-            var proxyFeature = context.GetReverseProxyFeature();
-            var route = proxyFeature.Route;
-
+            var route = context.GetRouteModel();
+            
             if (route.Config.Metadata != null)
             {
                 if (route.Config.Metadata.TryGetValue(Constants.Yarp.AntiforgeryCheckMetadata, out var value))
