@@ -16,6 +16,11 @@ namespace Duende.Bff
             /// Name of toke type metadata
             /// </summary>
             public const string TokenTypeMetadata = "Duende.Bff.Yarp.TokenType";
+            
+            /// <summary>
+            /// Name of toke type metadata
+            /// </summary>
+            public const string AntiforgeryCheckMetadata = "Duende.Bff.Yarp.AntiforgeryCheck";
         }
         
         /// <summary>

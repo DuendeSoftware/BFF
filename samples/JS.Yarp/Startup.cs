@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +33,7 @@ namespace YarpHost
                         {
                             Path = "/user_api/{**catch-all}"
                         }
-                    }.WithAccessToken(TokenType.User),
+                    }.WithAccessToken(TokenType.User).WithAntiforgeryCheck(),
                     new RouteConfig()
                     {
                         RouteId = "api_client",
@@ -42,7 +43,7 @@ namespace YarpHost
                         {
                             Path = "/client_api/{**catch-all}"
                         }
-                    }.WithAccessToken(TokenType.Client),
+                    }.WithAccessToken(TokenType.Client).WithAntiforgeryCheck(),
                     new RouteConfig()
                     {
                         RouteId = "api_anon",
@@ -52,7 +53,7 @@ namespace YarpHost
                         {
                             Path = "/anon_api/{**catch-all}"
                         }
-                    }
+                    }.WithAntiforgeryCheck()
                 },
                 new[]
                 {
@@ -147,7 +148,10 @@ namespace YarpHost
                 endpoints.MapBffManagementEndpoints();
 
                 // adds BFF enhanced YARP
-                endpoints.MapBffReverseProxy();
+                endpoints.MapReverseProxy(proxyApp =>
+                {
+                    proxyApp.UseAntiforgeryCheck();
+                });
             });
         }
     }
