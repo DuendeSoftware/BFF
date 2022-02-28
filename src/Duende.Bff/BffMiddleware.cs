@@ -40,7 +40,7 @@ namespace Duende.Bff.Endpoints
         public async Task Invoke(HttpContext context)
         {
             // add marker so we can determine if middleware has run later in the pipeline
-            context.Items.Add(Constants.BffMiddlewareMarker, true);
+            context.Items[Constants.BffMiddlewareMarker] = true;
 
             // inbound: add CSRF check for local APIs 
 
