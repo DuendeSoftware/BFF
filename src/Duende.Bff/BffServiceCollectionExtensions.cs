@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="services"></param>
         /// <param name="configureAction"></param>
         /// <returns></returns>
-        public static BffBuilder AddBff(this IServiceCollection services, Action<BffOptions> configureAction = null)
+        public static BffBuilder AddBff(this IServiceCollection services, Action<BffOptions>? configureAction = null)
         {
             var opts = new BffOptions();
             configureAction?.Invoke(opts);

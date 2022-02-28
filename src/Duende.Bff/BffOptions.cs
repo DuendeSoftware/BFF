@@ -56,7 +56,7 @@ namespace Duende.Bff
         /// <summary>
         /// License key
         /// </summary>
-        public string LicenseKey { get; set; }
+        public string? LicenseKey { get; set; }
         
         /// <summary>
         /// Login endpoint

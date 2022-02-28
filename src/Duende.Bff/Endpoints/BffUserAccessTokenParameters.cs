@@ -14,8 +14,11 @@ namespace Duende.Bff
         /// <param name="challengeScheme"></param>
         /// <param name="forceRenewal"></param>
         /// <param name="resource"></param>
-        public BffUserAccessTokenParameters(string signInScheme = null, string challengeScheme = null,
-            bool forceRenewal = false, string resource = null)
+        public BffUserAccessTokenParameters(
+            string? signInScheme = null, 
+            string? challengeScheme = null,
+            bool forceRenewal = false, 
+            string? resource = null)
         {
             SignInScheme = signInScheme;
             ChallengeScheme = challengeScheme;
@@ -26,12 +29,12 @@ namespace Duende.Bff
         /// <summary>
         /// Overrides the default sign-in scheme. This information may be used for state management.
         /// </summary>
-        private string SignInScheme { get; }
+        private string? SignInScheme { get; }
 
         /// <summary>
         /// Overrides the default challenge scheme. This information may be used for deriving token service configuration.
         /// </summary>
-        private string ChallengeScheme { get; }
+        private string? ChallengeScheme { get; }
 
         /// <summary>
         /// Force renewal of token.
@@ -41,7 +44,7 @@ namespace Duende.Bff
         /// <summary>
         /// Specifies the resource parameter.
         /// </summary>
-        private string Resource { get; }
+        private string? Resource { get; }
 
         /// <summary>
         /// Retrieve a UserAccessTokenParameters
@@ -56,7 +59,6 @@ namespace Duende.Bff
                 ForceRenewal = this.ForceRenewal,
                 Resource = this.Resource
             };
-
         }
     }
 }

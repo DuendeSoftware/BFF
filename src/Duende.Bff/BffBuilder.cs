@@ -64,7 +64,7 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         /// <param name="configureClient"></param>
         /// <returns></returns>
-        public IHttpClientBuilder ConfigureTokenClient(Action<HttpClient> configureClient = null)
+        public IHttpClientBuilder ConfigureTokenClient(Action<HttpClient>? configureClient = null)
         {
             if (configureClient == null)
             {

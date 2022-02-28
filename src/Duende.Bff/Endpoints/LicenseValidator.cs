@@ -21,8 +21,8 @@ namespace Duende.Bff.Endpoints
             "Duende_IdentityServer_License.key",
         };
 
-        static ILogger _logger;
-        static License _license;
+        static ILogger _logger = default!;
+        static License? _license;
 
         public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)
         {
@@ -32,7 +32,7 @@ namespace Duende.Bff.Endpoints
             _license = ValidateKey(key);
         }
 
-        private static string LoadFromFile()
+        private static string? LoadFromFile()
         {
             foreach (var name in LicenseFileNames)
             {
@@ -110,7 +110,7 @@ namespace Duende.Bff.Endpoints
             }
         }
 
-        internal static License ValidateKey(string licenseKey)
+        internal static License? ValidateKey(string? licenseKey)
         {
             if (!String.IsNullOrWhiteSpace(licenseKey))
             {

@@ -5,6 +5,7 @@
 // for earlier .NET versions, we need to do that in the middleware
 #if NET5_0_OR_GREATER
 
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +34,8 @@ namespace Duende.Bff
             PolicyAuthorizationResult authorizeResult)
         {
             var endpoint = context.GetEndpoint();
+
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             
             var remoteApi = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
             var localApi = endpoint.Metadata.GetMetadata<BffApiAttribute>();

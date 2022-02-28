@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
 using System.Linq;
 using Duende.Bff;
 
@@ -25,6 +26,8 @@ namespace Microsoft.AspNetCore.Builder
                 var metadata =
                     endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
 
+                if (metadata == null) throw new InvalidOperationException("no metadata found");
+                
                 metadata.RequiredTokenType = type;
             });
 
@@ -44,6 +47,8 @@ namespace Microsoft.AspNetCore.Builder
                 var metadata =
                     endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
 
+                if (metadata == null) throw new InvalidOperationException("no metadata found");
+                
                 metadata.OptionalUserToken = true;
             });
 
@@ -64,6 +69,8 @@ namespace Microsoft.AspNetCore.Builder
                 var metadata =
                     endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
 
+                if (metadata == null) throw new InvalidOperationException("no metadata found");
+                
                 metadata.BffUserAccessTokenParameters = bffUserAccessTokenParameters;
             });
 
