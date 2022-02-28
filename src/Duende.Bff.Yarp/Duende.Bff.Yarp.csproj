@@ -3,7 +3,8 @@
     <PropertyGroup>
         <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <LangVersion>9.0</LangVersion>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
 
         <AssemblyName>Duende.BFF.Yarp</AssemblyName>
 

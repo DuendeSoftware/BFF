@@ -34,7 +34,7 @@ namespace Duende.Bff.Yarp
         }
         
         /// <inheritdoc />
-        public virtual HttpTransformer CreateTransformer(string localPath, string accessToken = null)
+        public virtual HttpTransformer CreateTransformer(string localPath, string? accessToken = null)
         {
             return TransformBuilder.Create(context =>
             {

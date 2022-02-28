@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Builder
             endpoints.CheckLicense();
             
             return endpoints.Map(
-                    localPath.Add("/{**catch-all}").Value,
+                    localPath.Add("/{**catch-all}").Value!,
                     RemoteApiEndpoint.Map(localPath, apiAddress))
                 .WithMetadata(new BffRemoteApiEndpointMetadata { RequireAntiForgeryHeader =  requireAntiForgeryCheck });
 
