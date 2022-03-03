@@ -16,6 +16,6 @@ namespace Duende.Bff.Yarp
         /// <param name="localPath">Local path the remote API is mapped to</param>
         /// <param name="accessToken">The access token to attach to the request (if present)</param>
         /// <returns></returns>
-        HttpTransformer CreateTransformer(string localPath, string accessToken = null);
+        HttpTransformer CreateTransformer(string localPath, string? accessToken = null);
     }
 }

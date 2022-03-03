@@ -26,6 +26,6 @@ namespace Duende.Bff
         /// <summary>
         /// Maps to UserAccessTokenParameters and included if set
         /// </summary>
-        public BffUserAccessTokenParameters BffUserAccessTokenParameters { get; set; }
+        public BffUserAccessTokenParameters? BffUserAccessTokenParameters { get; set; }
     }
 }

@@ -14,12 +14,12 @@ namespace Duende.Bff.Yarp.Logging
     
     internal static class Log
     {
-        private static readonly Action<ILogger, string, string, Exception> _accessTokenMissing = LoggerMessage.Define<string, string>(
+        private static readonly Action<ILogger, string, string, Exception?> _accessTokenMissing = LoggerMessage.Define<string, string>(
             LogLevel.Warning,
             EventIds.AccessTokenMissing,
             "Access token is missing. token type: '{tokenType}', local path: '{localpath}'.");
 
-        private static readonly Action<ILogger, string, string, Exception> _proxyResponseError = LoggerMessage.Define<string, string>(
+        private static readonly Action<ILogger, string, string, Exception?> _proxyResponseError = LoggerMessage.Define<string, string>(
             LogLevel.Information,
             EventIds.ProxyError,
             "Proxy response error. local path: '{localPath}', error: '{error}'");

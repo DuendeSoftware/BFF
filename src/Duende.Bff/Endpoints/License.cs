@@ -159,8 +159,8 @@ namespace Duende.Bff.Endpoints
             }
         }
 
-        public string CompanyName { get; set; }
-        public string ContactInfo { get; set; }
+        public string? CompanyName { get; set; }
+        public string? ContactInfo { get; set; }
 
         public DateTime? Expiration { get; set; }
 

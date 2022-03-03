@@ -65,8 +65,8 @@ namespace Duende.Bff
 
         private class DiagnosticsInfo
         {
-            public string UserAccessToken { get; set; }
-            public string ClientAccessToken { get; set; }
+            public string? UserAccessToken { get; set; }
+            public string? ClientAccessToken { get; set; }
         }
     }
 }

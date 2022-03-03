@@ -31,9 +31,9 @@ namespace Duende.Bff
             return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
         }
 
-        public static async Task<string> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserAccessTokenParameters userAccessTokenParameters = null)
+        public static async Task<string?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserAccessTokenParameters? userAccessTokenParameters = null)
         {
-            string token;
+            string? token;
 
             if (tokenType == TokenType.User)
             {

@@ -18,7 +18,7 @@ namespace Duende.Bff
     public class PostConfigureSlidingExpirationCheck : IPostConfigureOptions<CookieAuthenticationOptions>
     {
         private readonly BffOptions _options;
-        private readonly string _scheme;
+        private readonly string? _scheme;
         private readonly ILogger<PostConfigureSlidingExpirationCheck> _logger;
 
         /// <summary>

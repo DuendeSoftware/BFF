@@ -32,13 +32,14 @@ namespace Duende.Bff
             return ticket.Principal.FindFirst(JwtClaimTypes.Subject)?.Value ??
                    ticket.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
                    // for the mfa remember me cookie, ASP.NET Identity uses the 'name' claim for the subject id (for some reason)
-                   ticket.Principal.FindFirst(ClaimTypes.Name)?.Value;
+                   ticket.Principal.FindFirst(ClaimTypes.Name)?.Value ??
+                   throw new InvalidOperationException("Missing 'sub' claim in AuthenticationTicket");
         }
 
         /// <summary>
         /// Extracts the session ID
         /// </summary>
-        public static string GetSessionId(this AuthenticationTicket ticket)
+        public static string? GetSessionId(this AuthenticationTicket ticket)
         {
             return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
         }
@@ -85,7 +86,7 @@ namespace Duende.Bff
 
             return new ClaimsPrincipalLite
             {
-                AuthenticationType = principal.Identity.AuthenticationType,
+                AuthenticationType = principal.Identity!.AuthenticationType,
                 NameClaimType = principal.Identities.First().NameClaimType,
                 RoleClaimType = principal.Identities.First().RoleClaimType,
                 Claims = claims
@@ -116,14 +117,14 @@ namespace Duende.Bff
         /// <summary>
         /// Deserializes a UserSession's Ticket to an AuthenticationTicket
         /// </summary>
-        public static AuthenticationTicket Deserialize(this UserSession session, IDataProtector protector, ILogger logger)
+        public static AuthenticationTicket? Deserialize(this UserSession session, IDataProtector protector, ILogger logger)
         {
             try
             {
                 var envelope = JsonSerializer.Deserialize<Envelope>(session.Ticket, _jsonOptions);
-                if (envelope.Version != 1)
+                if (envelope == null || envelope.Version != 1)
                 {
-                    logger.LogWarning("Deserializing AuthenticationTicket envelope found incorrect version for key {key}.", session.Key);
+                    logger.LogDebug("Deserializing AuthenticationTicket envelope failed or found incorrect version for key {key}.", session.Key);
                     return null;
                 }
 
@@ -134,11 +135,16 @@ namespace Duende.Bff
                 }
                 catch(Exception ex)
                 {
-                    logger.LogError(ex, "Failed to unprotect AuthenticationTicket payload for key {key}", session.Key);
+                    logger.LogDebug(ex, "Failed to unprotect AuthenticationTicket payload for key {key}", session.Key);
                     return null;
                 }
 
                 var ticket = JsonSerializer.Deserialize<AuthenticationTicketLite>(payload, _jsonOptions);
+                if (ticket == null)
+                {
+                    logger.LogDebug("Deserializing AuthenticationTicket failed for key {key}.", session.Key);
+                    return null;
+                }
 
                 var user = ticket.User.ToClaimsPrincipal();
                 var properties = new AuthenticationProperties(ticket.Items);
@@ -172,17 +178,17 @@ namespace Duende.Bff
             /// <summary>
             /// The scheme
             /// </summary>
-            public string Scheme { get; set; }
-            
+            public string Scheme { get; set; } = default!;
+
             /// <summary>
             /// The user
             /// </summary>
-            public ClaimsPrincipalLite User { get; set; }
-            
+            public ClaimsPrincipalLite User { get; set; } = default!;
+
             /// <summary>
             /// The items
             /// </summary>
-            public IDictionary<string, string> Items { get; set; }
+            public IDictionary<string, string?> Items { get; set; } = default!;
         }
         
         /// <summary>
@@ -193,17 +199,17 @@ namespace Duende.Bff
             /// <summary>
             /// The type
             /// </summary>
-            public string Type { get; init; }
+            public string Type { get; init; } = default!;
             
             /// <summary>
             /// The value
             /// </summary>
-            public string Value { get; init; }
-            
+            public string Value { get; init; } = default!;
+
             /// <summary>
             /// The value type
             /// </summary>
-            public string ValueType { get; init; }
+            public string? ValueType { get; init; }
         }
         
         /// <summary>
@@ -214,22 +220,22 @@ namespace Duende.Bff
             /// <summary>
             /// The authentication type
             /// </summary>
-            public string AuthenticationType { get; init; }
+            public string? AuthenticationType { get; init; }
 
             /// <summary>
             /// The name claim type
             /// </summary>
-            public string NameClaimType { get; init; }
+            public string? NameClaimType { get; init; }
 
             /// <summary>
             /// The role claim type
             /// </summary>
-            public string RoleClaimType { get; init; }
+            public string? RoleClaimType { get; init; }
 
             /// <summary>
             /// The claims
             /// </summary>
-            public ClaimLite[] Claims { get; init; }
+            public ClaimLite[] Claims { get; init; } = default!;
         }
 
         /// <summary>
@@ -245,7 +251,7 @@ namespace Duende.Bff
             /// <summary>
             /// Payload
             /// </summary>
-            public string Payload { get; set; }
+            public string Payload { get; set; } = default!;
         }
     }
 

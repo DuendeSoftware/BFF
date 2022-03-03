@@ -44,14 +44,14 @@ namespace Duende.Bff.Yarp
                     throw new InvalidOperationException("API endoint is missing BFF metadata");
                 }
 
-                UserAccessTokenParameters toUserAccessTokenParameters = null;
+                UserAccessTokenParameters? toUserAccessTokenParameters = null;
 
                 if (metadata.BffUserAccessTokenParameters != null)
                 {
                     toUserAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenParameters();
                 }
 
-                string token = null;
+                string? token = null;
                 if (metadata.RequiredTokenType.HasValue)
                 {
                     token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, toUserAccessTokenParameters);

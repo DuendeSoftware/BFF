@@ -13,7 +13,7 @@ namespace Duende.Bff
         /// <summary>
         /// The key
         /// </summary>
-        public string Key { get; set; }
+        public string Key { get; set; } = default!;
 
         /// <summary>
         /// Clones the instance

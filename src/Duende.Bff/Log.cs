@@ -21,17 +21,17 @@ namespace Duende.Bff.Logging
     
     internal static class Log
     {
-        private static readonly Action<ILogger, string, Exception> _antiForgeryValidationFailed = LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, Exception?> _antiForgeryValidationFailed = LoggerMessage.Define<string>(
             LogLevel.Error,
             EventIds.AntiForgeryValidationFailed,
             "Anti-forgery validation failed. local path: '{localPath}'");
         
-        private static readonly Action<ILogger, string, string, Exception> _backChannelLogout = LoggerMessage.Define<string, string>(
+        private static readonly Action<ILogger, string, string, Exception?> _backChannelLogout = LoggerMessage.Define<string, string>(
             LogLevel.Information,
             EventIds.BackChannelLogout,
             "Back-channel logout. sub: '{sub}', sid: '{sid}'");
         
-        private static readonly Action<ILogger, string, Exception> _backChannelLogoutError = LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, Exception?> _backChannelLogoutError = LoggerMessage.Define<string>(
             LogLevel.Information,
             EventIds.BackChannelLogoutError,
             "Back-channel logout error. error: '{error}'");

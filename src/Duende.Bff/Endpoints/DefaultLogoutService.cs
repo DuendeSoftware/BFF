@@ -35,7 +35,7 @@ namespace Duende.Bff
             context.CheckForBffMiddleware(_options);
             
             var result = await context.AuthenticateAsync();
-            if (result.Succeeded && result.Principal.Identity.IsAuthenticated)
+            if (result.Succeeded && result.Principal?.Identity?.IsAuthenticated == true)
             {
                 var userSessionId = result.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
                 if (!String.IsNullOrWhiteSpace(userSessionId))
@@ -53,7 +53,7 @@ namespace Duende.Bff
             
             // get rid of local cookie first
             var signInScheme = await _schemes.GetDefaultSignInSchemeAsync();
-            await context.SignOutAsync(signInScheme.Name);
+            await context.SignOutAsync(signInScheme?.Name);
 
             var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
 

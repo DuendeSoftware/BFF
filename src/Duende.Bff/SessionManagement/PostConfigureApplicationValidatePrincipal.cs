@@ -16,7 +16,7 @@ namespace Duende.Bff
     public class PostConfigureApplicationValidatePrincipal : IPostConfigureOptions<CookieAuthenticationOptions>
     {
         private readonly BffOptions _options;
-        private readonly string _scheme;
+        private readonly string? _scheme;
         private readonly ILogger<PostConfigureApplicationValidatePrincipal> _logger;
 
         /// <summary>

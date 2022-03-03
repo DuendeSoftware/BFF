@@ -21,8 +21,8 @@ namespace Duende.Bff.Endpoints
             "Duende_IdentityServer_License.key",
         };
 
-        static ILogger _logger;
-        static License _license;
+        static ILogger _logger = default!;
+        static License? _license;
 
         public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)
         {
@@ -32,7 +32,7 @@ namespace Duende.Bff.Endpoints
             _license = ValidateKey(key);
         }
 
-        private static string LoadFromFile()
+        private static string? LoadFromFile()
         {
             foreach (var name in LicenseFileNames)
             {
@@ -98,19 +98,19 @@ namespace Duende.Bff.Endpoints
                 {
                     Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
                     log.Invoke("You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}. The license expires on {licenseExpiration}.",
-                        new object[] { _license.Edition, _license.CompanyName, _license.Expiration.Value.ToLongDateString() });
+                        new object[] { _license.Edition, _license.CompanyName!, _license.Expiration.Value.ToLongDateString() });
                 }
                 else
                 {
                     Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
                     log.Invoke(
                         "You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}.",
-                        new object[] { _license.Edition, _license.CompanyName });
+                        new object[] { _license.Edition, _license.CompanyName! });
                 }
             }
         }
 
-        internal static License ValidateKey(string licenseKey)
+        internal static License? ValidateKey(string? licenseKey)
         {
             if (!String.IsNullOrWhiteSpace(licenseKey))
             {
