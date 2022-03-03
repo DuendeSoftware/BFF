@@ -18,7 +18,7 @@ namespace Duende.Bff
         /// <summary>
         /// The session ID
         /// </summary>
-        public string SessionId { get; set; } = default!;
+        public string? SessionId { get; set; }
 
         /// <summary>
         /// The creation time

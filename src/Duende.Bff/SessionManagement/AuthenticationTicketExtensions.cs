@@ -39,10 +39,9 @@ namespace Duende.Bff
         /// <summary>
         /// Extracts the session ID
         /// </summary>
-        public static string GetSessionId(this AuthenticationTicket ticket)
+        public static string? GetSessionId(this AuthenticationTicket ticket)
         {
-            return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value ?? 
-                throw new InvalidOperationException("Missing 'sid' claim in AuthenticationTicket");
+            return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
         }
         
         /// <summary>
