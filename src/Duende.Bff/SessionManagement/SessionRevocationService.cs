@@ -60,7 +60,7 @@ namespace Duende.Bff
                             var response = await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken);
                             if (response.IsError)
                             {
-                                _logger.LogError("Error revoking refresh token: {error} for subject id: {sub} and session id: {sid}", response.Error, ticket.GetSubjectId(), ticket.GetSessionId());
+                                _logger.LogDebug("Error revoking refresh token: {error} for subject id: {sub} and session id: {sid}", response.Error, ticket.GetSubjectId(), ticket.GetSessionId());
                             }
                             else
                             {

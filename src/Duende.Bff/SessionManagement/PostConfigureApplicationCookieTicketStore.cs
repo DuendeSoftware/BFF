@@ -14,7 +14,7 @@ namespace Duende.Bff
     public class PostConfigureApplicationCookieTicketStore : IPostConfigureOptions<CookieAuthenticationOptions>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _scheme;
+        private readonly string? _scheme;
 
         /// <summary>
         /// ctor

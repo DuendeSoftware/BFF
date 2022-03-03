@@ -13,12 +13,12 @@ namespace Duende.Bff
         /// <summary>
         /// The subject ID
         /// </summary>
-        public string SubjectId { get; set; }
+        public string SubjectId { get; set; } = default!;
 
         /// <summary>
         /// The session ID
         /// </summary>
-        public string SessionId { get; set; }
+        public string SessionId { get; set; } = default!;
 
         /// <summary>
         /// The creation time
@@ -38,7 +38,7 @@ namespace Duende.Bff
         /// <summary>
         /// The serialized ticket
         /// </summary>
-        public string Ticket { get; set; }
+        public string Ticket { get; set; } = default!;
 
         /// <summary>
         /// Copies this instance into another

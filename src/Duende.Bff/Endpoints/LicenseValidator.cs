@@ -98,14 +98,14 @@ namespace Duende.Bff.Endpoints
                 {
                     Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
                     log.Invoke("You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}. The license expires on {licenseExpiration}.",
-                        new object[] { _license.Edition, _license.CompanyName, _license.Expiration.Value.ToLongDateString() });
+                        new object[] { _license.Edition, _license.CompanyName!, _license.Expiration.Value.ToLongDateString() });
                 }
                 else
                 {
                     Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
                     log.Invoke(
                         "You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}.",
-                        new object[] { _license.Edition, _license.CompanyName });
+                        new object[] { _license.Edition, _license.CompanyName! });
                 }
             }
         }

@@ -95,7 +95,7 @@ namespace Duende.Bff
             context.Response.StatusCode = 400;
         }
 
-        private async Task<ClaimsIdentity> ValidateLogoutTokenAsync(string logoutToken)
+        private async Task<ClaimsIdentity?> ValidateLogoutTokenAsync(string logoutToken)
         {
             var claims = await ValidateJwt(logoutToken);
             if (claims == null)
@@ -141,7 +141,7 @@ namespace Duende.Bff
             return claims;
         }
 
-        private async Task<ClaimsIdentity> ValidateJwt(string jwt)
+        private async Task<ClaimsIdentity?> ValidateJwt(string jwt)
         {
             var handler = new JsonWebTokenHandler();
             var parameters = await GetTokenValidationParameters();
@@ -173,7 +173,7 @@ namespace Duende.Bff
             var config = options.Configuration;
             if (config == null)
             {
-                config = await options.ConfigurationManager.GetConfigurationAsync(CancellationToken.None);
+                config = await options.ConfigurationManager?.GetConfigurationAsync(CancellationToken.None)!;
             }
 
             if (config == null)

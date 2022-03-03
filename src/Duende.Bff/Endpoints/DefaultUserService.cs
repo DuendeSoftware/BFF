@@ -75,7 +75,7 @@ namespace Duende.Bff
         /// <returns></returns>
         protected virtual IEnumerable<ClaimRecord> GetUserClaims(AuthenticateResult authenticateResult)
         {
-            return authenticateResult.Principal.Claims.Select(x => new ClaimRecord(x.Type, x.Value));
+            return authenticateResult.Principal?.Claims.Select(x => new ClaimRecord(x.Type, x.Value)) ?? Enumerable.Empty<ClaimRecord>();
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Duende.Bff
 
             var pathBase = context.Request.PathBase;
 
-            var sessionId = authenticateResult.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
+            var sessionId = authenticateResult.Principal?.FindFirst(JwtClaimTypes.SessionId)?.Value;
             if (!String.IsNullOrWhiteSpace(sessionId))
             {
                 claims.Add(new ClaimRecord(
@@ -98,15 +98,21 @@ namespace Duende.Bff
                     pathBase + Options.LogoutPath.Value + $"?sid={UrlEncoder.Default.Encode(sessionId)}"));
             }
 
-            var expiresInSeconds =
-                authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
-            claims.Add(new ClaimRecord(
-                Constants.ClaimTypes.SessionExpiresIn,
-                Math.Round(expiresInSeconds)));
-
-            if (authenticateResult.Properties.Items.TryGetValue(OpenIdConnectSessionProperties.SessionState, out var sessionState))
+            if (authenticateResult.Properties != null)
             {
-                claims.Add(new ClaimRecord(Constants.ClaimTypes.SessionState, sessionState));
+                if (authenticateResult.Properties.ExpiresUtc.HasValue)
+                {
+                    var expiresInSeconds =
+                        authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
+                    claims.Add(new ClaimRecord(
+                        Constants.ClaimTypes.SessionExpiresIn,
+                        Math.Round(expiresInSeconds)));
+                }
+
+                if (authenticateResult.Properties.Items.TryGetValue(OpenIdConnectSessionProperties.SessionState, out var sessionState) && sessionState is not null)
+                {
+                    claims.Add(new ClaimRecord(Constants.ClaimTypes.SessionState, sessionState));
+                }
             }
 
             return claims;
