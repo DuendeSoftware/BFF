@@ -29,18 +29,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0"/>
-        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0" PrivateAssets="All"/>
+        <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0" />
+        <PackageReference Include="MinVer" Version="3.0.0-alpha.1" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="../../icon.png" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Duende.Bff\Duende.Bff.csproj"/>
+        <ProjectReference Include="..\Duende.Bff\Duende.Bff.csproj" />
     </ItemGroup>
 
 </Project>

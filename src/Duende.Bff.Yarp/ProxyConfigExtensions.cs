@@ -19,6 +19,21 @@ namespace Duende.Bff.Yarp
         /// <returns></returns>
         public static RouteConfig WithAccessToken(this RouteConfig config, TokenType tokenType)
         {
+            return config.WithMetadata(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
+        }
+        
+        /// <summary>
+        /// Adds anti-forgery metadata to a route configuration
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static RouteConfig WithAntiforgeryCheck(this RouteConfig config)
+        {
+            return config.WithMetadata(Constants.Yarp.AntiforgeryCheckMetadata, "true");
+        }
+
+        private static RouteConfig WithMetadata(this RouteConfig config, string key, string value)
+        {
             Dictionary<string, string> metadata;
 
             if (config.Metadata != null)
@@ -30,10 +45,11 @@ namespace Duende.Bff.Yarp
                 metadata = new();
             }
 
-            metadata.TryAdd(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
+            metadata.TryAdd(key, value);
             
             return config with { Metadata = metadata };
         }
+
         
         /// <summary>
         /// Adds BFF access token metadata to a cluster configuration
