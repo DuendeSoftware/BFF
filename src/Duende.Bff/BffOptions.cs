@@ -57,12 +57,22 @@ namespace Duende.Bff
         /// License key
         /// </summary>
         public string? LicenseKey { get; set; }
-        
+
         /// <summary>
         /// Login endpoint
         /// </summary>
         public PathString LoginPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Login);
+
+        /// <summary>
+        /// Silent login endpoint
+        /// </summary>
+        public PathString SilentLoginPath => ManagementBasePath.Add(Constants.ManagementEndpoints.SilentLogin);
         
+        /// <summary>
+        /// Silent login callback endpoint
+        /// </summary>
+        public PathString SilentLoginCallbackPath => ManagementBasePath.Add(Constants.ManagementEndpoints.SilentLoginCallback);
+
         /// <summary>
         /// Logout endpoint
         /// </summary>

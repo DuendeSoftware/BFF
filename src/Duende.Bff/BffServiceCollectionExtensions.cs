@@ -8,6 +8,7 @@ using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -29,9 +30,11 @@ namespace Microsoft.AspNetCore.Builder
             services.AddSingleton(opts);                                  
 
             services.AddAccessTokenManagement();
-            
+
             // management endpoints
             services.AddTransient<ILoginService, DefaultLoginService>();
+            services.AddTransient<ISilentLoginService, DefaultSilentLoginService>();
+            services.AddTransient<ISilentLoginCallbackService, DefaultSilentLoginCallbackService>();
             services.AddTransient<ILogoutService, DefaultLogoutService>();
             services.AddTransient<IUserService, DefaultUserService>();
             services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
@@ -45,13 +48,14 @@ namespace Microsoft.AspNetCore.Builder
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureSlidingExpirationCheck>();
             #else
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
-            #endif
-            
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
+#endif
 
-            #if NET5_0_OR_GREATER
+            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
+            services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOidcOptionsForSilentLogin>();
+
+#if NET5_0_OR_GREATER
             services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
-            #endif
+#endif
 
             return new BffBuilder(services);
         }

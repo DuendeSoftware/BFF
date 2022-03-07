@@ -25,6 +25,16 @@ async function onLoad() {
             }
         } else if (resp.status === 401) {
             log("user not logged in");
+
+            window.addEventListener("message", e => {
+                if (e.data.source === 'bff-silent-login') {
+                    if (e.data.isLoggedIn) {
+                        window.location.reload();
+                    }
+                }
+            });
+
+            document.querySelector("#silent").src = "/bff/silent-login";
         }
     }
     catch (e) {
@@ -115,3 +125,4 @@ function log() {
         document.getElementById('response').innerText += msg + '\r\n';
     });
 }
+
