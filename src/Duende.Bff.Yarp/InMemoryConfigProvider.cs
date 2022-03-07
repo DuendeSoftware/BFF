@@ -7,13 +7,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Yarp.ReverseProxy.Configuration;
 
-namespace YarpHost
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extends the IReverseProxyBuilder to support the InMemoryConfigProvider
     /// </summary>
     public static class InMemoryConfigProviderExtensions
     {
+        /// <summary>
+        /// Loads YARP configuration from in-memory
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="routes"></param>
+        /// <param name="clusters"></param>
+        /// <returns></returns>
         public static IReverseProxyBuilder LoadFromMemory(this IReverseProxyBuilder builder, IReadOnlyList<RouteConfig> routes, IReadOnlyList<ClusterConfig> clusters)
         {
             builder.Services.AddSingleton<IProxyConfigProvider>(new InMemoryConfigProvider(routes, clusters));
@@ -29,6 +36,11 @@ namespace YarpHost
         // Marked as volatile so that updates are atomic
         private volatile InMemoryConfig _config;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="routes"></param>
+        /// <param name="clusters"></param>
         public InMemoryConfigProvider(IReadOnlyList<RouteConfig> routes, IReadOnlyList<ClusterConfig> clusters)
         {
             _config = new InMemoryConfig(routes, clusters);
@@ -56,7 +68,7 @@ namespace YarpHost
         private class InMemoryConfig : IProxyConfig
         {
             // Used to implement the change token for the state
-            private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+            private readonly CancellationTokenSource _cts = new();
 
             public InMemoryConfig(IReadOnlyList<RouteConfig> routes, IReadOnlyList<ClusterConfig> clusters)
             {

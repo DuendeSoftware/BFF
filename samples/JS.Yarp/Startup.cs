@@ -19,7 +19,7 @@ namespace YarpHost
         public void ConfigureServices(IServiceCollection services)
         {
             var builder = services.AddReverseProxy()
-                .AddTransforms<AccessTokenTransformProvider>();
+                .AddBffExtensions();
 
             builder.LoadFromMemory(
                 new[]
@@ -29,7 +29,7 @@ namespace YarpHost
                         RouteId = "api_user",
                         ClusterId = "cluster1",
 
-                        Match = new RouteMatch
+                        Match = new()
                         {
                             Path = "/user_api/{**catch-all}"
                         }
@@ -39,7 +39,7 @@ namespace YarpHost
                         RouteId = "api_client",
                         ClusterId = "cluster1",
 
-                        Match = new RouteMatch
+                        Match = new()
                         {
                             Path = "/client_api/{**catch-all}"
                         }
@@ -49,7 +49,7 @@ namespace YarpHost
                         RouteId = "api_anon",
                         ClusterId = "cluster1",
 
-                        Match = new RouteMatch
+                        Match = new()
                         {
                             Path = "/anon_api/{**catch-all}"
                         }
@@ -63,7 +63,7 @@ namespace YarpHost
 
                         Destinations = new Dictionary<string, DestinationConfig>(StringComparer.OrdinalIgnoreCase)
                         {
-                            { "destination1", new DestinationConfig() { Address = "https://localhost:5010" } },
+                            { "destination1", new() { Address = "https://localhost:5010" } },
                         }
                     }
                 });
@@ -146,8 +146,7 @@ namespace YarpHost
 
                 // login, logout, user, backchannel logout...
                 endpoints.MapBffManagementEndpoints();
-
-                // adds BFF enhanced YARP
+                
                 endpoints.MapReverseProxy(proxyApp =>
                 {
                     proxyApp.UseAntiforgeryCheck();
