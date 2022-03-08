@@ -32,27 +32,19 @@ namespace Duende.Bff
 
             var result = (await context.AuthenticateAsync()).Succeeded ? "true" : "false";
             var json = $"{{source:'bff-silent-login', isLoggedIn:{result}}}";
+            
             var nonce = CryptoRandom.CreateUniqueId(format:CryptoRandom.OutputFormat.Hex);
             var origin = $"{context.Request.Scheme}://{context.Request.Host}";
+            
             var html = $"<script nonce='{nonce}'>window.parent.postMessage({json}, '{origin}');</script>";
 
             context.Response.StatusCode = 200;
             context.Response.ContentType = "text/html";
-            context.Response.Headers.Add("Content-Security-Policy", $"script-src 'nonce-{nonce}';");
             
-            if (!context.Response.Headers.ContainsKey("Cache-Control"))
-            {
-                context.Response.Headers.Add("Cache-Control", "no-store, no-cache, max-age=0");
-            }
-            else
-            {
-                context.Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
-            }
-            if (!context.Response.Headers.ContainsKey("Pragma"))
-            {
-                context.Response.Headers.Add("Pragma", "no-cache");
-            }
-            
+            context.Response.Headers["Content-Security-Policy"] = $"script-src 'nonce-{nonce}';";
+            context.Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
+            context.Response.Headers["Pragma"] = "no-cache";
+
             await context.Response.WriteAsync(html, Encoding.UTF8);
         }
     }
