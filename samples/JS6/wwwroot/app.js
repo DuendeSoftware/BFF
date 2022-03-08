@@ -1,4 +1,5 @@
 ﻿const loginUrl = "/bff/login";
+const silentLoginUrl = "/bff/silent-login";
 const userUrl = "/bff/user";
 const localApiUrl = "/local";
 const remoteApiUrl = "/api";
@@ -26,15 +27,24 @@ async function onLoad() {
         } else if (resp.status === 401) {
             log("user not logged in");
 
-            window.addEventListener("message", e => {
-                if (e.data.source === 'bff-silent-login') {
-                    if (e.data.isLoggedIn) {
+            // if we've detected that the user is no already logged in, we can attempt a silent login
+            // this will trigger a normal OIDC request in an iframe using prompt=none.
+            // if the user is already logged into IdentityServer, then the result will establish a session in the BFF.
+            // this whole process avoids redirecting the top window without knowing if the user is logged in or not.
+            silentSignin()
+                .then(result => {
+                    // the result is a boolean letting us know if the user has been logged in silently
+                    log("silent login result: " + result);
+
+                    if (result) {
+                        // if we now have a user logged in silently, then reload this window
                         window.location.reload();
                     }
-                }
-            });
-
-            document.querySelector("#silent").src = "/bff/silent-login";
+                })
+                .catch(err => {
+                    // error on this should be a rare, and usually due to a config or coding mistake
+                    log("silent login error", err);
+                });
         }
     }
     catch (e) {
@@ -126,3 +136,37 @@ function log() {
     });
 }
 
+
+// this will trigger the silent login and return a promise that resolves to true or false.
+function silentSignin(iframeSelector) {
+    iframeSelector = iframeSelector || "#bff-silent-login";
+    const timeout = 5000;
+
+    return new Promise((resolve, reject) => {
+        function onMessage(e) {
+            // look for messages sent from the BFF iframe
+            if (e.data && e.data.source === 'bff-silent-login') {
+                window.removeEventListener("message", onMessage);
+                // send along the boolean result
+                resolve(e.data.isLoggedIn);
+            }
+        };
+
+        // listen for the iframe response to notify its parent (i.e. this window).
+        window.addEventListener("message", onMessage);
+
+        // we're setting up a time to handle scenarios when the iframe doesn't return immediaetly (despite prompt=none).
+        // this likely means the iframe is showing the error page at IdentityServer (typically due to client misconfiguration).
+        window.setTimeout(() => {
+            window.removeEventListener("message", onMessage);
+
+            // so we can either just treat this like a "not logged in"
+            resolve(false);
+            // or we can trigger an error, so someone can look into the reason why
+            //reject(new Error("timed_out")); 
+        }, timeout);
+
+        // send the iframe to the silent login endpoint to kick off the workflow
+        document.querySelector(iframeSelector).src = silentLoginUrl;
+    });
+}
