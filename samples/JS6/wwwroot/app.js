@@ -31,20 +31,15 @@ async function onLoad() {
             // this will trigger a normal OIDC request in an iframe using prompt=none.
             // if the user is already logged into IdentityServer, then the result will establish a session in the BFF.
             // this whole process avoids redirecting the top window without knowing if the user is logged in or not.
-            silentSignin()
-                .then(result => {
-                    // the result is a boolean letting us know if the user has been logged in silently
-                    log("silent login result: " + result);
+            var silentLoginResult = await silentLogin();
 
-                    if (result) {
-                        // if we now have a user logged in silently, then reload this window
-                        window.location.reload();
-                    }
-                })
-                .catch(err => {
-                    // error on this should be a rare, and usually due to a config or coding mistake
-                    log("silent login error", err);
-                });
+            // the result is a boolean letting us know if the user has been logged in silently
+            log("silent login result: " + silentLoginResult);
+
+            if (silentLoginResult) {
+                // if we now have a user logged in silently, then reload this window
+                window.location.reload();
+            }
         }
     }
     catch (e) {
@@ -138,7 +133,7 @@ function log() {
 
 
 // this will trigger the silent login and return a promise that resolves to true or false.
-function silentSignin(iframeSelector) {
+function silentLogin(iframeSelector) {
     iframeSelector = iframeSelector || "#bff-silent-login";
     const timeout = 5000;
 
