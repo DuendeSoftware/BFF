@@ -32,6 +32,7 @@ namespace Microsoft.AspNetCore.Builder
         public static void MapBffManagementEndpoints(this IEndpointRouteBuilder endpoints)
         {
             endpoints.MapBffManagementLoginEndpoint();
+            endpoints.MapBffManagementSilentLoginEndpoints();
             endpoints.MapBffManagementLogoutEndpoint();
             endpoints.MapBffManagementUserEndpoint();
             endpoints.MapBffManagementBackchannelEndpoint();
@@ -49,6 +50,20 @@ namespace Microsoft.AspNetCore.Builder
             var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
             endpoints.MapGet(options.LoginPath, ProcessWith<ILoginService>);
+        }
+
+        /// <summary>
+        /// Adds the silent login BFF management endpoints
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void MapBffManagementSilentLoginEndpoints(this IEndpointRouteBuilder endpoints)
+        {
+            endpoints.CheckLicense();
+
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+            endpoints.MapGet(options.SilentLoginPath, ProcessWith<ISilentLoginService>);
+            endpoints.MapGet(options.SilentLoginCallbackPath, ProcessWith<ISilentLoginCallbackService>);
         }
 
         /// <summary>

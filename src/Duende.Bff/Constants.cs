@@ -53,7 +53,17 @@ namespace Duende.Bff
             /// Login path
             /// </summary>
             public const string Login = "/login";
+
+            /// <summary>
+            /// Silent login path
+            /// </summary>
+            public const string SilentLogin = "/silent-login";
             
+            /// <summary>
+            /// Silent login callback path
+            /// </summary>
+            public const string SilentLoginCallback = "/silent-login-callback";
+
             /// <summary>
             /// Logout path
             /// </summary>
@@ -89,6 +99,18 @@ namespace Duende.Bff
             /// Used to pass a return URL to login/logout
             /// </summary>
             public const string ReturnUrl = "returnUrl";
+        }
+
+
+        /// <summary>
+        /// Internal flags for library behavior
+        /// </summary>
+        public static class BffFlags
+        {
+            /// <summary>
+            /// Used to indicate the OIDC request is a silent login
+            /// </summary>
+            public const string SilentLogin = "bff-silent-login";
         }
     }
 }
