@@ -40,7 +40,7 @@ namespace Duende.Bff
         /// </summary>
         public virtual Task<bool> ProcessRedirectToIdentityProviderAsync(RedirectContext context)
         {
-            if (context.Properties!.Items.ContainsKey(Constants.BffFlags.SilentLogin))
+            if (context.Properties?.IsSilentLogin() == true)
             {
                 Logger.LogDebug("Setting OIDC ProtocolMessage.Prompt to 'none' for BFF silent login");
                 context.ProtocolMessage.Prompt = "none";
@@ -64,8 +64,8 @@ namespace Duende.Bff
         /// </summary>
         public virtual Task<bool> ProcessMessageReceivedAsync(MessageReceivedContext context)
         {
-            if (context.Properties!.Items.ContainsKey(Constants.BffFlags.SilentLogin) &&
-                            context.Properties.RedirectUri != null)
+            if (context.Properties?.IsSilentLogin() == true &&
+                context.Properties?.RedirectUri != null)
             {
                 context.HttpContext.Items[Constants.BffFlags.SilentLogin] = context.Properties.RedirectUri;
 
