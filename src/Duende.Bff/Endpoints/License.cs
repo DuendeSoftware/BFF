@@ -192,11 +192,7 @@ namespace Duende.Bff.Endpoints
 
         public override string ToString()
         {
-#if NET6_0_OR_GREATER
             return JsonSerializer.Serialize(this, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
-#else
-            return JsonSerializer.Serialize(this, new JsonSerializerOptions { IgnoreNullValues = true });
-#endif        
         }
     }
 }
