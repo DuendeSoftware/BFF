@@ -45,17 +45,10 @@ namespace Duende.Bff
                 ClientAccessToken = clientToken
             };
             
-#if NET6_0_OR_GREATER
             var options = new JsonSerializerOptions
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
-#else
-            var options = new JsonSerializerOptions
-            {
-                IgnoreNullValues = true
-            };
-#endif
 
             var json = JsonSerializer.Serialize(info, options);
 
