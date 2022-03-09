@@ -15,24 +15,31 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultLogoutService : ILogoutService
     {
-        private readonly BffOptions _options;
-        private readonly IAuthenticationSchemeProvider _schemes;
+        /// <summary>
+        /// The BFF options
+        /// </summary>
+        protected readonly BffOptions Options;
+        
+        /// <summary>
+        /// The scheme provider
+        /// </summary>
+        protected readonly IAuthenticationSchemeProvider AuthenticationSchemeProvider;
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="options"></param>
-        /// <param name="authenticationSchemeProvider"></param>
-        public DefaultLogoutService(BffOptions options, IAuthenticationSchemeProvider authenticationSchemeProvider)
+        /// <param name="authenticationAuthenticationSchemeProviderProvider"></param>
+        public DefaultLogoutService(BffOptions options, IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider)
         {
-            _options = options;
-            _schemes = authenticationSchemeProvider;
+            Options = options;
+            AuthenticationSchemeProvider = authenticationAuthenticationSchemeProviderProvider;
         }
 
         /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
+        public virtual async Task ProcessRequestAsync(HttpContext context)
         {
-            context.CheckForBffMiddleware(_options);
+            context.CheckForBffMiddleware(Options);
             
             var result = await context.AuthenticateAsync();
             if (result.Succeeded && result.Principal?.Identity?.IsAuthenticated == true)
@@ -44,7 +51,7 @@ namespace Duende.Bff
                     // for an authenticated user, if they have a sesison id claim,
                     // we require the logout request to pass that same value to
                     // prevent unauthenticated logout requests (similar to OIDC front channel)
-                    if (_options.RequireLogoutSessionId && userSessionId != passedSessionId)
+                    if (Options.RequireLogoutSessionId && userSessionId != passedSessionId)
                     {
                         throw new Exception("Invalid Session Id");
                     }
@@ -52,7 +59,7 @@ namespace Duende.Bff
             }
             
             // get rid of local cookie first
-            var signInScheme = await _schemes.GetDefaultSignInSchemeAsync();
+            var signInScheme = await AuthenticationSchemeProvider.GetDefaultSignInSchemeAsync();
             await context.SignOutAsync(signInScheme?.Name);
 
             var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();

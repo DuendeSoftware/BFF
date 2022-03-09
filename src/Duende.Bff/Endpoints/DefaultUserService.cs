@@ -44,7 +44,7 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
+        public virtual async Task ProcessRequestAsync(HttpContext context)
         {
             context.CheckForBffMiddleware(Options);
 
@@ -125,6 +125,4 @@ namespace Duende.Bff
         /// <param name="value"></param>
         protected record ClaimRecord(string type, object value);
     }
-
-    
 }

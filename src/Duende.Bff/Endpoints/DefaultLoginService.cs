@@ -14,7 +14,10 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultLoginService : ILoginService
     {
-        private readonly BffOptions _options;
+        /// <summary>
+        /// The BFF options
+        /// </summary>
+        protected readonly BffOptions _options;
 
         /// <summary>
         /// ctor
@@ -26,7 +29,7 @@ namespace Duende.Bff
         }
         
         /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
+        public virtual async Task ProcessRequestAsync(HttpContext context)
         {
             context.CheckForBffMiddleware(_options);
             
