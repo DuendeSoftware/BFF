@@ -140,7 +140,7 @@ function silentLogin(iframeSelector) {
     return new Promise((resolve, reject) => {
         function onMessage(e) {
             // look for messages sent from the BFF iframe
-            if (e.data && e.data.source === 'bff-silent-login') {
+            if (e.data && e.data['source'] === 'bff-silent-login') {
                 window.removeEventListener("message", onMessage);
                 // send along the boolean result
                 resolve(e.data.isLoggedIn);
@@ -155,10 +155,10 @@ function silentLogin(iframeSelector) {
         window.setTimeout(() => {
             window.removeEventListener("message", onMessage);
 
-            // so we can either just treat this like a "not logged in"
+            // we can either just treat this like a "not logged in"
             resolve(false);
             // or we can trigger an error, so someone can look into the reason why
-            //reject(new Error("timed_out")); 
+            // reject(new Error("timed_out")); 
         }, timeout);
 
         // send the iframe to the silent login endpoint to kick off the workflow

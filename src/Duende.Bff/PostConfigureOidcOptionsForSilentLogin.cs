@@ -1,7 +1,6 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,44 +14,34 @@ namespace Duende.Bff
     /// </summary>
     public class PostConfigureOidcOptionsForSilentLogin : IPostConfigureOptions<OpenIdConnectOptions>
     {
-        private readonly string? _scheme;
-        private readonly ILogger<PostConfigureOidcOptionsForSilentLogin> _logger;
+        private readonly BffOpenIdConnectEvents _events;
 
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="authenticationSchemeProvider"></param>
-        /// <param name="logger"></param>
-        public PostConfigureOidcOptionsForSilentLogin(IAuthenticationSchemeProvider authenticationSchemeProvider, ILogger<PostConfigureOidcOptionsForSilentLogin> logger)
+        public PostConfigureOidcOptionsForSilentLogin(ILoggerFactory logger)
         {
-            _scheme = authenticationSchemeProvider.GetDefaultChallengeSchemeAsync().Result?.Name;
-            _logger = logger;
+            _events = new BffOpenIdConnectEvents(logger.CreateLogger<BffOpenIdConnectEvents>());
         }
 
         /// <inheritdoc />
         public void PostConfigure(string name, OpenIdConnectOptions options)
         {
-            if (name == _scheme)
-            {
-                options.Events.OnRedirectToIdentityProvider = CreateRedirectCallback(options.Events.OnRedirectToIdentityProvider);
-                options.Events.OnMessageReceived = CreateMessageReceivedCallback(options.Events.OnMessageReceived);
-                options.Events.OnAuthenticationFailed = CreateAuthenticationFailedCallback(options.Events.OnAuthenticationFailed);
-            }
+            options.Events.OnRedirectToIdentityProvider = CreateRedirectCallback(options.Events.OnRedirectToIdentityProvider);
+            options.Events.OnMessageReceived = CreateMessageReceivedCallback(options.Events.OnMessageReceived);
+            options.Events.OnAuthenticationFailed = CreateAuthenticationFailedCallback(options.Events.OnAuthenticationFailed);
         }
 
         private Func<RedirectContext, Task> CreateRedirectCallback(Func<RedirectContext, Task> inner)
         {
             async Task Callback(RedirectContext ctx)
             {
-                if (ctx.Properties!.Items.ContainsKey(Constants.BffFlags.SilentLogin))
+                if (!await _events.ProcessRedirectToIdentityProviderAsync(ctx))
                 {
-                    _logger.LogDebug("Setting OIDC ProtocolMessage.Prompt to 'none' for BFF silent login");
-                    ctx.ProtocolMessage.Prompt = "none";
-                }
-
-                if (inner != null)
-                {
-                    await inner.Invoke(ctx);
+                    if (inner != null)
+                    {
+                        await inner.Invoke(ctx);
+                    }
                 }
             };
 
@@ -63,23 +52,12 @@ namespace Duende.Bff
         {
             async Task Callback(MessageReceivedContext ctx)
             {
-                if (ctx.Properties!.Items.ContainsKey(Constants.BffFlags.SilentLogin) &&
-                    ctx.Properties.RedirectUri != null)
+                if (!await _events.ProcessMessageReceivedAsync(ctx))
                 {
-                    ctx.HttpContext.Items[Constants.BffFlags.SilentLogin] = ctx.Properties.RedirectUri;
-
-                    if (ctx.ProtocolMessage.Error != null)
+                    if (inner != null)
                     {
-                        _logger.LogDebug("Handling error response from OIDC provider for BFF silent login.");
-                        ctx.HandleResponse();
-                        ctx.Response.Redirect(ctx.Properties.RedirectUri);
-                        return;
+                        await inner.Invoke(ctx);
                     }
-                }
-
-                if (inner != null)
-                {
-                    await inner.Invoke(ctx);
                 }
             };
 
@@ -90,17 +68,12 @@ namespace Duende.Bff
         {
             async Task Callback(AuthenticationFailedContext ctx)
             {
-                if (ctx.HttpContext.Items.ContainsKey(Constants.BffFlags.SilentLogin))
+                if (!await _events.ProcessAuthenticationFailedAsync(ctx))
                 {
-                    _logger.LogDebug("Handling failed response from OIDC provider for BFF silent login.");
-                    ctx.HandleResponse();
-                    ctx.Response.Redirect(ctx.HttpContext.Items[Constants.BffFlags.SilentLogin]!.ToString()!);
-                    return;
-                }
-
-                if (inner != null)
-                {
-                    await inner.Invoke(ctx);
+                    if (inner != null)
+                    {
+                        await inner.Invoke(ctx);
+                    }
                 }
             };
 
