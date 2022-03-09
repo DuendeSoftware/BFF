@@ -16,7 +16,10 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultDiagnosticsService : IDiagnosticsService
     {
-        private readonly IWebHostEnvironment _environment;
+        /// <summary>
+        /// The environment
+        /// </summary>
+        protected readonly IWebHostEnvironment Environment;
 
         /// <summary>
         /// ctor
@@ -24,13 +27,13 @@ namespace Duende.Bff
         /// <param name="environment"></param>
         public DefaultDiagnosticsService(IWebHostEnvironment environment)
         {
-            _environment = environment;
+            Environment = environment;
         }
         
         /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
+        public virtual async Task ProcessRequestAsync(HttpContext context)
         {
-            if (!_environment.IsDevelopment())
+            if (!Environment.IsDevelopment())
             {
                 context.Response.StatusCode = 404;
                 return;

@@ -24,10 +24,25 @@ namespace Duende.Bff
     /// </summary>
     public class DefaultBackchannelLogoutService : IBackchannelLogoutService
     {
-        private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
-        private readonly IOptionsMonitor<OpenIdConnectOptions> _optionsMonitor;
-        private readonly ISessionRevocationService _userSession;
-        private readonly ILogger<DefaultBackchannelLogoutService> _logger;
+        /// <summary>
+        /// Authentication scheme provider
+        /// </summary>
+        protected readonly IAuthenticationSchemeProvider AuthenticationSchemeProvider;
+        
+        /// <summary>
+        /// OpenID Connect options monitor
+        /// </summary>
+        protected readonly IOptionsMonitor<OpenIdConnectOptions> OptionsMonitor;
+        
+        /// <summary>
+        /// Session revocation service
+        /// </summary>
+        protected readonly ISessionRevocationService UserSession;
+        
+        /// <summary>
+        /// Logger
+        /// </summary>
+        protected readonly ILogger<DefaultBackchannelLogoutService> Logger;
 
         /// <summary>
         /// ctor
@@ -42,14 +57,14 @@ namespace Duende.Bff
             ISessionRevocationService userSession,
             ILogger<DefaultBackchannelLogoutService> logger)
         {
-            _authenticationSchemeProvider = authenticationSchemeProvider;
-            _optionsMonitor = optionsMonitor;
-            _userSession = userSession;
-            _logger = logger;
+            AuthenticationSchemeProvider = authenticationSchemeProvider;
+            OptionsMonitor = optionsMonitor;
+            UserSession = userSession;
+            Logger = logger;
         }
 
         /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
+        public virtual async Task ProcessRequestAsync(HttpContext context)
         {
             context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
             context.Response.Headers.Add("Pragma", "no-cache");
@@ -69,9 +84,9 @@ namespace Duende.Bff
                             var sub = user.FindFirst("sub")?.Value;
                             var sid = user.FindFirst("sid")?.Value;
                             
-                            _logger.BackChannelLogout(sub ?? "missing", sid ?? "missing");
+                            Logger.BackChannelLogout(sub ?? "missing", sid ?? "missing");
                             
-                            await _userSession.RevokeSessionsAsync(new UserSessionsFilter 
+                            await UserSession.RevokeSessionsAsync(new UserSessionsFilter 
                             { 
                                 SubjectId = sub,
                                 SessionId = sid
@@ -82,20 +97,25 @@ namespace Duende.Bff
                     }
                     else
                     {
-                        _logger.BackChannelLogoutError($"Failed to process backchannel logout request. 'Logout token is missing'");
+                        Logger.BackChannelLogoutError($"Failed to process backchannel logout request. 'Logout token is missing'");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.BackChannelLogoutError($"Failed to process backchannel logout request. '{ex.Message}'");
+                Logger.BackChannelLogoutError($"Failed to process backchannel logout request. '{ex.Message}'");
             }
             
-            _logger.BackChannelLogoutError($"Failed to process backchannel logout request.");
+            Logger.BackChannelLogoutError($"Failed to process backchannel logout request.");
             context.Response.StatusCode = 400;
         }
 
-        private async Task<ClaimsIdentity?> ValidateLogoutTokenAsync(string logoutToken)
+        /// <summary>
+        /// Validates the logout token
+        /// </summary>
+        /// <param name="logoutToken"></param>
+        /// <returns></returns>
+        protected virtual async Task<ClaimsIdentity?> ValidateLogoutTokenAsync(string logoutToken)
         {
             var claims = await ValidateJwt(logoutToken);
             if (claims == null)
@@ -105,21 +125,21 @@ namespace Duende.Bff
 
             if (claims.FindFirst("sub") == null && claims.FindFirst("sid") == null)
             {
-                _logger.BackChannelLogoutError("Logout token missing sub or sid claims.");
+                Logger.BackChannelLogoutError("Logout token missing sub or sid claims.");
                 return null;
             }
 
             var nonce = claims.FindFirst("nonce")?.Value;
             if (!String.IsNullOrWhiteSpace(nonce))
             {
-                _logger.BackChannelLogoutError("Logout token should not contain nonce claim.");
+                Logger.BackChannelLogoutError("Logout token should not contain nonce claim.");
                 return null;
             }
 
             var eventsJson = claims.FindFirst("events")?.Value;
             if (String.IsNullOrWhiteSpace(eventsJson))
             {
-                _logger.BackChannelLogoutError("Logout token missing events claim.");
+                Logger.BackChannelLogoutError("Logout token missing events claim.");
                 return null;
             }
 
@@ -128,20 +148,25 @@ namespace Duende.Bff
                 var events = JsonDocument.Parse(eventsJson);
                 if (!events.RootElement.TryGetProperty("http://schemas.openid.net/event/backchannel-logout", out _))
                 {
-                    _logger.BackChannelLogoutError("Logout token contains missing http://schemas.openid.net/event/backchannel-logout value.");
+                    Logger.BackChannelLogoutError("Logout token contains missing http://schemas.openid.net/event/backchannel-logout value.");
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.BackChannelLogoutError($"Logout token contains invalid JSON in events claim value. '{ex.Message}'");
+                Logger.BackChannelLogoutError($"Logout token contains invalid JSON in events claim value. '{ex.Message}'");
                 return null;
             }
 
             return claims;
         }
 
-        private async Task<ClaimsIdentity?> ValidateJwt(string jwt)
+        /// <summary>
+        /// Validates and parses the logout token JWT 
+        /// </summary>
+        /// <param name="jwt"></param>
+        /// <returns></returns>
+        protected virtual async Task<ClaimsIdentity?> ValidateJwt(string jwt)
         {
             var handler = new JsonWebTokenHandler();
             var parameters = await GetTokenValidationParameters();
@@ -152,19 +177,24 @@ namespace Duende.Bff
                 return result.ClaimsIdentity;
             }
 
-            _logger.BackChannelLogoutError($"Error validating logout token. '{result.Exception.ToString()}'");
+            Logger.BackChannelLogoutError($"Error validating logout token. '{result.Exception.ToString()}'");
             return null;
         }
 
-        private async Task<TokenValidationParameters> GetTokenValidationParameters()
+        /// <summary>
+        /// Creates the token validation parameters based on the OIDC configuration
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        protected virtual async Task<TokenValidationParameters> GetTokenValidationParameters()
         {
-            var scheme = await _authenticationSchemeProvider.GetDefaultChallengeSchemeAsync();
+            var scheme = await AuthenticationSchemeProvider.GetDefaultChallengeSchemeAsync();
             if (scheme == null)
             {
                 throw new Exception("Failed to obtain default challenge scheme");
             }
 
-            var options = _optionsMonitor.Get(scheme.Name);
+            var options = OptionsMonitor.Get(scheme.Name);
             if (options == null)
             {
                 throw new Exception("Failed to obtain OIDC options for default challenge scheme");
