@@ -46,7 +46,7 @@ namespace Duende.Bff
         Task DeleteUserSessionAsync(string key, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Queries user sessions
+        /// Queries user sessions based on the filter.
         /// </summary>
         /// <param name="filter"></param>
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
@@ -54,7 +54,7 @@ namespace Duende.Bff
         Task<IReadOnlyCollection<UserSession>> GetUserSessionsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Deletes a user session
+        /// Deletes user sessions based on the filter.
         /// </summary>
         /// <param name="filter"></param>
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
