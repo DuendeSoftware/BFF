@@ -8,6 +8,7 @@ using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder
@@ -40,6 +41,8 @@ namespace Microsoft.AspNetCore.Builder
             Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieTicketStore>();
             Services.AddTransient<IServerTicketStore, ServerSideTicketStore>();
             Services.AddTransient<ISessionRevocationService, SessionRevocationService>();
+            Services.AddSingleton<IHostedService, SessionCleanupHost>();
+
 
             // only add if not already in DI
             Services.TryAddSingleton<IUserSessionStore, InMemoryUserSessionStore>();

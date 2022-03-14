@@ -46,6 +46,7 @@ namespace Duende.Bff.EntityFramework
             entity.HasIndex(x => new { x.ApplicationName, x.Key }).IsUnique();
             entity.HasIndex(x => new { x.ApplicationName, x.SubjectId, x.SessionId }).IsUnique();
             entity.HasIndex(x => new { x.ApplicationName, x.SessionId }).IsUnique();
+            entity.HasIndex(x => x.Expires);
         }
     }
 }

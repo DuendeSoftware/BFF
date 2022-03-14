@@ -18,7 +18,7 @@ namespace Duende.Bff.EntityFramework
     /// <summary>
     /// Entity framework core implementation of IUserSessionStore
     /// </summary>
-    public class UserSessionStore : IUserSessionStore
+    public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     {
         private readonly string _applicationDiscriminator;
         private readonly SessionDbContext _sessionDbContext;
@@ -191,6 +191,47 @@ namespace Duende.Bff.EntityFramework
             else
             {
                 _logger.LogDebug("No record found in user session store when trying to update user session for key {key}", key);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default)
+        {
+            var found = Int32.MaxValue;
+            var batchSize = 100;
+
+            while (found >= batchSize)
+            {
+                var expired = await _sessionDbContext.UserSessions
+                    .Where(x => x.Expires < DateTime.UtcNow)
+                    .OrderBy(x => x.Id)
+                    .Take(batchSize)
+                    .ToArrayAsync(cancellationToken);
+
+                found = expired.Length;
+
+                if (found > 0)
+                {
+                    _logger.LogDebug("Removing {serverSideSessionCount} server side sessions", found);
+
+                    _sessionDbContext.UserSessions.RemoveRange(expired);
+
+                    try
+                    {
+                        await _sessionDbContext.SaveChangesAsync(cancellationToken);
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        // suppressing exception for concurrent deletes
+                        _logger.LogDebug("DbUpdateConcurrencyException: {error}", ex.Message);
+
+                        foreach (var entry in ex.Entries)
+                        {
+                            // mark detatched so another call to SaveChangesAsync won't throw again
+                            entry.State = EntityState.Detached;
+                        }
+                    }
+                }
             }
         }
     }

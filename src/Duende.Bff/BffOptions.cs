@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace Duende.Bff
 {
@@ -92,5 +93,23 @@ namespace Duende.Bff
         /// Diagnostics endpoint
         /// </summary>
         public PathString DiagnosticsPath => ManagementBasePath.Add(Constants.ManagementEndpoints.Diagnostics);
+
+        /// <summary>
+        /// Indicates if expired server side sessions should be cleaned up.
+        /// This requires an implementation of IUserSessionStoreCleanup to be registered in the DI system.
+        /// </summary>
+        public bool EnableSessionCleanup { get; set; }
+
+        /// <summary>
+        /// Interval at which expired sessions are cleaned up.
+        /// Defaults to 10 minutes.
+        /// </summary>
+        public TimeSpan SessionCleanupInterval { get; set; } = TimeSpan.FromMinutes(10);
+
+        /// <summary>
+        /// Batch size expired sessions are deleted.
+        /// Defaults to 100.
+        /// </summary>
+        //public int SessionCleanupBatchSize { get; set; } = 100;
     }
 }

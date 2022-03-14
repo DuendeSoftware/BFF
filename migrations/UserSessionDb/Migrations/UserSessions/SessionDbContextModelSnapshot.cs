@@ -54,6 +54,8 @@ namespace UserSessionDb.Migrations.UserSessions
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Expires");
+
                     b.HasIndex("ApplicationName", "Key")
                         .IsUnique();
 
