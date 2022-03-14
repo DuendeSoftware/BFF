@@ -106,10 +106,10 @@ namespace Duende.Bff
         /// </summary>
         public TimeSpan SessionCleanupInterval { get; set; } = TimeSpan.FromMinutes(10);
 
-        /// <summary>
-        /// Batch size expired sessions are deleted.
-        /// Defaults to 100.
-        /// </summary>
+        ///// <summary>
+        ///// Batch size expired sessions are deleted.
+        ///// Defaults to 100.
+        ///// </summary>
         //public int SessionCleanupBatchSize { get; set; } = 100;
     }
 }
