@@ -17,23 +17,27 @@ namespace Duende.Bff.Yarp
         /// </summary>
         /// <param name="endpoints"></param>
         /// <param name="configureAction"></param>
+        /// <param name="requireAntiforgeryCheck"></param>
         /// <returns></returns>
         public static ReverseProxyConventionBuilder MapBffReverseProxy(this IEndpointRouteBuilder endpoints,
-            Action<IReverseProxyApplicationBuilder> configureAction)
+            Action<IReverseProxyApplicationBuilder> configureAction,
+            bool requireAntiforgeryCheck = true)
         {
             return endpoints.MapReverseProxy(configureAction)
-                .AsBffApiEndpoint();
+                .AsBffApiEndpoint(requireAntiforgeryCheck);
         }
-        
+
         /// <summary>
         /// Adds YARP with anti-forgery protection 
         /// </summary>
         /// <param name="endpoints"></param>
+        /// <param name="requireAntiforgeryCheck"></param>
         /// <returns></returns>
-        public static ReverseProxyConventionBuilder MapBffReverseProxy(this IEndpointRouteBuilder endpoints)
+        public static ReverseProxyConventionBuilder MapBffReverseProxy(this IEndpointRouteBuilder endpoints,
+            bool requireAntiforgeryCheck = true)
         {
             return endpoints.MapReverseProxy()
-                .AsBffApiEndpoint();
+                .AsBffApiEndpoint(requireAntiforgeryCheck);
         }
         
         /// <summary>
