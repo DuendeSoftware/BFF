@@ -64,6 +64,11 @@ namespace Duende.Bff
                 var slide = _httpContextAccessor.HttpContext.Request.Query[Constants.RequestParameters.SlideCookie];
                 if (slide == "false")
                 {
+                    // in ASP.NET Core 3.1 we need to track that we have set ticket.Properties.AllowRefresh
+                    // so that we can un-set it, in the rare scenario where during this request someone else
+                    // downstream re-issues the cookie w/ SignInAsync, because the AllowRefresh that we set
+                    // will be cached, and then set internally in the new cookie, and thus it will never slide again.
+                    _httpContextAccessor.HttpContext.Items["Bff-AuthenticationTicket-AllowRefresh"] = ticket.Properties.AllowRefresh;
                     ticket.Properties.AllowRefresh = false;
                 }
             }
