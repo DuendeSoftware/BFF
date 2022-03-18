@@ -14,13 +14,13 @@ namespace UserSessionDb.Migrations.UserSessions
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ApplicationName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    SubjectId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    SessionId = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Renewed = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Expires = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Ticket = table.Column<string>(type: "TEXT", nullable: false),
-                    Key = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    SubjectId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    SessionId = table.Column<string>(type: "TEXT", nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Key = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,6 +44,11 @@ namespace UserSessionDb.Migrations.UserSessions
                 table: "UserSessions",
                 columns: new[] { "ApplicationName", "SubjectId", "SessionId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSessions_Expires",
+                table: "UserSessions",
+                column: "Expires");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

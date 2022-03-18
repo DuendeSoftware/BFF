@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UserSessionDb.Migrations.UserSessions
 {
     [DbContext(typeof(SessionDbContext))]
-    [Migration("20211020131747_UserSessions")]
+    [Migration("20220314155751_UserSessions")]
     partial class UserSessions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,8 @@ namespace UserSessionDb.Migrations.UserSessions
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Expires");
 
                     b.HasIndex("ApplicationName", "Key")
                         .IsUnique();
