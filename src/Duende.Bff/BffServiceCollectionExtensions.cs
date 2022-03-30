@@ -27,10 +27,17 @@ namespace Microsoft.AspNetCore.Builder
         {
             var opts = new BffOptions();
             configureAction?.Invoke(opts);
-            services.AddSingleton(opts);                                  
+            services.AddSingleton(opts);
 
-            services.AddAccessTokenManagement();
-
+            if (opts.AccessTokenManagementConfigureAction != null)
+            {
+                services.AddAccessTokenManagement(opts.AccessTokenManagementConfigureAction);
+            }
+            else
+            {
+                services.AddAccessTokenManagement();    
+            }
+            
             // management endpoints
             services.AddTransient<ILoginService, DefaultLoginService>();
             services.AddTransient<ISilentLoginService, DefaultSilentLoginService>();
