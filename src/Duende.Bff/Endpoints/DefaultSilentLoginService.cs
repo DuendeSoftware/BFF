@@ -28,9 +28,12 @@ namespace Duende.Bff
         {
             context.CheckForBffMiddleware(_options);
 
+            var pathBase = context.Request.PathBase;
+            var redirectPath = pathBase + _options.SilentLoginCallbackPath;
+
             var props = new AuthenticationProperties
             {
-                RedirectUri = _options.SilentLoginCallbackPath,
+                RedirectUri = redirectPath,
                 Items =
                 {
                     { Constants.BffFlags.SilentLogin, "true" }
