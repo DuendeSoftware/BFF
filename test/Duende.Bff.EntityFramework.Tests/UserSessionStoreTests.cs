@@ -21,7 +21,7 @@ namespace Duende.Bff.EntityFramework.Tests
         {
             var services = new ServiceCollection();
             services.AddBff()
-                .AddEntityFrameworkServerSideSessions(options=> options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+                .AddEntityFrameworkServerSideSessions(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
             var provider = services.BuildServiceProvider();
             
             _subject = provider.GetRequiredService<IUserSessionStore>();

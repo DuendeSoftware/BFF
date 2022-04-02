@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duende.Bff.EntityFramework.Interfaces;
 
 namespace Duende.Bff.EntityFramework
 {
@@ -21,7 +22,7 @@ namespace Duende.Bff.EntityFramework
     public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     {
         private readonly string _applicationDiscriminator;
-        private readonly SessionDbContext _sessionDbContext;
+        private readonly ISessionDbContext _sessionDbContext;
         private readonly ILogger<UserSessionStore> _logger;
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace Duende.Bff.EntityFramework
         /// <param name="options"></param>
         /// <param name="sessionDbContext"></param>
         /// <param name="logger"></param>
-        public UserSessionStore(IOptions<DataProtectionOptions> options, SessionDbContext sessionDbContext, ILogger<UserSessionStore> logger)
+        public UserSessionStore(IOptions<DataProtectionOptions> options, ISessionDbContext sessionDbContext, ILogger<UserSessionStore> logger)
         {
             _applicationDiscriminator = options.Value.ApplicationDiscriminator;
             _sessionDbContext = sessionDbContext;
@@ -106,7 +107,7 @@ namespace Duende.Bff.EntityFramework
                 items = items.Where(x => x.SessionId == filter.SessionId).ToArray();
             }
 
-            _sessionDbContext.RemoveRange(items);
+            _sessionDbContext.UserSessions.RemoveRange(items);
 
             try
             {

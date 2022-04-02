@@ -1,52 +1,67 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
+using Duende.Bff.EntityFramework.Extensions;
+using Duende.Bff.EntityFramework.Interfaces;
+using Duende.Bff.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Duende.Bff.EntityFramework
 {
     /// <summary>
     /// DbContext for session entities
     /// </summary>
-    public class SessionDbContext : DbContext
+    /// /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
+    /// <seealso cref="ISessionDbContext" />
+    public class SessionDbContext : SessionDbContext<SessionDbContext>
     {
         /// <summary>
-        /// Ctor
+        /// Initializes a new instance of the <see cref="SessionDbContext"/> class.
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">The options.</param>
+        /// <exception cref="ArgumentNullException">storeOptions</exception>
         public SessionDbContext(DbContextOptions<SessionDbContext> options) : base(options)
         {
         }
-
+    }
+    
+    /// <summary>
+    /// DbContext for session entities
+    /// </summary>
+    /// /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
+    /// <seealso cref="ISessionDbContext" />
+    public class SessionDbContext<TContext> : DbContext, ISessionDbContext
+        where TContext : DbContext, ISessionDbContext
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SessionDbContext"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <exception cref="ArgumentNullException">storeOptions</exception>
+        public SessionDbContext(DbContextOptions<TContext> options) : base(options)
+        {
+        }
+    
         /// <summary>
         /// DbSet for user sessions
         /// </summary>
         public DbSet<UserSessionEntity> UserSessions { get; set; }
-
+    
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var storeOptions = this.GetService<SessionStoreOptions>();
+                
+            if (storeOptions is null)
+            {
+                throw new ArgumentNullException(nameof(storeOptions));
+            }
+    
+            modelBuilder.ConfigureSessionContext(storeOptions);
+                
             base.OnModelCreating(modelBuilder);
-            ConfigureUserSessionSchema(modelBuilder.Entity<UserSessionEntity>());
-        }
-
-        /// <summary>
-        /// Allows controlling the schema for UserSessionEntity
-        /// </summary>
-        protected virtual void ConfigureUserSessionSchema(EntityTypeBuilder<UserSessionEntity> entity)
-        {
-            entity.HasKey(x => x.Id);
-            
-            entity.Property(x => x.ApplicationName).HasMaxLength(200);
-            entity.Property(x => x.Key).IsRequired().HasMaxLength(200);
-            entity.Property(x => x.SubjectId).IsRequired().HasMaxLength(200);
-            entity.Property(x => x.Ticket).IsRequired();
-
-            entity.HasIndex(x => new { x.ApplicationName, x.Key }).IsUnique();
-            entity.HasIndex(x => new { x.ApplicationName, x.SubjectId, x.SessionId }).IsUnique();
-            entity.HasIndex(x => new { x.ApplicationName, x.SessionId }).IsUnique();
-            entity.HasIndex(x => x.Expires);
         }
     }
 }
