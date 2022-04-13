@@ -3,21 +3,20 @@
 
 using Duende.Bff.Endpoints;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+/// <summary>
+/// Extension methods for the BFF middleware
+/// </summary>
+public static class BffApplicationBuilderExtensions
 {
     /// <summary>
-    /// Extension methods for the BFF middleware
+    /// Adds the Duende.BFF middleware to the pipeline
     /// </summary>
-    public static class BffApplicationBuilderExtensions
+    /// <param name="app"></param>
+    /// <returns></returns>
+    public static IApplicationBuilder UseBff(this IApplicationBuilder app)
     {
-        /// <summary>
-        /// Adds the Duende.BFF middleware to the pipeline
-        /// </summary>
-        /// <param name="app"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseBff(this IApplicationBuilder app)
-        {
-            return app.UseMiddleware<BffMiddleware>();
-        }
+        return app.UseMiddleware<BffMiddleware>();
     }
 }

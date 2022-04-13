@@ -8,90 +8,89 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// OIDC configuration to add silent login support
+/// </summary>
+public class PostConfigureOidcOptionsForSilentLogin : IPostConfigureOptions<OpenIdConnectOptions>
 {
+    private readonly string? _scheme;
+    private readonly BffOpenIdConnectEvents _events;
+
     /// <summary>
-    /// OIDC configuration to add silent login support
+    /// ctor
     /// </summary>
-    public class PostConfigureOidcOptionsForSilentLogin : IPostConfigureOptions<OpenIdConnectOptions>
+    public PostConfigureOidcOptionsForSilentLogin(IOptions<AuthenticationOptions> options, ILoggerFactory logger)
     {
-        private readonly string? _scheme;
-        private readonly BffOpenIdConnectEvents _events;
+        _scheme = options.Value.DefaultChallengeScheme;
+        _events = new BffOpenIdConnectEvents(logger.CreateLogger<BffOpenIdConnectEvents>());
+    }
 
-        /// <summary>
-        /// ctor
-        /// </summary>
-        public PostConfigureOidcOptionsForSilentLogin(IOptions<AuthenticationOptions> options, ILoggerFactory logger)
+    /// <inheritdoc />
+    public void PostConfigure(string name, OpenIdConnectOptions options)
+    {
+        if (_scheme == name)
         {
-            _scheme = options.Value.DefaultChallengeScheme;
-            _events = new BffOpenIdConnectEvents(logger.CreateLogger<BffOpenIdConnectEvents>());
-        }
-
-        /// <inheritdoc />
-        public void PostConfigure(string name, OpenIdConnectOptions options)
-        {
-            if (_scheme == name)
+            if (options.EventsType != null && !typeof(BffOpenIdConnectEvents).IsAssignableFrom(options.EventsType))
             {
-                if (options.EventsType != null && !typeof(BffOpenIdConnectEvents).IsAssignableFrom(options.EventsType))
-                {
-                    throw new Exception("EventsType on OpenIdConnectOptions must derive from BffOpenIdConnectEvents to work with the BFF framework.");
-                }
+                throw new Exception("EventsType on OpenIdConnectOptions must derive from BffOpenIdConnectEvents to work with the BFF framework.");
+            }
 
-                if (options.EventsType == null)
-                {
-                    options.Events.OnRedirectToIdentityProvider = CreateRedirectCallback(options.Events.OnRedirectToIdentityProvider);
-                    options.Events.OnMessageReceived = CreateMessageReceivedCallback(options.Events.OnMessageReceived);
-                    options.Events.OnAuthenticationFailed = CreateAuthenticationFailedCallback(options.Events.OnAuthenticationFailed);
-                }
+            if (options.EventsType == null)
+            {
+                options.Events.OnRedirectToIdentityProvider = CreateRedirectCallback(options.Events.OnRedirectToIdentityProvider);
+                options.Events.OnMessageReceived = CreateMessageReceivedCallback(options.Events.OnMessageReceived);
+                options.Events.OnAuthenticationFailed = CreateAuthenticationFailedCallback(options.Events.OnAuthenticationFailed);
             }
         }
+    }
 
-        private Func<RedirectContext, Task> CreateRedirectCallback(Func<RedirectContext, Task> inner)
+    private Func<RedirectContext, Task> CreateRedirectCallback(Func<RedirectContext, Task> inner)
+    {
+        async Task Callback(RedirectContext ctx)
         {
-            async Task Callback(RedirectContext ctx)
+            if (!await _events.ProcessRedirectToIdentityProviderAsync(ctx))
             {
-                if (!await _events.ProcessRedirectToIdentityProviderAsync(ctx))
+                if (inner != null)
                 {
-                    if (inner != null)
-                    {
-                        await inner.Invoke(ctx);
-                    }
+                    await inner.Invoke(ctx);
                 }
-            };
+            }
+        };
 
-            return Callback;
-        }
+        return Callback;
+    }
 
-        private Func<MessageReceivedContext, Task> CreateMessageReceivedCallback(Func<MessageReceivedContext, Task> inner)
+    private Func<MessageReceivedContext, Task> CreateMessageReceivedCallback(Func<MessageReceivedContext, Task> inner)
+    {
+        async Task Callback(MessageReceivedContext ctx)
         {
-            async Task Callback(MessageReceivedContext ctx)
+            if (!await _events.ProcessMessageReceivedAsync(ctx))
             {
-                if (!await _events.ProcessMessageReceivedAsync(ctx))
+                if (inner != null)
                 {
-                    if (inner != null)
-                    {
-                        await inner.Invoke(ctx);
-                    }
+                    await inner.Invoke(ctx);
                 }
-            };
+            }
+        };
 
-            return Callback;
-        }
+        return Callback;
+    }
 
-        private Func<AuthenticationFailedContext, Task> CreateAuthenticationFailedCallback(Func<AuthenticationFailedContext, Task> inner)
+    private Func<AuthenticationFailedContext, Task> CreateAuthenticationFailedCallback(Func<AuthenticationFailedContext, Task> inner)
+    {
+        async Task Callback(AuthenticationFailedContext ctx)
         {
-            async Task Callback(AuthenticationFailedContext ctx)
+            if (!await _events.ProcessAuthenticationFailedAsync(ctx))
             {
-                if (!await _events.ProcessAuthenticationFailedAsync(ctx))
+                if (inner != null)
                 {
-                    if (inner != null)
-                    {
-                        await inner.Invoke(ctx);
-                    }
+                    await inner.Invoke(ctx);
                 }
-            };
+            }
+        };
 
-            return Callback;
-        }
+        return Callback;
     }
 }

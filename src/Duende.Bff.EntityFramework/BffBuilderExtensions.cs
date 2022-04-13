@@ -6,37 +6,36 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Duende.Bff.EntityFramework
+namespace Duende.Bff.EntityFramework;
+
+/// <summary>
+/// Extensions for BffBuilder
+/// </summary>
+public static class BffBuilderExtensions
 {
     /// <summary>
-    /// Extensions for BffBuilder
+    /// Adds entity framework core support for user session store.
     /// </summary>
-    public static class BffBuilderExtensions
+    /// <param name="bffBuilder"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static BffBuilder AddEntityFrameworkServerSideSessions(this BffBuilder bffBuilder, Action<IServiceProvider, DbContextOptionsBuilder> action)
     {
-        /// <summary>
-        /// Adds entity framework core support for user session store.
-        /// </summary>
-        /// <param name="bffBuilder"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public static BffBuilder AddEntityFrameworkServerSideSessions(this BffBuilder bffBuilder, Action<IServiceProvider, DbContextOptionsBuilder> action)
-        {
-            bffBuilder.Services.AddDbContext<SessionDbContext>(action);
-            bffBuilder.Services.AddTransient<IUserSessionStoreCleanup, UserSessionStore>();
-            return bffBuilder.AddServerSideSessions<UserSessionStore>();
-        }
+        bffBuilder.Services.AddDbContext<SessionDbContext>(action);
+        bffBuilder.Services.AddTransient<IUserSessionStoreCleanup, UserSessionStore>();
+        return bffBuilder.AddServerSideSessions<UserSessionStore>();
+    }
 
-        /// <summary>
-        /// Adds entity framework core support for user session store.
-        /// </summary>
-        /// <param name="bffBuilder"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public static BffBuilder AddEntityFrameworkServerSideSessions(this BffBuilder bffBuilder, Action<DbContextOptionsBuilder> action)
-        {
-            bffBuilder.Services.AddDbContext<SessionDbContext>(action);
-            bffBuilder.Services.AddTransient<IUserSessionStoreCleanup, UserSessionStore>();
-            return bffBuilder.AddServerSideSessions<UserSessionStore>();
-        }
+    /// <summary>
+    /// Adds entity framework core support for user session store.
+    /// </summary>
+    /// <param name="bffBuilder"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static BffBuilder AddEntityFrameworkServerSideSessions(this BffBuilder bffBuilder, Action<DbContextOptionsBuilder> action)
+    {
+        bffBuilder.Services.AddDbContext<SessionDbContext>(action);
+        bffBuilder.Services.AddTransient<IUserSessionStoreCleanup, UserSessionStore>();
+        return bffBuilder.AddServerSideSessions<UserSessionStore>();
     }
 }

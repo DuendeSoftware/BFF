@@ -4,24 +4,23 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// User session store cleanup
+/// </summary>
+public interface IUserSessionStoreCleanup
 {
     /// <summary>
-    /// User session store cleanup
+    /// Deletes expired sessions
     /// </summary>
-    public interface IUserSessionStoreCleanup
-    {
-        /// <summary>
-        /// Deletes expired sessions
-        /// </summary>
-        Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default);
-    }
+    Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default);
+}
 
-    class NopUserSessionStoreCleanup : IUserSessionStoreCleanup
+class NopUserSessionStoreCleanup : IUserSessionStoreCleanup
+{
+    public Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default)
     {
-        public Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default)
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

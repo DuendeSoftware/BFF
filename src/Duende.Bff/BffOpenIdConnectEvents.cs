@@ -5,108 +5,107 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// BFF specific OpenIdConnectEvents class.
+/// </summary>
+public class BffOpenIdConnectEvents : OpenIdConnectEvents
 {
     /// <summary>
-    /// BFF specific OpenIdConnectEvents class.
+    /// The logger.
     /// </summary>
-    public class BffOpenIdConnectEvents : OpenIdConnectEvents
+    protected readonly ILogger<BffOpenIdConnectEvents> Logger;
+
+    /// <summary>
+    /// ctor
+    /// </summary>
+    /// <param name="logger"></param>
+    public BffOpenIdConnectEvents(ILogger<BffOpenIdConnectEvents> logger)
     {
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        protected readonly ILogger<BffOpenIdConnectEvents> Logger;
+        Logger = logger;
+    }
 
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="logger"></param>
-        public BffOpenIdConnectEvents(ILogger<BffOpenIdConnectEvents> logger)
+    /// <inheritdoc/>
+    public override async Task RedirectToIdentityProvider(RedirectContext context)
+    {
+        if (!await ProcessRedirectToIdentityProviderAsync(context))
         {
-            Logger = logger;
+            await base.RedirectToIdentityProvider(context);
+        }
+    }
+
+    /// <summary>
+    /// Processes the RedirectToIdentityProvider event.
+    /// </summary>
+    public virtual Task<bool> ProcessRedirectToIdentityProviderAsync(RedirectContext context)
+    {
+        if (context.Properties?.IsSilentLogin() == true)
+        {
+            Logger.LogDebug("Setting OIDC ProtocolMessage.Prompt to 'none' for BFF silent login");
+            context.ProtocolMessage.Prompt = "none";
         }
 
-        /// <inheritdoc/>
-        public override async Task RedirectToIdentityProvider(RedirectContext context)
+        // we've not "handled" the request, so let other code process
+        return Task.FromResult(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task MessageReceived(MessageReceivedContext context)
+    {
+        if (!await ProcessMessageReceivedAsync(context))
         {
-            if (!await ProcessRedirectToIdentityProviderAsync(context))
-            {
-                await base.RedirectToIdentityProvider(context);
-            }
+            await base.MessageReceived(context);
         }
+    }
 
-        /// <summary>
-        /// Processes the RedirectToIdentityProvider event.
-        /// </summary>
-        public virtual Task<bool> ProcessRedirectToIdentityProviderAsync(RedirectContext context)
+    /// <summary>
+    /// Processes the MessageReceived event.
+    /// </summary>
+    public virtual Task<bool> ProcessMessageReceivedAsync(MessageReceivedContext context)
+    {
+        if (context.Properties?.IsSilentLogin() == true &&
+            context.Properties?.RedirectUri != null)
         {
-            if (context.Properties?.IsSilentLogin() == true)
+            context.HttpContext.Items[Constants.BffFlags.SilentLogin] = context.Properties.RedirectUri;
+
+            if (context.ProtocolMessage.Error != null)
             {
-                Logger.LogDebug("Setting OIDC ProtocolMessage.Prompt to 'none' for BFF silent login");
-                context.ProtocolMessage.Prompt = "none";
-            }
-
-            // we've not "handled" the request, so let other code process
-            return Task.FromResult(false);
-        }
-
-        /// <inheritdoc/>
-        public override async Task MessageReceived(MessageReceivedContext context)
-        {
-            if (!await ProcessMessageReceivedAsync(context))
-            {
-                await base.MessageReceived(context);
-            }
-        }
-
-        /// <summary>
-        /// Processes the MessageReceived event.
-        /// </summary>
-        public virtual Task<bool> ProcessMessageReceivedAsync(MessageReceivedContext context)
-        {
-            if (context.Properties?.IsSilentLogin() == true &&
-                context.Properties?.RedirectUri != null)
-            {
-                context.HttpContext.Items[Constants.BffFlags.SilentLogin] = context.Properties.RedirectUri;
-
-                if (context.ProtocolMessage.Error != null)
-                {
-                    Logger.LogDebug("Handling error response from OIDC provider for BFF silent login.");
-
-                    context.HandleResponse();
-                    context.Response.Redirect(context.Properties.RedirectUri);
-                    return Task.FromResult(true);
-                }
-            }
-
-            return Task.FromResult(false);
-        }
-
-        /// <inheritdoc/>
-        public override async Task AuthenticationFailed(AuthenticationFailedContext context)
-        {
-            if (!await ProcessAuthenticationFailedAsync(context))
-            {
-                await base.AuthenticationFailed(context);
-            }
-        }
-
-        /// <summary>
-        /// Processes the AuthenticationFailed event.
-        /// </summary>
-        public virtual Task<bool> ProcessAuthenticationFailedAsync(AuthenticationFailedContext context)
-        {
-            if (context.HttpContext.Items.ContainsKey(Constants.BffFlags.SilentLogin))
-            {
-                Logger.LogDebug("Handling failed response from OIDC provider for BFF silent login.");
+                Logger.LogDebug("Handling error response from OIDC provider for BFF silent login.");
 
                 context.HandleResponse();
-                context.Response.Redirect(context.HttpContext.Items[Constants.BffFlags.SilentLogin]!.ToString()!);
-
+                context.Response.Redirect(context.Properties.RedirectUri);
                 return Task.FromResult(true);
             }
-
-            return Task.FromResult(false);
         }
+
+        return Task.FromResult(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task AuthenticationFailed(AuthenticationFailedContext context)
+    {
+        if (!await ProcessAuthenticationFailedAsync(context))
+        {
+            await base.AuthenticationFailed(context);
+        }
+    }
+
+    /// <summary>
+    /// Processes the AuthenticationFailed event.
+    /// </summary>
+    public virtual Task<bool> ProcessAuthenticationFailedAsync(AuthenticationFailedContext context)
+    {
+        if (context.HttpContext.Items.ContainsKey(Constants.BffFlags.SilentLogin))
+        {
+            Logger.LogDebug("Handling failed response from OIDC provider for BFF silent login.");
+
+            context.HandleResponse();
+            context.Response.Redirect(context.HttpContext.Items[Constants.BffFlags.SilentLogin]!.ToString()!);
+
+            return Task.FromResult(true);
+        }
+
+        return Task.FromResult(false);
     }
 }

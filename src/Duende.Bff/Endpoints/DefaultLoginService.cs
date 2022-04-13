@@ -7,48 +7,47 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Service for handling login requests
+/// </summary>
+public class DefaultLoginService : ILoginService
 {
     /// <summary>
-    /// Service for handling login requests
+    /// The BFF options
     /// </summary>
-    public class DefaultLoginService : ILoginService
+    protected readonly BffOptions _options;
+
+    /// <summary>
+    /// ctor
+    /// </summary>
+    /// <param name="options"></param>
+    public DefaultLoginService(BffOptions options)
     {
-        /// <summary>
-        /// The BFF options
-        /// </summary>
-        protected readonly BffOptions _options;
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="options"></param>
-        public DefaultLoginService(BffOptions options)
-        {
-            _options = options;
-        }
+        _options = options;
+    }
         
-        /// <inheritdoc />
-        public virtual async Task ProcessRequestAsync(HttpContext context)
-        {
-            context.CheckForBffMiddleware(_options);
+    /// <inheritdoc />
+    public virtual async Task ProcessRequestAsync(HttpContext context)
+    {
+        context.CheckForBffMiddleware(_options);
             
-            var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
+        var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(returnUrl))
+        if (!string.IsNullOrWhiteSpace(returnUrl))
+        {
+            if (!Util.IsLocalUrl(returnUrl))
             {
-                if (!Util.IsLocalUrl(returnUrl))
-                {
-                    throw new Exception("returnUrl is not application local: " + returnUrl);
-                }
+                throw new Exception("returnUrl is not application local: " + returnUrl);
             }
-
-            var props = new AuthenticationProperties
-            {
-                RedirectUri = returnUrl ?? "/"
-            };
-
-            await context.ChallengeAsync(props);
         }
+
+        var props = new AuthenticationProperties
+        {
+            RedirectUri = returnUrl ?? "/"
+        };
+
+        await context.ChallengeAsync(props);
     }
 }

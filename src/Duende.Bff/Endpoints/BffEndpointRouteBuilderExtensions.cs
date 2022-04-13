@@ -9,128 +9,127 @@ using System.Threading.Tasks;
 using Duende.Bff.Endpoints;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+/// <summary>
+/// Extension methods for the BFF endpoints
+/// </summary>
+public static class BffEndpointRouteBuilderExtensions
 {
-    /// <summary>
-    /// Extension methods for the BFF endpoints
-    /// </summary>
-    public static class BffEndpointRouteBuilderExtensions
+    internal static bool _licenseChecked;
+
+    private static Task ProcessWith<T>(HttpContext context)
+        where T : IBffEndpointService
     {
-        internal static bool _licenseChecked;
+        var service = context.RequestServices.GetRequiredService<T>();
+        return service.ProcessRequestAsync(context);
+    }
 
-        private static Task ProcessWith<T>(HttpContext context)
-            where T : IBffEndpointService
-        {
-            var service = context.RequestServices.GetRequiredService<T>();
-            return service.ProcessRequestAsync(context);
-        }
+    /// <summary>
+    /// Adds the BFF management endpoints (login, logout, logout notifications)
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffManagementEndpoints(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapBffManagementLoginEndpoint();
+        endpoints.MapBffManagementSilentLoginEndpoints();
+        endpoints.MapBffManagementLogoutEndpoint();
+        endpoints.MapBffManagementUserEndpoint();
+        endpoints.MapBffManagementBackchannelEndpoint();
+        endpoints.MapBffDiagnosticsEndpoint();
+    }
 
-        /// <summary>
-        /// Adds the BFF management endpoints (login, logout, logout notifications)
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffManagementEndpoints(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.MapBffManagementLoginEndpoint();
-            endpoints.MapBffManagementSilentLoginEndpoints();
-            endpoints.MapBffManagementLogoutEndpoint();
-            endpoints.MapBffManagementUserEndpoint();
-            endpoints.MapBffManagementBackchannelEndpoint();
-            endpoints.MapBffDiagnosticsEndpoint();
-        }
-
-        /// <summary>
-        /// Adds the login BFF management endpoint
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffManagementLoginEndpoint(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.CheckLicense();
+    /// <summary>
+    /// Adds the login BFF management endpoint
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffManagementLoginEndpoint(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.CheckLicense();
             
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.LoginPath, ProcessWith<ILoginService>);
-        }
+        endpoints.MapGet(options.LoginPath, ProcessWith<ILoginService>);
+    }
 
-        /// <summary>
-        /// Adds the silent login BFF management endpoints
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffManagementSilentLoginEndpoints(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.CheckLicense();
+    /// <summary>
+    /// Adds the silent login BFF management endpoints
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffManagementSilentLoginEndpoints(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.CheckLicense();
 
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.SilentLoginPath, ProcessWith<ISilentLoginService>);
-            endpoints.MapGet(options.SilentLoginCallbackPath, ProcessWith<ISilentLoginCallbackService>);
-        }
+        endpoints.MapGet(options.SilentLoginPath, ProcessWith<ISilentLoginService>);
+        endpoints.MapGet(options.SilentLoginCallbackPath, ProcessWith<ISilentLoginCallbackService>);
+    }
 
-        /// <summary>
-        /// Adds the logout BFF management endpoint
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffManagementLogoutEndpoint(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.CheckLicense();
+    /// <summary>
+    /// Adds the logout BFF management endpoint
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffManagementLogoutEndpoint(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.CheckLicense();
             
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.LogoutPath, ProcessWith<ILogoutService>);
-        }
+        endpoints.MapGet(options.LogoutPath, ProcessWith<ILogoutService>);
+    }
 
-        /// <summary>
-        /// Adds the user BFF management endpoint
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffManagementUserEndpoint(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.CheckLicense();
+    /// <summary>
+    /// Adds the user BFF management endpoint
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffManagementUserEndpoint(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.CheckLicense();
             
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.UserPath, ProcessWith<IUserService>)
-                .AsBffApiEndpoint();
-        }
+        endpoints.MapGet(options.UserPath, ProcessWith<IUserService>)
+            .AsBffApiEndpoint();
+    }
 
-        /// <summary>
-        /// Adds the back channel BFF management endpoint
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffManagementBackchannelEndpoint(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.CheckLicense();
+    /// <summary>
+    /// Adds the back channel BFF management endpoint
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffManagementBackchannelEndpoint(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.CheckLicense();
             
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapPost(options.BackChannelLogoutPath, ProcessWith<IBackchannelLogoutService>);
-        }
+        endpoints.MapPost(options.BackChannelLogoutPath, ProcessWith<IBackchannelLogoutService>);
+    }
         
-        /// <summary>
-        /// Adds the logout BFF management endpoint
-        /// </summary>
-        /// <param name="endpoints"></param>
-        public static void MapBffDiagnosticsEndpoint(this IEndpointRouteBuilder endpoints)
-        {
-            endpoints.CheckLicense();
+    /// <summary>
+    /// Adds the logout BFF management endpoint
+    /// </summary>
+    /// <param name="endpoints"></param>
+    public static void MapBffDiagnosticsEndpoint(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.CheckLicense();
             
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
 
-            endpoints.MapGet(options.DiagnosticsPath, ProcessWith<IDiagnosticsService>);
-        }
+        endpoints.MapGet(options.DiagnosticsPath, ProcessWith<IDiagnosticsService>);
+    }
         
-        internal static void CheckLicense(this IEndpointRouteBuilder endpoints)
+    internal static void CheckLicense(this IEndpointRouteBuilder endpoints)
+    {
+        if (_licenseChecked == false)
         {
-            if (_licenseChecked == false)
-            {
-                var loggerFactory = endpoints.ServiceProvider.GetRequiredService<ILoggerFactory>();
-                var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+            var loggerFactory = endpoints.ServiceProvider.GetRequiredService<ILoggerFactory>();
+            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
                 
-                LicenseValidator.Initalize(loggerFactory, options);
-                LicenseValidator.ValidateLicense();
-            }
-
-            _licenseChecked = true;
+            LicenseValidator.Initalize(loggerFactory, options);
+            LicenseValidator.ValidateLicense();
         }
+
+        _licenseChecked = true;
     }
 }

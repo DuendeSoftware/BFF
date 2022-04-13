@@ -3,32 +3,31 @@
 
 using System;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Filter to query user sessions
+/// </summary>
+public class UserSessionsFilter
 {
     /// <summary>
-    /// Filter to query user sessions
+    /// The subject ID
     /// </summary>
-    public class UserSessionsFilter
+    public string? SubjectId { get; init; }
+
+    /// <summary>
+    /// The sesion ID
+    /// </summary>
+    public string? SessionId { get; set; }
+
+    /// <summary>
+    /// Validates
+    /// </summary>
+    public void Validate()
     {
-        /// <summary>
-        /// The subject ID
-        /// </summary>
-        public string? SubjectId { get; init; }
-
-        /// <summary>
-        /// The sesion ID
-        /// </summary>
-        public string? SessionId { get; set; }
-
-        /// <summary>
-        /// Validates
-        /// </summary>
-        public void Validate()
+        if (String.IsNullOrWhiteSpace(SubjectId) && String.IsNullOrWhiteSpace(SessionId))
         {
-            if (String.IsNullOrWhiteSpace(SubjectId) && String.IsNullOrWhiteSpace(SessionId))
-            {
-                throw new ArgumentNullException("SubjectId or SessionId is required.");
-            }
+            throw new ArgumentNullException("SubjectId or SessionId is required.");
         }
     }
 }

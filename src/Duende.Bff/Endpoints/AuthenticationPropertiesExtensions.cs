@@ -3,19 +3,18 @@
 
 using Microsoft.AspNetCore.Authentication;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+///  Extension methods for AuthenticationProperties
+/// </summary>
+public static class AuthenticationPropertiesExtensions
 {
     /// <summary>
-    ///  Extension methods for AuthenticationProperties
+    /// Determines if this AuthenticationProperties represents a BFF silent login.
     /// </summary>
-    public static class AuthenticationPropertiesExtensions
+    public static bool IsSilentLogin(this AuthenticationProperties props)
     {
-        /// <summary>
-        /// Determines if this AuthenticationProperties represents a BFF silent login.
-        /// </summary>
-        public static bool IsSilentLogin(this AuthenticationProperties props)
-        {
-            return props.Items.ContainsKey(Constants.BffFlags.SilentLogin);
-        }
+        return props.Items.ContainsKey(Constants.BffFlags.SilentLogin);
     }
 }
