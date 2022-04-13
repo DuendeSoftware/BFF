@@ -10,61 +10,60 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+/// <summary>
+/// Extension methods for the BFF DI services
+/// </summary>
+public static class BffServiceCollectionExtensions
 {
     /// <summary>
-    /// Extension methods for the BFF DI services
+    /// Adds the Duende.BFF services to DI
     /// </summary>
-    public static class BffServiceCollectionExtensions
+    /// <param name="services"></param>
+    /// <param name="configureAction"></param>
+    /// <returns></returns>
+    public static BffBuilder AddBff(this IServiceCollection services, Action<BffOptions>? configureAction = null)
     {
-        /// <summary>
-        /// Adds the Duende.BFF services to DI
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configureAction"></param>
-        /// <returns></returns>
-        public static BffBuilder AddBff(this IServiceCollection services, Action<BffOptions>? configureAction = null)
+        var opts = new BffOptions();
+        configureAction?.Invoke(opts);
+        services.AddSingleton(opts);
+
+        if (opts.AccessTokenManagementConfigureAction != null)
         {
-            var opts = new BffOptions();
-            configureAction?.Invoke(opts);
-            services.AddSingleton(opts);
-
-            if (opts.AccessTokenManagementConfigureAction != null)
-            {
-                services.AddAccessTokenManagement(opts.AccessTokenManagementConfigureAction);
-            }
-            else
-            {
-                services.AddAccessTokenManagement();    
-            }
+            services.AddAccessTokenManagement(opts.AccessTokenManagementConfigureAction);
+        }
+        else
+        {
+            services.AddAccessTokenManagement();    
+        }
             
-            // management endpoints
-            services.AddTransient<ILoginService, DefaultLoginService>();
-            services.AddTransient<ISilentLoginService, DefaultSilentLoginService>();
-            services.AddTransient<ISilentLoginCallbackService, DefaultSilentLoginCallbackService>();
-            services.AddTransient<ILogoutService, DefaultLogoutService>();
-            services.AddTransient<IUserService, DefaultUserService>();
-            services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
-            services.AddTransient<IDiagnosticsService, DefaultDiagnosticsService>();
+        // management endpoints
+        services.AddTransient<ILoginService, DefaultLoginService>();
+        services.AddTransient<ISilentLoginService, DefaultSilentLoginService>();
+        services.AddTransient<ISilentLoginCallbackService, DefaultSilentLoginCallbackService>();
+        services.AddTransient<ILogoutService, DefaultLogoutService>();
+        services.AddTransient<IUserService, DefaultUserService>();
+        services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
+        services.AddTransient<IDiagnosticsService, DefaultDiagnosticsService>();
             
-            // session management
-            services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
+        // session management
+        services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
 
-            // cookie configuration
-            #if NET6_0_OR_GREATER
+        // cookie configuration
+#if NET6_0_OR_GREATER
             services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureSlidingExpirationCheck>();
-            #else
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
+#else
+        services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
 #endif
 
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
-            services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOidcOptionsForSilentLogin>();
+        services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
+        services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOidcOptionsForSilentLogin>();
 
 #if NET5_0_OR_GREATER
-            services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
+        services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
 #endif
 
-            return new BffBuilder(services);
-        }
+        return new BffBuilder(services);
     }
 }

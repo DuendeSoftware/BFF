@@ -3,23 +3,22 @@
 
 using Duende.Bff;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+/// <summary>
+/// Extension methods for BFF endpoint conventions
+/// </summary>
+public static class EndpointConventionBuilderExtensions
 {
     /// <summary>
-    /// Extension methods for BFF endpoint conventions
+    /// Marks an endpoint as a local BFF API endpoint.
+    /// This metadata is used by the BFF middleware.
     /// </summary>
-    public static class EndpointConventionBuilderExtensions
+    /// <param name="builder"></param>
+    /// <param name="requireAntiForgeryCheck">Specifies if the antiforgery header gets checked</param>
+    /// <returns></returns>
+    public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder, bool requireAntiForgeryCheck = true)
     {
-        /// <summary>
-        /// Marks an endpoint as a local BFF API endpoint.
-        /// This metadata is used by the BFF middleware.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="requireAntiForgeryCheck">Specifies if the antiforgery header gets checked</param>
-        /// <returns></returns>
-        public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder, bool requireAntiForgeryCheck = true)
-        {
-            return builder.WithMetadata(new BffApiAttribute(requireAntiForgeryCheck));
-        }
+        return builder.WithMetadata(new BffApiAttribute(requireAntiForgeryCheck));
     }
 }

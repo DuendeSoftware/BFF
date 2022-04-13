@@ -5,42 +5,41 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
 
-namespace Duende.Bff.Yarp
+namespace Duende.Bff.Yarp;
+
+/// <summary>
+/// Default implementation of the message invoker factory.
+/// This implementation creates one message invoke per remote API endpoint
+/// </summary>
+public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
 {
     /// <summary>
-    /// Default implementation of the message invoker factory.
-    /// This implementation creates one message invoke per remote API endpoint
+    /// Dictionary to cachen invoker instances
     /// </summary>
-    public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
-    {
-        /// <summary>
-        /// Dictionary to cachen invoker instances
-        /// </summary>
-        protected readonly ConcurrentDictionary<string, HttpMessageInvoker> Clients = new();
+    protected readonly ConcurrentDictionary<string, HttpMessageInvoker> Clients = new();
 
-        /// <inheritdoc />
-        public virtual HttpMessageInvoker CreateClient(string localPath)
+    /// <inheritdoc />
+    public virtual HttpMessageInvoker CreateClient(string localPath)
+    {
+        return Clients.GetOrAdd(localPath, (key) =>
         {
-            return Clients.GetOrAdd(localPath, (key) =>
+            var socketsHandler = new SocketsHttpHandler
             {
-                var socketsHandler = new SocketsHttpHandler
-                {
-                    UseProxy = false,
-                    AllowAutoRedirect = false,
-                    AutomaticDecompression = DecompressionMethods.None,
-                    UseCookies = false
-                };
+                UseProxy = false,
+                AllowAutoRedirect = false,
+                AutomaticDecompression = DecompressionMethods.None,
+                UseCookies = false
+            };
 
                 
 #if !NET6_0_OR_GREATER
-                // propagates the current Activity to the downstream service on .NET Core 3.1 and 5.0
-                var handler = new ActivityPropagationHandler(socketsHandler);
-                return new HttpMessageInvoker(handler);
+            // propagates the current Activity to the downstream service on .NET Core 3.1 and 5.0
+            var handler = new ActivityPropagationHandler(socketsHandler);
+            return new HttpMessageInvoker(handler);
 #else
                 // for .NET 6+ this feature is built-in to SocketsHandler directly
                 return new HttpMessageInvoker(socketsHandler);
 #endif
-            });
-        }
+        });
     }
 }

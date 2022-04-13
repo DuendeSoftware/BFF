@@ -10,81 +10,80 @@ using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
-namespace Duende.Bff.Yarp
+namespace Duende.Bff.Yarp;
+
+/// <summary>
+/// Transform provider to attach an access token to forwarded calls
+/// </summary>
+public class AccessTokenTransformProvider : ITransformProvider
 {
+    private readonly BffOptions _options;
+    private readonly ILogger _logger;
+
     /// <summary>
-    /// Transform provider to attach an access token to forwarded calls
+    /// ctor
     /// </summary>
-    public class AccessTokenTransformProvider : ITransformProvider
+    /// <param name="options"></param>
+    /// <param name="logger"></param>
+    public AccessTokenTransformProvider(BffOptions options, ILogger<AccessTokenTransformProvider> logger)
     {
-        private readonly BffOptions _options;
-        private readonly ILogger _logger;
+        _options = options;
+        _logger = logger;
+    }
 
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="options"></param>
-        /// <param name="logger"></param>
-        public AccessTokenTransformProvider(BffOptions options, ILogger<AccessTokenTransformProvider> logger)
+    /// <inheritdoc />
+    public void ValidateRoute(TransformRouteValidationContext context)
+    {
+    }
+
+    /// <inheritdoc />
+    public void ValidateCluster(TransformClusterValidationContext context)
+    {
+    }
+
+    /// <inheritdoc />
+    public void Apply(TransformBuilderContext transformBuildContext)
+    {
+        var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+        var clusterValue =
+            transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+
+        // no metadata
+        if (string.IsNullOrEmpty(routeValue) && string.IsNullOrEmpty(clusterValue))
         {
-            _options = options;
-            _logger = logger;
+            return;
         }
 
-        /// <inheritdoc />
-        public void ValidateRoute(TransformRouteValidationContext context)
+        var values = new HashSet<string>();
+        if (!string.IsNullOrEmpty(routeValue)) values.Add(routeValue);
+        if (!string.IsNullOrEmpty(clusterValue)) values.Add(clusterValue);
+
+        if (values.Count > 1)
         {
+            throw new ArgumentException(
+                "Mismatching Duende.Bff.Yarp.TokenType route or cluster metadata values found");
         }
-
-        /// <inheritdoc />
-        public void ValidateCluster(TransformClusterValidationContext context)
-        {
-        }
-
-        /// <inheritdoc />
-        public void Apply(TransformBuilderContext transformBuildContext)
-        {
-            var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
-            var clusterValue =
-                transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
-
-            // no metadata
-            if (string.IsNullOrEmpty(routeValue) && string.IsNullOrEmpty(clusterValue))
-            {
-                return;
-            }
-
-            var values = new HashSet<string>();
-            if (!string.IsNullOrEmpty(routeValue)) values.Add(routeValue);
-            if (!string.IsNullOrEmpty(clusterValue)) values.Add(clusterValue);
-
-            if (values.Count > 1)
-            {
-                throw new ArgumentException(
-                    "Mismatching Duende.Bff.Yarp.TokenType route or cluster metadata values found");
-            }
             
-            if (!TokenType.TryParse(values.First(), true, out TokenType tokenType))
-            {
-                throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
-            }
-
-            transformBuildContext.AddRequestTransform(async transformContext =>
-            {
-                transformContext.HttpContext.CheckForBffMiddleware(_options);
-
-                var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
-
-                if (!string.IsNullOrEmpty(token))
-                {
-                    transformContext.ProxyRequest.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", token);
-                }
-                else
-                {
-                    _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
-                }
-            });
+        if (!TokenType.TryParse(values.First(), true, out TokenType tokenType))
+        {
+            throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
         }
+
+        transformBuildContext.AddRequestTransform(async transformContext =>
+        {
+            transformContext.HttpContext.CheckForBffMiddleware(_options);
+
+            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                transformContext.ProxyRequest.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
+            }
+        });
     }
 }

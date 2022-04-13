@@ -7,19 +7,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Extends ITicketStore with additional query APIs.
+/// </summary>
+public interface IServerTicketStore : ITicketStore
 {
     /// <summary>
-    /// Extends ITicketStore with additional query APIs.
+    /// Returns the AuthenticationTickets for the UserSessionsFilter.
     /// </summary>
-    public interface IServerTicketStore : ITicketStore
-    {
-        /// <summary>
-        /// Returns the AuthenticationTickets for the UserSessionsFilter.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
-        /// <returns></returns>
-        Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
-    }
+    /// <param name="filter"></param>
+    /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
+    /// <returns></returns>
+    Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken = default);
 }

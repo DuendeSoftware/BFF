@@ -7,45 +7,44 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Service for handling silent login callback requests
+/// </summary>
+public class DefaultSilentLoginCallbackService : ISilentLoginCallbackService
 {
+    private readonly BffOptions _options;
+
     /// <summary>
-    /// Service for handling silent login callback requests
+    /// ctor
     /// </summary>
-    public class DefaultSilentLoginCallbackService : ISilentLoginCallbackService
+    /// <param name="options"></param>
+    public DefaultSilentLoginCallbackService(BffOptions options)
     {
-        private readonly BffOptions _options;
+        _options = options;
+    }
 
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="options"></param>
-        public DefaultSilentLoginCallbackService(BffOptions options)
-        {
-            _options = options;
-        }
+    /// <inheritdoc />
+    public async Task ProcessRequestAsync(HttpContext context)
+    {
+        context.CheckForBffMiddleware(_options);
 
-        /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
-        {
-            context.CheckForBffMiddleware(_options);
-
-            var result = (await context.AuthenticateAsync()).Succeeded ? "true" : "false";
-            var json = $"{{source:'bff-silent-login', isLoggedIn:{result}}}";
+        var result = (await context.AuthenticateAsync()).Succeeded ? "true" : "false";
+        var json = $"{{source:'bff-silent-login', isLoggedIn:{result}}}";
             
-            var nonce = CryptoRandom.CreateUniqueId(format:CryptoRandom.OutputFormat.Hex);
-            var origin = $"{context.Request.Scheme}://{context.Request.Host}";
+        var nonce = CryptoRandom.CreateUniqueId(format:CryptoRandom.OutputFormat.Hex);
+        var origin = $"{context.Request.Scheme}://{context.Request.Host}";
             
-            var html = $"<script nonce='{nonce}'>window.parent.postMessage({json}, '{origin}');</script>";
+        var html = $"<script nonce='{nonce}'>window.parent.postMessage({json}, '{origin}');</script>";
 
-            context.Response.StatusCode = 200;
-            context.Response.ContentType = "text/html";
+        context.Response.StatusCode = 200;
+        context.Response.ContentType = "text/html";
             
-            context.Response.Headers["Content-Security-Policy"] = $"script-src 'nonce-{nonce}';";
-            context.Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
-            context.Response.Headers["Pragma"] = "no-cache";
+        context.Response.Headers["Content-Security-Policy"] = $"script-src 'nonce-{nonce}';";
+        context.Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
+        context.Response.Headers["Pragma"] = "no-cache";
 
-            await context.Response.WriteAsync(html, Encoding.UTF8);
-        }
+        await context.Response.WriteAsync(html, Encoding.UTF8);
     }
 }

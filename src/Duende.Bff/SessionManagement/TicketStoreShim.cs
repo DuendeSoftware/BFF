@@ -9,52 +9,52 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// this shim class is needed since ITicketStore is not configured in DI, rather it's a property 
+/// of the cookie options and coordinated with PostConfigureApplicationCookie. #lame
+/// https://github.com/aspnet/AspNetCore/issues/6946 
+/// </summary>
+public class TicketStoreShim : ITicketStore
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly BffOptions _options;
+
     /// <summary>
-    /// this shim class is needed since ITicketStore is not configured in DI, rather it's a property 
-    /// of the cookie options and coordinated with PostConfigureApplicationCookie. #lame
-    /// https://github.com/aspnet/AspNetCore/issues/6946 
+    /// ctor
     /// </summary>
-    public class TicketStoreShim : ITicketStore
+    /// <param name="httpContextAccessor"></param>
+    public TicketStoreShim(IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly BffOptions _options;
+        _httpContextAccessor = httpContextAccessor;
+        _options = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<BffOptions>();
+    }
 
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="httpContextAccessor"></param>
-        public TicketStoreShim(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _options = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<BffOptions>();
-        }
+    /// <summary>
+    /// The inner
+    /// </summary>
+    private IServerTicketStore Inner => _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IServerTicketStore>();
 
-        /// <summary>
-        /// The inner
-        /// </summary>
-        private IServerTicketStore Inner => _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IServerTicketStore>();
+    /// <inheritdoc />
+    public Task RemoveAsync(string key)
+    {
+        return Inner.RemoveAsync(key);
+    }
 
-        /// <inheritdoc />
-        public Task RemoveAsync(string key)
-        {
-            return Inner.RemoveAsync(key);
-        }
+    /// <inheritdoc />
+    public Task RenewAsync(string key, AuthenticationTicket ticket)
+    {
+        return Inner.RenewAsync(key, ticket);
+    }
 
-        /// <inheritdoc />
-        public Task RenewAsync(string key, AuthenticationTicket ticket)
-        {
-            return Inner.RenewAsync(key, ticket);
-        }
+    /// <inheritdoc />
+    public async Task<AuthenticationTicket> RetrieveAsync(string key)
+    {
+        var ticket = await Inner.RetrieveAsync(key);
 
-        /// <inheritdoc />
-        public async Task<AuthenticationTicket> RetrieveAsync(string key)
-        {
-            var ticket = await Inner.RetrieveAsync(key);
-
-            // if we're in .NET 6 or beyond, this logic is instead handled in the cookie handler
-            // OnCheckSlidingExpiration callback implemented by our PostConfigureSlidingExpirationCheck
+        // if we're in .NET 6 or beyond, this logic is instead handled in the cookie handler
+        // OnCheckSlidingExpiration callback implemented by our PostConfigureSlidingExpirationCheck
 #if !NET6_0_OR_GREATER
             // allows the client-side app to request that the cookie does not slide on the user endpoint
             // this only works if we're implementing the a ticket store, as we can suppress the behavior
@@ -74,13 +74,12 @@ namespace Duende.Bff
             }
 #endif
 
-            return ticket;
-        }
+        return ticket;
+    }
 
-        /// <inheritdoc />
-        public Task<string> StoreAsync(AuthenticationTicket ticket)
-        {
-            return Inner.StoreAsync(ticket);
-        }
+    /// <inheritdoc />
+    public Task<string> StoreAsync(AuthenticationTicket ticket)
+    {
+        return Inner.StoreAsync(ticket);
     }
 }

@@ -4,75 +4,74 @@
 using System.Collections.Generic;
 using Yarp.ReverseProxy.Configuration;
 
-namespace Duende.Bff.Yarp
+namespace Duende.Bff.Yarp;
+
+/// <summary>
+/// Extension methods for YARP configuration
+/// </summary>
+public static class ProxyConfigExtensions
 {
     /// <summary>
-    /// Extension methods for YARP configuration
+    /// Adds BFF access token metadata to a route configuration
     /// </summary>
-    public static class ProxyConfigExtensions
+    /// <param name="config"></param>
+    /// <param name="tokenType"></param>
+    /// <returns></returns>
+    public static RouteConfig WithAccessToken(this RouteConfig config, TokenType tokenType)
     {
-        /// <summary>
-        /// Adds BFF access token metadata to a route configuration
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="tokenType"></param>
-        /// <returns></returns>
-        public static RouteConfig WithAccessToken(this RouteConfig config, TokenType tokenType)
-        {
-            return config.WithMetadata(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
-        }
+        return config.WithMetadata(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
+    }
         
-        /// <summary>
-        /// Adds anti-forgery metadata to a route configuration
-        /// </summary>
-        /// <param name="config"></param>
-        /// <returns></returns>
-        public static RouteConfig WithAntiforgeryCheck(this RouteConfig config)
+    /// <summary>
+    /// Adds anti-forgery metadata to a route configuration
+    /// </summary>
+    /// <param name="config"></param>
+    /// <returns></returns>
+    public static RouteConfig WithAntiforgeryCheck(this RouteConfig config)
+    {
+        return config.WithMetadata(Constants.Yarp.AntiforgeryCheckMetadata, "true");
+    }
+
+    private static RouteConfig WithMetadata(this RouteConfig config, string key, string value)
+    {
+        Dictionary<string, string> metadata;
+
+        if (config.Metadata != null)
         {
-            return config.WithMetadata(Constants.Yarp.AntiforgeryCheckMetadata, "true");
+            metadata = new Dictionary<string, string>(config.Metadata);
+        }
+        else
+        {
+            metadata = new();
         }
 
-        private static RouteConfig WithMetadata(this RouteConfig config, string key, string value)
-        {
-            Dictionary<string, string> metadata;
-
-            if (config.Metadata != null)
-            {
-                metadata = new Dictionary<string, string>(config.Metadata);
-            }
-            else
-            {
-                metadata = new();
-            }
-
-            metadata.TryAdd(key, value);
+        metadata.TryAdd(key, value);
             
-            return config with { Metadata = metadata };
-        }
+        return config with { Metadata = metadata };
+    }
 
         
-        /// <summary>
-        /// Adds BFF access token metadata to a cluster configuration
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="tokenType"></param>
-        /// <returns></returns>
-        public static ClusterConfig WithAccessToken(this ClusterConfig config, TokenType tokenType)
+    /// <summary>
+    /// Adds BFF access token metadata to a cluster configuration
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="tokenType"></param>
+    /// <returns></returns>
+    public static ClusterConfig WithAccessToken(this ClusterConfig config, TokenType tokenType)
+    {
+        Dictionary<string, string> metadata;
+
+        if (config.Metadata != null)
         {
-            Dictionary<string, string> metadata;
-
-            if (config.Metadata != null)
-            {
-                metadata = new Dictionary<string, string>(config.Metadata);
-            }
-            else
-            {
-                metadata = new();
-            }
-
-            metadata.TryAdd(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
-            
-            return config with { Metadata = metadata };
+            metadata = new Dictionary<string, string>(config.Metadata);
         }
+        else
+        {
+            metadata = new();
+        }
+
+        metadata.TryAdd(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
+            
+        return config with { Metadata = metadata };
     }
 }

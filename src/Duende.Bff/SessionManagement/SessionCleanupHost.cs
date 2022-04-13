@@ -8,117 +8,116 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Helper to cleanup expired sessions.
+/// </summary>
+public class SessionCleanupHost : IHostedService
 {
+    private readonly IServiceProvider _serviceProvider;
+    private readonly BffOptions _options;
+    private readonly ILogger<SessionCleanupHost> _logger;
+
+    private TimeSpan CleanupInterval => _options.SessionCleanupInterval;
+
+    private CancellationTokenSource? _source;
+
     /// <summary>
-    /// Helper to cleanup expired sessions.
+    /// Constructor for SessionCleanupHost.
     /// </summary>
-    public class SessionCleanupHost : IHostedService
+    public SessionCleanupHost(IServiceProvider serviceProvider, BffOptions options, ILogger<SessionCleanupHost> logger)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly BffOptions _options;
-        private readonly ILogger<SessionCleanupHost> _logger;
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _options = options;
+        _logger = logger;
+    }
 
-        private TimeSpan CleanupInterval => _options.SessionCleanupInterval;
-
-        private CancellationTokenSource? _source;
-
-        /// <summary>
-        /// Constructor for SessionCleanupHost.
-        /// </summary>
-        public SessionCleanupHost(IServiceProvider serviceProvider, BffOptions options, ILogger<SessionCleanupHost> logger)
+    /// <summary>
+    /// Starts the token cleanup polling.
+    /// </summary>
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        if (_options.EnableSessionCleanup)
         {
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _options = options;
-            _logger = logger;
+            if (_source != null) throw new InvalidOperationException("Already started. Call Stop first.");
+
+            _logger.LogDebug("Starting BFF session cleanup");
+
+            _source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            Task.Factory.StartNew(() => StartInternalAsync(_source.Token));
         }
 
-        /// <summary>
-        /// Starts the token cleanup polling.
-        /// </summary>
-        public Task StartAsync(CancellationToken cancellationToken)
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Stops the token cleanup polling.
+    /// </summary>
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_options.EnableSessionCleanup)
         {
-            if (_options.EnableSessionCleanup)
+            if (_source == null) throw new InvalidOperationException("Not started. Call Start first.");
+
+            _logger.LogDebug("Stopping BFF session cleanup");
+
+            _source.Cancel();
+            _source = null;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task StartInternalAsync(CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            if (cancellationToken.IsCancellationRequested)
             {
-                if (_source != null) throw new InvalidOperationException("Already started. Call Stop first.");
-
-                _logger.LogDebug("Starting BFF session cleanup");
-
-                _source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-                Task.Factory.StartNew(() => StartInternalAsync(_source.Token));
+                _logger.LogDebug("CancellationRequested. Exiting.");
+                break;
             }
 
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Stops the token cleanup polling.
-        /// </summary>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            if (_options.EnableSessionCleanup)
-            {
-                if (_source == null) throw new InvalidOperationException("Not started. Call Start first.");
-
-                _logger.LogDebug("Stopping BFF session cleanup");
-
-                _source.Cancel();
-                _source = null;
-            }
-
-            return Task.CompletedTask;
-        }
-
-        private async Task StartInternalAsync(CancellationToken cancellationToken)
-        {
-            while (true)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogDebug("CancellationRequested. Exiting.");
-                    break;
-                }
-
-                try
-                {
-                    await Task.Delay(CleanupInterval, cancellationToken);
-                }
-                catch (TaskCanceledException)
-                {
-                    _logger.LogDebug("TaskCanceledException. Exiting.");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Task.Delay exception: {0}. Exiting.", ex.Message);
-                    break;
-                }
-
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogDebug("CancellationRequested. Exiting.");
-                    break;
-                }
-
-                await RunAsync(cancellationToken);
-            }
-        }
-
-        async Task RunAsync(CancellationToken cancellationToken = default)
-        {
             try
             {
-                using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                {
-                    var tokenCleanupService = serviceScope.ServiceProvider.GetRequiredService<IUserSessionStoreCleanup>();
-                    await tokenCleanupService.DeleteExpiredSessionsAsync(cancellationToken);
-                }
+                await Task.Delay(CleanupInterval, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogDebug("TaskCanceledException. Exiting.");
+                break;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Exception deleting expired sessions: {exception}", ex.Message);
+                _logger.LogError("Task.Delay exception: {0}. Exiting.", ex.Message);
+                break;
             }
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogDebug("CancellationRequested. Exiting.");
+                break;
+            }
+
+            await RunAsync(cancellationToken);
+        }
+    }
+
+    async Task RunAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var tokenCleanupService = serviceScope.ServiceProvider.GetRequiredService<IUserSessionStoreCleanup>();
+                await tokenCleanupService.DeleteExpiredSessionsAsync(cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Exception deleting expired sessions: {exception}", ex.Message);
         }
     }
 }

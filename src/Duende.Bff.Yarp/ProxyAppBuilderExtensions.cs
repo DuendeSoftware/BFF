@@ -3,21 +3,20 @@
 
 using Microsoft.AspNetCore.Builder;
 
-namespace Duende.Bff.Yarp
+namespace Duende.Bff.Yarp;
+
+/// <summary>
+/// Extensions for wiring up YARP middleware
+/// </summary>
+public static class ProxyAppBuilderExtensions
 {
     /// <summary>
-    /// Extensions for wiring up YARP middleware
+    /// Adds antiforgery middleware to YARP pipeline
     /// </summary>
-    public static class ProxyAppBuilderExtensions
+    /// <param name="yarpApp"></param>
+    /// <returns></returns>
+    public static IApplicationBuilder UseAntiforgeryCheck(this IApplicationBuilder yarpApp)
     {
-        /// <summary>
-        /// Adds antiforgery middleware to YARP pipeline
-        /// </summary>
-        /// <param name="yarpApp"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseAntiforgeryCheck(this IApplicationBuilder yarpApp)
-        {
-            return yarpApp.UseMiddleware<AntiforgeryMiddleware>();
-        }
+        return yarpApp.UseMiddleware<AntiforgeryMiddleware>();
     }
 }

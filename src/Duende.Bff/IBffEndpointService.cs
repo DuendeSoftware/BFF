@@ -4,18 +4,17 @@
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Service definition for handling endpoint requests
+/// </summary>
+public interface IBffEndpointService
 {
     /// <summary>
-    /// Service definition for handling endpoint requests
+    /// Process a request
     /// </summary>
-    public interface IBffEndpointService
-    {
-        /// <summary>
-        /// Process a request
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        Task ProcessRequestAsync(HttpContext context);
-    }
+    /// <param name="context"></param>
+    /// <returns></returns>
+    Task ProcessRequestAsync(HttpContext context);
 }

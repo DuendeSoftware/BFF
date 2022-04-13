@@ -5,42 +5,41 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Duende.Bff
+namespace Duende.Bff;
+
+/// <summary>
+/// Service for handling silent login requests
+/// </summary>
+public class DefaultSilentLoginService : ISilentLoginService
 {
+    private readonly BffOptions _options;
+
     /// <summary>
-    /// Service for handling silent login requests
+    /// ctor
     /// </summary>
-    public class DefaultSilentLoginService : ISilentLoginService
+    /// <param name="options"></param>
+    public DefaultSilentLoginService(BffOptions options)
     {
-        private readonly BffOptions _options;
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="options"></param>
-        public DefaultSilentLoginService(BffOptions options)
-        {
-            _options = options;
-        }
+        _options = options;
+    }
         
-        /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
+    /// <inheritdoc />
+    public async Task ProcessRequestAsync(HttpContext context)
+    {
+        context.CheckForBffMiddleware(_options);
+
+        var pathBase = context.Request.PathBase;
+        var redirectPath = pathBase + _options.SilentLoginCallbackPath;
+
+        var props = new AuthenticationProperties
         {
-            context.CheckForBffMiddleware(_options);
-
-            var pathBase = context.Request.PathBase;
-            var redirectPath = pathBase + _options.SilentLoginCallbackPath;
-
-            var props = new AuthenticationProperties
+            RedirectUri = redirectPath,
+            Items =
             {
-                RedirectUri = redirectPath,
-                Items =
-                {
-                    { Constants.BffFlags.SilentLogin, "true" }
-                },
-            };
+                { Constants.BffFlags.SilentLogin, "true" }
+            },
+        };
 
-            await context.ChallengeAsync(props);
-        }
+        await context.ChallengeAsync(props);
     }
 }
