@@ -72,9 +72,21 @@ public class DefaultLogoutService : ILogoutService
             }
         }
 
+        if (String.IsNullOrWhiteSpace(returnUrl))
+        {
+            if (context.Request.PathBase.HasValue)
+            {
+                returnUrl = context.Request.PathBase;
+            }
+            else
+            {
+                returnUrl = "/";
+            }
+        }
+        
         var props = new AuthenticationProperties
         {
-            RedirectUri = returnUrl ?? "/"
+            RedirectUri = returnUrl
         };
 
         // trigger idp logout
