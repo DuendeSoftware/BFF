@@ -51,19 +51,15 @@ public class BffMiddleware
             return;
         }
 
-        var localEndpointMetadata = endpoint.Metadata.GetOrderedMetadata<BffApiAttribute>();
-        if (localEndpointMetadata.Any())
+        var localEndpointMetadata = endpoint.Metadata.GetMetadata<BffApiAttribute>();
+        if (localEndpointMetadata is { RequireAntiForgeryCheck: true })
         {
-            var requireLocalAntiForgeryCheck = localEndpointMetadata.First().RequireAntiForgeryCheck;
-            if (requireLocalAntiForgeryCheck)
+            if (!context.CheckAntiForgeryHeader(_options))
             {
-                if (!context.CheckAntiForgeryHeader(_options))
-                {
-                    _logger.AntiForgeryValidationFailed(context.Request.Path);
+                _logger.AntiForgeryValidationFailed(context.Request.Path);
 
-                    context.Response.StatusCode = 401;
-                    return;
-                }
+                context.Response.StatusCode = 401;
+                return;
             }
         }
         else
@@ -82,7 +78,7 @@ public class BffMiddleware
         }
 
 #if NETCOREAPP3_1
-        context.Response.OnStarting(() => 
+        context.Response.OnStarting(() =>
         {
             // outbound: for .NET Core 3.1 - we assume that an API will never return a 302
             // if a 302 is returned, that must be the challenge to the OIDC provider
@@ -101,6 +97,7 @@ public class BffMiddleware
                     context.Response.Headers.Remove("Set-Cookie");
                 }
             }
+
             return Task.CompletedTask;
         });
 #endif
