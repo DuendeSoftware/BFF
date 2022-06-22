@@ -52,28 +52,7 @@ public class TicketStoreShim : ITicketStore
     public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
         var ticket = await Inner.RetrieveAsync(key);
-
-        // if we're in .NET 6 or beyond, this logic is instead handled in the cookie handler
-        // OnCheckSlidingExpiration callback implemented by our PostConfigureSlidingExpirationCheck
-#if !NET6_0_OR_GREATER
-            // allows the client-side app to request that the cookie does not slide on the user endpoint
-            // this only works if we're implementing the a ticket store, as we can suppress the behavior
-            // by explicitly setting the AllowRefresh on the ticket
-            if (ticket != null && _httpContextAccessor.HttpContext!.Request.Path == _options.UserPath)
-            {
-                var slide = _httpContextAccessor.HttpContext.Request.Query[Constants.RequestParameters.SlideCookie];
-                if (slide == "false")
-                {
-                    // in ASP.NET Core 3.1 we need to track that we have set ticket.Properties.AllowRefresh
-                    // so that we can un-set it, in the rare scenario where during this request someone else
-                    // downstream re-issues the cookie w/ SignInAsync, because the AllowRefresh that we set
-                    // will be cached, and then set internally in the new cookie, and thus it will never slide again.
-                    _httpContextAccessor.HttpContext.Items["Bff-AuthenticationTicket-AllowRefresh"] = ticket.Properties.AllowRefresh;
-                    ticket.Properties.AllowRefresh = false;
-                }
-            }
-#endif
-
+        
         return ticket;
     }
 

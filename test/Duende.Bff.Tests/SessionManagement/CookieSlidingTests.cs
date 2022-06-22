@@ -127,7 +127,6 @@ namespace Duende.Bff.Tests.SessionManagement
         {
             var shouldRenew = false;
             
-            #if NET6_0_OR_GREATER
             BffHost.OnConfigureServices += services =>
             {
                 services.Configure<CookieAuthenticationOptions>("cookie", options =>
@@ -139,19 +138,6 @@ namespace Duende.Bff.Tests.SessionManagement
                     };
                 });
             };
-            #else
-            BffHost.OnConfigureServices += services =>
-            {
-                services.Configure<CookieAuthenticationOptions>("cookie", options =>
-                {
-                    options.Events.OnValidatePrincipal = ctx =>
-                    {
-                        ctx.ShouldRenew = shouldRenew;
-                        return Task.CompletedTask;
-                    };
-                });
-            };
-            #endif
             
             await BffHost.InitializeAsync();
 
