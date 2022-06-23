@@ -52,7 +52,16 @@ public class DefaultUserService : IUserService
 
         if (!result.Succeeded)
         {
-            context.Response.StatusCode = 401;
+            if (Options.UserEndpointReturnNullForAnonymousUser)
+            {
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync("null", Encoding.UTF8);
+            }
+            else
+            {
+                context.Response.StatusCode = 401;
+            }
         }
         else
         {

@@ -117,4 +117,10 @@ public class BffOptions
     /// Action to configure the IdentityModel.AspNetCore access token management options
     /// </summary>
     public Action<AccessTokenManagementOptions>? AccessTokenManagementConfigureAction { get; set; } = null;
+
+    /// <summary>
+    /// If enabled, the ~/bff/user endpoint will return 200 status code and "null" if the user is anonymous.
+    /// Defaults to false.
+    /// </summary>
+    public bool UserEndpointReturnNullForAnonymousUser { get; set; }
 }
