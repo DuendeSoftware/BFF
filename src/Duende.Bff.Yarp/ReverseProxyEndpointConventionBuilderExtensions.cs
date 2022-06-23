@@ -17,38 +17,36 @@ public static class ReverseProxyEndpointConventionBuilderExtensions
     /// </summary>
     /// <param name="endpoints"></param>
     /// <param name="configureAction"></param>
-    /// <param name="requireAntiforgeryCheck"></param>
     /// <returns></returns>
     public static ReverseProxyConventionBuilder MapBffReverseProxy(this IEndpointRouteBuilder endpoints,
-        Action<IReverseProxyApplicationBuilder> configureAction,
-        bool requireAntiforgeryCheck = true)
+        Action<IReverseProxyApplicationBuilder> configureAction)
     {
         return endpoints.MapReverseProxy(configureAction)
-            .AsBffApiEndpoint(requireAntiforgeryCheck);
+            .AsBffApiEndpoint();
     }
 
     /// <summary>
     /// Adds YARP with anti-forgery protection 
     /// </summary>
     /// <param name="endpoints"></param>
-    /// <param name="requireAntiforgeryCheck"></param>
     /// <returns></returns>
-    public static ReverseProxyConventionBuilder MapBffReverseProxy(this IEndpointRouteBuilder endpoints,
-        bool requireAntiforgeryCheck = true)
+    public static ReverseProxyConventionBuilder MapBffReverseProxy(this IEndpointRouteBuilder endpoints)
     {
         return endpoints.MapReverseProxy()
-            .AsBffApiEndpoint(requireAntiforgeryCheck);
+            .AsBffApiEndpoint();
     }
-        
+
+    // TODO: do we also need a SkipAntiforgery API?
+    // TODO: review the API comment below
+
     /// <summary>
     /// Adds anti-forgery protection to YARP
     /// </summary>
     /// <param name="builder"></param>
-    /// <param name="requireAntiforgeryCheck"></param>
     /// <returns></returns>
-    public static ReverseProxyConventionBuilder AsBffApiEndpoint(this ReverseProxyConventionBuilder builder,
-        bool requireAntiforgeryCheck = true)
+    public static ReverseProxyConventionBuilder AsBffApiEndpoint(this ReverseProxyConventionBuilder builder)
     {
-        return builder.WithMetadata(new BffApiAttribute(requireAntiforgeryCheck));
+        return builder.WithMetadata(new BffApiAttribute());
     }
+
 }

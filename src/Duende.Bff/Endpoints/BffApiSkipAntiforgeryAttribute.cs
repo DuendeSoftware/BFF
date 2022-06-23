@@ -6,10 +6,9 @@ using System;
 namespace Duende.Bff;
 
 /// <summary>
-/// Decorates a controller or action as a local BFF API endpoint
-/// By default, this provides anti-forgery protection and response handling.
+/// This attribute indicates that the BFF midleware will ignore the antiforgery header checks.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class BffApiAttribute : Attribute, IBffApiEndpoint
+public class BffApiSkipAntiforgeryAttribute : Attribute, IBffApiSkipAntiforgry
 {
 }

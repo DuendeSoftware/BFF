@@ -32,25 +32,21 @@ namespace Duende.Bff
             var endpoint = context.GetEndpoint();
 
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
-            
-            var remoteApi = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
-            var localApi = endpoint.Metadata.GetMetadata<BffApiAttribute>();
 
-            if (remoteApi == null && localApi == null)
+            var isBffEndpoint = endpoint.Metadata.GetMetadata<IBffApiEndpoint>() != null;
+            if (isBffEndpoint)
             {
-                return _handler.HandleAsync(next, context, policy, authorizeResult);
-            }
-            
-            if (authorizeResult.Challenged)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                return Task.CompletedTask;
-            }
+                if (authorizeResult.Challenged)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    return Task.CompletedTask;
+                }
 
-            if (authorizeResult.Forbidden)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                return Task.CompletedTask;
+                if (authorizeResult.Forbidden)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    return Task.CompletedTask;
+                }
             }
 
             return _handler.HandleAsync(next, context, policy, authorizeResult);

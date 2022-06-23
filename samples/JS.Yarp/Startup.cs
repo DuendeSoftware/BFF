@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
