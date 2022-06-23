@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net6.0</TargetFrameworks>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
@@ -34,7 +34,7 @@
 
         <PackageReference Include="IdentityModel.AspNetCore" Version="4.2.0" />
 
-        <PackageReference Include="MinVer" Version="3.0.0" PrivateAssets="all" />
+        <PackageReference Include="MinVer" Version="4.0.0" PrivateAssets="all" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     </ItemGroup>
 

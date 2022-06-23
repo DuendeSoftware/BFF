@@ -35,9 +35,9 @@ public static class BffServiceCollectionExtensions
         }
         else
         {
-            services.AddAccessTokenManagement();    
+            services.AddAccessTokenManagement();
         }
-            
+
         // management endpoints
         services.AddTransient<ILoginService, DefaultLoginService>();
         services.AddTransient<ISilentLoginService, DefaultSilentLoginService>();
@@ -46,23 +46,17 @@ public static class BffServiceCollectionExtensions
         services.AddTransient<IUserService, DefaultUserService>();
         services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
         services.AddTransient<IDiagnosticsService, DefaultDiagnosticsService>();
-            
+
         // session management
         services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
 
         // cookie configuration
-#if NET6_0_OR_GREATER
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureSlidingExpirationCheck>();
-#else
-        services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
-#endif
-
+        services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureSlidingExpirationCheck>();
         services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieRevokeRefreshToken>();
+        
         services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOidcOptionsForSilentLogin>();
 
-#if NET5_0_OR_GREATER
         services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
-#endif
 
         return new BffBuilder(services);
     }

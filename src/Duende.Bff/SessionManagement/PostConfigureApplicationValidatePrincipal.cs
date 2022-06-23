@@ -58,17 +58,6 @@ public class PostConfigureApplicationValidatePrincipal : IPostConfigureOptions<C
                 {
                     _logger.LogDebug("Explicitly setting ShouldRenew=false in OnValidatePrincipal due to query param suppressing slide behavior.");
                     ctx.ShouldRenew = false;
-
-#if !NET6_0_OR_GREATER
-                        if (ctx.HttpContext.Items.ContainsKey("Bff-AuthenticationTicket-AllowRefresh"))
-                        {
-                            // in ASP.NET Core 3.1 we need to track that we have set ticket.Properties.AllowRefresh
-                            // so that we can un-set it, in the rare scenario where during this request someone else
-                            // downstream re-issues the cookie w/ SignInAsync, because the AllowRefresh that we set
-                            // will be cached, and then set internally in the new cookie, and thus it will never slide again.
-                            ctx.Properties.AllowRefresh = (bool?)ctx.HttpContext.Items["Bff-AuthenticationTicket-AllowRefresh"];
-                        }
-#endif
                 }
             }
 

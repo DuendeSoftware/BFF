@@ -33,7 +33,7 @@ namespace Duende.Bff.Tests.TestHosts
                 AllowedScopes = { "openid", "profile", "scope1" }
             });
             
-            #if NET6_0_OR_GREATER
+            
             IdentityServerHost.OnConfigureServices += services => {
                 services.AddTransient<IBackChannelLogoutHttpClient>(provider => 
                     new DefaultBackChannelLogoutHttpClient(
@@ -41,15 +41,6 @@ namespace Duende.Bff.Tests.TestHosts
                         provider.GetRequiredService<ILoggerFactory>(), 
                         provider.GetRequiredService<ICancellationTokenProvider>()));
             };
-            #else
-            IdentityServerHost.OnConfigureServices += services =>
-            {
-                services.AddTransient<IBackChannelLogoutHttpClient>(provider =>
-                    new DefaultBackChannelLogoutHttpClient(
-                        BffHost.HttpClient,
-                        provider.GetRequiredService<ILoggerFactory>()));
-            };
-            #endif
             
             IdentityServerHost.InitializeAsync().Wait();
 

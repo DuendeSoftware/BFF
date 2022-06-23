@@ -30,16 +30,8 @@ public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
                 AutomaticDecompression = DecompressionMethods.None,
                 UseCookies = false
             };
-
-                
-#if !NET6_0_OR_GREATER
-            // propagates the current Activity to the downstream service on .NET Core 3.1 and 5.0
-            var handler = new ActivityPropagationHandler(socketsHandler);
-            return new HttpMessageInvoker(handler);
-#else
-                // for .NET 6+ this feature is built-in to SocketsHandler directly
-                return new HttpMessageInvoker(socketsHandler);
-#endif
+            
+            return new HttpMessageInvoker(socketsHandler);
         });
     }
 }
