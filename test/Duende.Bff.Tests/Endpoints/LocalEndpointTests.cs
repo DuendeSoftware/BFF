@@ -34,7 +34,7 @@ namespace Duende.Bff.Tests.Endpoints
         }
         
         [Fact]
-        public async Task calls_to_authorized_local_endpoint_without_csrf_should_succeed()
+        public async Task calls_to_authorized_local_endpoint_without_csrf_should_succeed_without_antiforgery_header()
         {
             await BffHost.BffLoginAsync("alice");
 
@@ -61,7 +61,7 @@ namespace Duende.Bff.Tests.Endpoints
         }
 
         [Fact]
-        public async Task calls_to_local_endpoint_should_require_csrf()
+        public async Task calls_to_local_endpoint_should_require_antiforgery_header()
         {
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_anon"));
             var response = await BffHost.BrowserClient.SendAsync(req);
@@ -70,7 +70,7 @@ namespace Duende.Bff.Tests.Endpoints
         }
         
         [Fact]
-        public async Task calls_to_local_endpoint_without_antiforgery_should_not_require_csrf()
+        public async Task calls_to_local_endpoint_without_csrf_should_not_require_antiforgery_header()
         {
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_anon_no_csrf"));
             var response = await BffHost.BrowserClient.SendAsync(req);
