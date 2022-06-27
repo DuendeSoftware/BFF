@@ -119,8 +119,23 @@ public class BffOptions
     public Action<AccessTokenManagementOptions>? AccessTokenManagementConfigureAction { get; set; } = null;
 
     /// <summary>
-    /// If enabled, the ~/bff/user endpoint will return 200 status code and "null" if the user is anonymous.
-    /// Defaults to false.
+    /// Controls the response behavior from the ~/bff/user endpoint when the user is anonymous.
+    /// Defaults to Response401.
     /// </summary>
-    public bool UserEndpointReturnNullForAnonymousUser { get; set; }
+    public AnonymousSessionResponse AnonymousSessionResponse { get; set; } = AnonymousSessionResponse.Response401;
+}
+
+/// <summary>
+/// Enum representing the style of response from the ~/bff/user endpoint when the user is anonymous.
+/// </summary>
+public enum AnonymousSessionResponse
+{
+    /// <summary>
+    /// 401 response with empty body
+    /// </summary>
+    Response401,
+    /// <summary>
+    /// 200 response with "null" as the body
+    /// </summary>
+    Response200
 }

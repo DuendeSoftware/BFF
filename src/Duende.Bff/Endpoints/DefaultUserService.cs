@@ -52,7 +52,7 @@ public class DefaultUserService : IUserService
 
         if (!result.Succeeded)
         {
-            if (Options.UserEndpointReturnNullForAnonymousUser)
+            if (Options.AnonymousSessionResponse == AnonymousSessionResponse.Response200)
             {
                 context.Response.StatusCode = 200;
                 context.Response.ContentType = "application/json";
