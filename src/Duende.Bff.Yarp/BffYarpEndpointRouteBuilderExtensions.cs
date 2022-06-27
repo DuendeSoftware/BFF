@@ -19,20 +19,17 @@ public static class BffYarpEndpointRouteBuilderExtensions
     /// <param name="endpoints"></param>
     /// <param name="localPath"></param>
     /// <param name="apiAddress"></param>
-    /// <param name="requireAntiForgeryCheck"></param>
     /// <returns></returns>
     public static IEndpointConventionBuilder MapRemoteBffApiEndpoint(
         this IEndpointRouteBuilder endpoints,
         PathString localPath, 
-        string apiAddress, 
-        bool requireAntiForgeryCheck = true)
+        string apiAddress)
     {
         endpoints.CheckLicense();
             
         return endpoints.Map(
                 localPath.Add("/{**catch-all}").Value!,
                 RemoteApiEndpoint.Map(localPath, apiAddress))
-            .WithMetadata(new BffRemoteApiEndpointMetadata { RequireAntiForgeryHeader =  requireAntiForgeryCheck });
-
+            .WithMetadata(new BffRemoteApiEndpointMetadata());
     }
 }

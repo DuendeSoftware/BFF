@@ -1,7 +1,6 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System.Linq;
 using System.Threading.Tasks;
 using Duende.Bff.Logging;
 using Microsoft.AspNetCore.Http;
@@ -51,25 +50,11 @@ public class BffMiddleware
             return;
         }
 
-        var localEndpointMetadata = endpoint.Metadata.GetOrderedMetadata<BffApiAttribute>();
-        if (localEndpointMetadata.Any())
+        var isBffEndpoint = endpoint.Metadata.GetMetadata<IBffApiEndpoint>() != null;
+        if (isBffEndpoint)
         {
-            var requireLocalAntiForgeryCheck = localEndpointMetadata.First().RequireAntiForgeryCheck;
-            if (requireLocalAntiForgeryCheck)
-            {
-                if (!context.CheckAntiForgeryHeader(_options))
-                {
-                    _logger.AntiForgeryValidationFailed(context.Request.Path);
-
-                    context.Response.StatusCode = 401;
-                    return;
-                }
-            }
-        }
-        else
-        {
-            var remoteEndpoint = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
-            if (remoteEndpoint is { RequireAntiForgeryHeader: true })
+            var requireAntiForgeryCheck = endpoint.Metadata.GetMetadata<IBffApiSkipAntiforgry>() == null;
+            if (requireAntiForgeryCheck)
             {
                 if (!context.CheckAntiForgeryHeader(_options))
                 {

@@ -15,10 +15,19 @@ public static class EndpointConventionBuilderExtensions
     /// This metadata is used by the BFF middleware.
     /// </summary>
     /// <param name="builder"></param>
-    /// <param name="requireAntiForgeryCheck">Specifies if the antiforgery header gets checked</param>
     /// <returns></returns>
-    public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder, bool requireAntiForgeryCheck = true)
+    public static IEndpointConventionBuilder AsBffApiEndpoint(this IEndpointConventionBuilder builder)
     {
-        return builder.WithMetadata(new BffApiAttribute(requireAntiForgeryCheck));
+        return builder.WithMetadata(new BffApiAttribute());
+    }
+    
+    /// <summary>
+    /// Adds marker that will cause the BFF framework to skip all antiforgery for this endpoint.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IEndpointConventionBuilder SkipAntiforgery(this IEndpointConventionBuilder builder)
+    {
+        return builder.WithMetadata(new BffApiSkipAntiforgeryAttribute());
     }
 }

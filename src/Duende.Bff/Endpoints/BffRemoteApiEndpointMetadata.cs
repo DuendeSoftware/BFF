@@ -6,7 +6,7 @@ namespace Duende.Bff;
 /// <summary>
 /// Endpoint metadata for a remote BFF API endpoint
 /// </summary>
-public class BffRemoteApiEndpointMetadata
+public class BffRemoteApiEndpointMetadata : IBffApiEndpoint
 {
     /// <summary>
     /// Required token type (if any)
@@ -18,11 +18,6 @@ public class BffRemoteApiEndpointMetadata
     /// </summary>
     public bool OptionalUserToken { get; set; }
         
-    /// <summary>
-    /// Require presence of anti-forgery header
-    /// </summary>
-    public bool RequireAntiForgeryHeader { get; set; } = true;
-
     /// <summary>
     /// Maps to UserAccessTokenParameters and included if set
     /// </summary>
