@@ -117,4 +117,25 @@ public class BffOptions
     /// Action to configure the IdentityModel.AspNetCore access token management options
     /// </summary>
     public Action<AccessTokenManagementOptions>? AccessTokenManagementConfigureAction { get; set; } = null;
+
+    /// <summary>
+    /// Controls the response behavior from the ~/bff/user endpoint when the user is anonymous.
+    /// Defaults to Response401.
+    /// </summary>
+    public AnonymousSessionResponse AnonymousSessionResponse { get; set; } = AnonymousSessionResponse.Response401;
+}
+
+/// <summary>
+/// Enum representing the style of response from the ~/bff/user endpoint when the user is anonymous.
+/// </summary>
+public enum AnonymousSessionResponse
+{
+    /// <summary>
+    /// 401 response with empty body
+    /// </summary>
+    Response401,
+    /// <summary>
+    /// 200 response with "null" as the body
+    /// </summary>
+    Response200
 }

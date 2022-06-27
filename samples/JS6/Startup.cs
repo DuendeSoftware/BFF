@@ -17,7 +17,10 @@ namespace Host5
         public void ConfigureServices(IServiceCollection services)
         {
             // Add BFF services to DI - also add server-side session management
-            services.AddBff()
+            services.AddBff(options => 
+                {
+                    //options.UserEndpointReturnNullForAnonymousUser = true;
+                })
                 .AddRemoteApis()
                 .AddServerSideSessions();
             

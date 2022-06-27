@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using System.Text.Json;
 
 namespace Duende.Bff.Tests.Endpoints.Management
 {
@@ -60,7 +61,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
             
             response.StatusCode.Should().Be(401);
         }
-        
+
         [Fact]
         public async Task user_endpoint_for_unauthenticated_user_should_fail()
         {
@@ -69,6 +70,15 @@ namespace Duende.Bff.Tests.Endpoints.Management
             var response = await BffHost.BrowserClient.SendAsync(req);
 
             response.StatusCode.Should().Be(401);
+        }
+
+        [Fact]
+        public async Task when_configured_user_endpoint_for_unauthenticated_user_should_return_200_and_null()
+        {
+            BffHost.BffOptions.AnonymousSessionResponse = AnonymousSessionResponse.Response200;
+
+            var data = await BffHost.CallUserEndpointAsync();
+            data.Should().BeNull();
         }
     }
 }

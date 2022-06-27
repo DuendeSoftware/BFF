@@ -15,14 +15,20 @@ async function onLoad() {
     try {
         var resp = await fetch(req);
         if (resp.ok) {
-            log("user logged in");
 
             let claims = await resp.json();
             showUser(claims);
 
-            let logoutUrlClaim = claims.find(claim => claim.type === 'bff:logout_url');
-            if (logoutUrlClaim) {
-                logoutUrl = logoutUrlClaim.value;
+            if (claims) {
+                log("user logged in");
+
+                let logoutUrlClaim = claims.find(claim => claim.type === 'bff:logout_url');
+                if (logoutUrlClaim) {
+                    logoutUrl = logoutUrlClaim.value;
+                }
+            }
+            else {
+                log("user not logged in");
             }
         } else if (resp.status === 401) {
             log("user not logged in");
