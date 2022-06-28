@@ -26,7 +26,7 @@ namespace Host5.EntityFramework
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDataProtection()
-                .SetApplicationName("Host5.Ef");
+                .SetApplicationName("JS-EF-Sample");
 
             // Add BFF services to DI - also add server-side session management
             var cn = _configuration.GetConnectionString("db");
@@ -50,7 +50,7 @@ namespace Host5.EntityFramework
                 .AddCookie("cookie", options =>
                 {
                     // host prefixed cookie name
-                    options.Cookie.Name = "__Host-spa5-ef";
+                    options.Cookie.Name = "__Host-spa-ef";
 
                     // strict SameSite handling
                     options.Cookie.SameSite = SameSiteMode.Strict;
