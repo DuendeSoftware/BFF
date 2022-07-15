@@ -44,8 +44,8 @@ public class DefaultDiagnosticsService : IDiagnosticsService
 
         var info = new DiagnosticsInfo
         {
-            UserAccessToken = usertoken,
-            ClientAccessToken = clientToken
+            UserAccessToken = usertoken.Value,
+            ClientAccessToken = clientToken.Value
         };
             
         var options = new JsonSerializerOptions

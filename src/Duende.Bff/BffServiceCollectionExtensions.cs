@@ -29,14 +29,7 @@ public static class BffServiceCollectionExtensions
         configureAction?.Invoke(opts);
         services.AddSingleton(opts);
 
-        if (opts.AccessTokenManagementConfigureAction != null)
-        {
-            services.AddAccessTokenManagement(opts.AccessTokenManagementConfigureAction);
-        }
-        else
-        {
-            services.AddAccessTokenManagement();
-        }
+        services.AddOpenIdConnectAccessTokenManagement();
 
         // management endpoints
         services.AddTransient<ILoginService, DefaultLoginService>();

@@ -51,8 +51,9 @@ namespace Duende.Bff.Tests.TestHosts
             var bff = services.AddBff();
             services.AddSingleton(BffOptions);
 
-            bff.ConfigureTokenClient()
-                .ConfigurePrimaryHttpMessageHandler(() => _identityServerHost.Server.CreateHandler());
+            // todo: need to bring back that feature somehow
+            // bff.ConfigureTokenClient()
+            //     .ConfigurePrimaryHttpMessageHandler(() => _identityServerHost.Server.CreateHandler());
 
             services.AddSingleton<IHttpMessageInvokerFactory>(
                 new CallbackHttpMessageInvokerFactory(

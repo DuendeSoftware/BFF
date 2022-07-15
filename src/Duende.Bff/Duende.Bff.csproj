@@ -32,10 +32,12 @@
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
 
-        <PackageReference Include="IdentityModel.AspNetCore" Version="4.2.0" />
+<!--        <PackageReference Include="IdentityModel.AspNetCore" Version="4.2.0" />-->
 
         <PackageReference Include="MinVer" Version="4.0.0" PrivateAssets="all" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        
+        <PackageReference Include="Duende.TokenManagement.OpenIdConnect" Version="0.0.0-alpha.0.42" />
     </ItemGroup>
 
     <ItemGroup>
