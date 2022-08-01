@@ -70,11 +70,11 @@ namespace Duende.Bff.Tests.Endpoints
         {
             var loginResponse = await BffHostWithNamedTokens.BffLoginAsync("alice");
 
-            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_user_with_useraccesstokenparameters_having_not_stored_named_token/test"));
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHostWithNamedTokens.Url("/api_user_with_useraccesstokenparameters_having_not_stored_named_token/test"));
             req.Headers.Add("x-csrf", "1");
 
-            Func<Task> f = () => BffHostWithNamedTokens.BrowserClient.SendAsync(req);
-            f.Should().Throw<Exception>();
+            var response = await BffHostWithNamedTokens.BrowserClient.SendAsync(req);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
