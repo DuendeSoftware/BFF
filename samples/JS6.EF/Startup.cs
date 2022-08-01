@@ -25,6 +25,8 @@ namespace Host5.EntityFramework
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+            
             services.AddDataProtection()
                 .SetApplicationName("JS-EF-Sample");
 

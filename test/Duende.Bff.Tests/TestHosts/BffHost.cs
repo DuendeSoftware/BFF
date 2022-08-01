@@ -45,15 +45,13 @@ namespace Duende.Bff.Tests.TestHosts
 
         private void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+
             services.AddRouting();
             services.AddAuthorization();
 
             var bff = services.AddBff();
             services.AddSingleton(BffOptions);
-
-            // todo: need to bring back that feature somehow
-            // bff.ConfigureTokenClient()
-            //     .ConfigurePrimaryHttpMessageHandler(() => _identityServerHost.Server.CreateHandler());
 
             services.AddSingleton<IHttpMessageInvokerFactory>(
                 new CallbackHttpMessageInvokerFactory(

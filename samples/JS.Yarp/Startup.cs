@@ -17,6 +17,8 @@ namespace YarpHost
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+            
             var builder = services.AddReverseProxy()
                 .AddBffExtensions();
 
