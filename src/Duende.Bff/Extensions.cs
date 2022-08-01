@@ -4,7 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Duende.TokenManagement.OpenIdConnect;
+using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -31,25 +31,25 @@ internal static class Extensions
         return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
     }
 
-    public static async Task<string?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserAccessTokenRequestParameters? userAccessTokenParameters = null)
+    public static async Task<string?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserTokenRequestParameters? userAccessTokenParameters = null)
     {
         string? token;
 
         if (tokenType == TokenType.User)
         {
-            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).Value;
+            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).AccessToken;
         }
         else if (tokenType == TokenType.Client)
         {
-            token = (await context.GetClientAccessTokenAsync()).Value;
+            token = (await context.GetClientAccessTokenAsync()).AccessToken;
         }
         else
         {
-            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).Value;
+            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).AccessToken;
 
             if (string.IsNullOrEmpty(token))
             {
-                token = (await context.GetClientAccessTokenAsync()).Value;
+                token = (await context.GetClientAccessTokenAsync()).AccessToken;
             }
         }
 

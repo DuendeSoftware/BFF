@@ -1,4 +1,4 @@
-using Duende.TokenManagement.OpenIdConnect;
+using Duende.AccessTokenManagement.OpenIdConnect;
 
 namespace Duende.Bff;
 
@@ -50,9 +50,9 @@ public class BffUserAccessTokenParameters
     /// Retrieve a UserAccessTokenParameters
     /// </summary>
     /// <returns></returns>
-    public UserAccessTokenRequestParameters ToUserAccessTokenRequestParameters()
+    public UserTokenRequestParameters ToUserAccessTokenRequestParameters()
     {
-        return new UserAccessTokenRequestParameters()
+        return new UserTokenRequestParameters()
         {
             SignInScheme = this.SignInScheme,
             ChallengeScheme = this.ChallengeScheme,

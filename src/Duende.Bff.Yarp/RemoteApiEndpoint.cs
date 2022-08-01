@@ -2,9 +2,9 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using Duende.AccessTokenManagement.OpenIdConnect;
 using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
-using Duende.TokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +44,7 @@ public static class RemoteApiEndpoint
                 throw new InvalidOperationException("API endoint is missing BFF metadata");
             }
 
-            UserAccessTokenRequestParameters? toUserAccessTokenParameters = null;
+            UserTokenRequestParameters? toUserAccessTokenParameters = null;
 
             if (metadata.BffUserAccessTokenParameters != null)
             {
@@ -68,7 +68,7 @@ public static class RemoteApiEndpoint
             {
                 if (metadata.OptionalUserToken)
                 {
-                    token = (await context.GetUserAccessTokenAsync(toUserAccessTokenParameters)).Value;
+                    token = (await context.GetUserAccessTokenAsync(toUserAccessTokenParameters)).AccessToken;
                 }
             }
 

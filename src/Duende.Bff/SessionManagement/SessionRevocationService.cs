@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Duende.TokenManagement.OpenIdConnect;
+using Duende.AccessTokenManagement.OpenIdConnect;
 
 namespace Duende.Bff;
 
@@ -57,7 +57,7 @@ public class SessionRevocationService : ISessionRevocationService
                     var refreshToken = ticket.Properties.GetTokenValue("refresh_token");
                     if (!String.IsNullOrWhiteSpace(refreshToken))
                     {
-                        await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken, new UserAccessTokenRequestParameters(), cancellationToken);
+                        await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken, new UserTokenRequestParameters(), cancellationToken);
                         // todo: no more error response - is logging required?
                         // if (response.IsError)
                         // {
