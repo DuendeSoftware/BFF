@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff;
 
@@ -28,7 +29,7 @@ public class TicketStoreShim : ITicketStore
     public TicketStoreShim(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
-        _options = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<BffOptions>();
+        _options = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IOptions<BffOptions>>().Value;
     }
 
     /// <summary>
@@ -52,7 +53,7 @@ public class TicketStoreShim : ITicketStore
     public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
         var ticket = await Inner.RetrieveAsync(key);
-        
+
         return ticket;
     }
 

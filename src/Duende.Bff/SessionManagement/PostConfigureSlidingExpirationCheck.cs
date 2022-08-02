@@ -25,9 +25,9 @@ namespace Duende.Bff
         /// <param name="bffOptions"></param>
         /// <param name="authOptions"></param>
         /// <param name="logger"></param>
-        public PostConfigureSlidingExpirationCheck(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureSlidingExpirationCheck> logger)
+        public PostConfigureSlidingExpirationCheck(IOptions<BffOptions> bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureSlidingExpirationCheck> logger)
         {
-            _options = bffOptions;
+            _options = bffOptions.Value;
             _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme;
             _logger = logger;
         }

@@ -25,9 +25,9 @@ public class PostConfigureApplicationValidatePrincipal : IPostConfigureOptions<C
     /// <param name="bffOptions"></param>
     /// <param name="authOptions"></param>
     /// <param name="logger"></param>
-    public PostConfigureApplicationValidatePrincipal(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureApplicationValidatePrincipal> logger)
+    public PostConfigureApplicationValidatePrincipal(IOptions<BffOptions> bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureApplicationValidatePrincipal> logger)
     {
-        _options = bffOptions;
+        _options = bffOptions.Value;
         _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme;
         _logger = logger;
     }

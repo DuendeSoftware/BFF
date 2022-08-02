@@ -4,6 +4,7 @@
 using Duende.Bff.Tests.TestHosts;
 using Duende.IdentityServer.Stores;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -42,7 +43,11 @@ namespace Duende.Bff.Tests.SessionManagement
         [Fact]
         public async Task when_setting_disabled_logout_should_not_revoke_refreshtoken()
         {
-            BffHost.BffOptions.RevokeRefreshTokenOnLogout = false;
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => {
+                    options.RevokeRefreshTokenOnLogout = false;
+                });
+            };
             await BffHost.InitializeAsync();
 
             await BffHost.BffLoginAsync("alice", "sid");
@@ -100,7 +105,11 @@ namespace Duende.Bff.Tests.SessionManagement
         [Fact]
         public async Task when_setting_disabled_backchannel_logout_endpoint_should_not_revoke_refreshtoken()
         {
-            BffHost.BffOptions.RevokeRefreshTokenOnLogout = false;
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => {
+                    options.RevokeRefreshTokenOnLogout = false;
+                });
+            };
             await BffHost.InitializeAsync();
             
             await BffHost.BffLoginAsync("alice", "sid123");

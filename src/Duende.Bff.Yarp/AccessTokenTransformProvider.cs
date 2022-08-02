@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using Duende.Bff.Yarp.Logging;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
@@ -25,9 +26,9 @@ public class AccessTokenTransformProvider : ITransformProvider
     /// </summary>
     /// <param name="options"></param>
     /// <param name="logger"></param>
-    public AccessTokenTransformProvider(BffOptions options, ILogger<AccessTokenTransformProvider> logger)
+    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger)
     {
-        _options = options;
+        _options = options.Value;
         _logger = logger;
     }
 

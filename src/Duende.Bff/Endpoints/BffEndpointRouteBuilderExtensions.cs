@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Duende.Bff.Endpoints;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -47,7 +48,7 @@ public static class BffEndpointRouteBuilderExtensions
     {
         endpoints.CheckLicense();
             
-        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.LoginPath.Value!, ProcessWith<ILoginService>);
     }
@@ -60,7 +61,7 @@ public static class BffEndpointRouteBuilderExtensions
     {
         endpoints.CheckLicense();
 
-        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+        var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.SilentLoginPath.Value!, ProcessWith<ISilentLoginService>);
         endpoints.MapGet(options.SilentLoginCallbackPath.Value!, ProcessWith<ISilentLoginCallbackService>);
@@ -73,8 +74,8 @@ public static class BffEndpointRouteBuilderExtensions
     public static void MapBffManagementLogoutEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.CheckLicense();
-            
-        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+        var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.LogoutPath.Value!, ProcessWith<ILogoutService>);
     }
@@ -86,8 +87,8 @@ public static class BffEndpointRouteBuilderExtensions
     public static void MapBffManagementUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.CheckLicense();
-            
-        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+        var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.UserPath.Value!, ProcessWith<IUserService>)
             .AsBffApiEndpoint();
@@ -100,8 +101,8 @@ public static class BffEndpointRouteBuilderExtensions
     public static void MapBffManagementBackchannelEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.CheckLicense();
-            
-        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+        var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapPost(options.BackChannelLogoutPath.Value!, ProcessWith<IBackchannelLogoutService>);
     }
@@ -113,8 +114,8 @@ public static class BffEndpointRouteBuilderExtensions
     public static void MapBffDiagnosticsEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.CheckLicense();
-            
-        var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+
+        var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.DiagnosticsPath.Value!, ProcessWith<IDiagnosticsService>);
     }
@@ -124,7 +125,7 @@ public static class BffEndpointRouteBuilderExtensions
         if (_licenseChecked == false)
         {
             var loggerFactory = endpoints.ServiceProvider.GetRequiredService<ILoggerFactory>();
-            var options = endpoints.ServiceProvider.GetRequiredService<BffOptions>();
+            var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
                 
             LicenseValidator.Initalize(loggerFactory, options);
             LicenseValidator.ValidateLicense();

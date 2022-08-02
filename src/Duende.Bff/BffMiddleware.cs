@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Duende.Bff.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff.Endpoints;
 
@@ -24,10 +25,10 @@ public class BffMiddleware
     /// <param name="next"></param>
     /// <param name="options"></param>
     /// <param name="logger"></param>
-    public BffMiddleware(RequestDelegate next, BffOptions options, ILogger<BffMiddleware> logger)
+    public BffMiddleware(RequestDelegate next, IOptions<BffOptions> options, ILogger<BffMiddleware> logger)
     {
         _next = next;
-        _options = options;
+        _options = options.Value;
         _logger = logger;
     }
 

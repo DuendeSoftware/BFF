@@ -4,6 +4,7 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,9 +31,9 @@ public class DefaultLogoutService : ILogoutService
     /// </summary>
     /// <param name="options"></param>
     /// <param name="authenticationAuthenticationSchemeProviderProvider"></param>
-    public DefaultLogoutService(BffOptions options, IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider)
+    public DefaultLogoutService(IOptions<BffOptions> options, IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider)
     {
-        Options = options;
+        Options = options.Value;
         AuthenticationSchemeProvider = authenticationAuthenticationSchemeProviderProvider;
     }
 

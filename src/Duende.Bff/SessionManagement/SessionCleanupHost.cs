@@ -4,6 +4,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,10 +27,10 @@ public class SessionCleanupHost : IHostedService
     /// <summary>
     /// Constructor for SessionCleanupHost.
     /// </summary>
-    public SessionCleanupHost(IServiceProvider serviceProvider, BffOptions options, ILogger<SessionCleanupHost> logger)
+    public SessionCleanupHost(IServiceProvider serviceProvider, IOptions<BffOptions> options, ILogger<SessionCleanupHost> logger)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _options = options;
+        _options = options.Value;
         _logger = logger;
     }
 

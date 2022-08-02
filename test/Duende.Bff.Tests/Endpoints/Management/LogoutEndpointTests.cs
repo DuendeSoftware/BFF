@@ -3,6 +3,7 @@
 
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -48,7 +49,11 @@ namespace Duende.Bff.Tests.Endpoints.Management
         public async Task logout_endpoint_for_authenticated_user_without_sid_should_succeed()
         {
             // workaround for RevokeUserRefreshTokenAsync throwing when no RT in session
-            BffHost.BffOptions.RevokeRefreshTokenOnLogout = false;
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => {
+                    options.RevokeRefreshTokenOnLogout = false;
+                });
+            };
             await BffHost.InitializeAsync();
 
             await BffHost.IssueSessionCookieAsync("alice");

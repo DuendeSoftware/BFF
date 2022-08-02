@@ -4,6 +4,7 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,9 +21,9 @@ public class DefaultSilentLoginCallbackService : ISilentLoginCallbackService
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    public DefaultSilentLoginCallbackService(BffOptions options)
+    public DefaultSilentLoginCallbackService(IOptions<BffOptions> options)
     {
-        _options = options;
+        _options = options.Value;
     }
 
     /// <inheritdoc />
