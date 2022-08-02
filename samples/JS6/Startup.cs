@@ -15,8 +15,6 @@ namespace Host5
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDistributedMemoryCache();
-
             // Add BFF services to DI - also add server-side session management
             services.AddBff(options => 
                 {

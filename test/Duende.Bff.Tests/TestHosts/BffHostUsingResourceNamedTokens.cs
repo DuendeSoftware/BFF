@@ -45,8 +45,6 @@ namespace Duende.Bff.Tests.TestHosts
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddDistributedMemoryCache();
-
             services.AddRouting();
             services.AddAuthorization();
 

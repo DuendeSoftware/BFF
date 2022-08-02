@@ -29,6 +29,7 @@ public static class BffServiceCollectionExtensions
         configureAction?.Invoke(opts);
         services.AddSingleton(opts);
 
+        services.AddDistributedMemoryCache();
         services.AddOpenIdConnectAccessTokenManagement();
 
         // management endpoints
