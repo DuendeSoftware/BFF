@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using System.Text.Json;
 
 namespace Duende.Bff.Tests.Endpoints.Management
 {

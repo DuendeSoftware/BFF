@@ -1,13 +1,13 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duende.AccessTokenManagement.OpenIdConnect;
 
 namespace Duende.Bff;
 
@@ -19,7 +19,7 @@ public class SessionRevocationService : ISessionRevocationService
     private readonly BffOptions _options;
     private readonly IServerTicketStore _ticketStore;
     private readonly IUserSessionStore _sessionStore;
-    private readonly ITokenEndpointService _tokenEndpoint;
+    private readonly IUserTokenEndpointService _tokenEndpoint;
     private readonly ILogger<SessionRevocationService> _logger;
 
     /// <summary>
@@ -30,7 +30,7 @@ public class SessionRevocationService : ISessionRevocationService
     /// <param name="sessionStore"></param>
     /// <param name="tokenEndpoint"></param>
     /// <param name="logger"></param>
-    public SessionRevocationService(BffOptions options, IServerTicketStore ticketStore, IUserSessionStore sessionStore, ITokenEndpointService tokenEndpoint, ILogger<SessionRevocationService> logger)
+    public SessionRevocationService(BffOptions options, IServerTicketStore ticketStore, IUserSessionStore sessionStore, IUserTokenEndpointService tokenEndpoint, ILogger<SessionRevocationService> logger)
     {
         _options = options;
         _ticketStore = ticketStore;
@@ -57,15 +57,16 @@ public class SessionRevocationService : ISessionRevocationService
                     var refreshToken = ticket.Properties.GetTokenValue("refresh_token");
                     if (!String.IsNullOrWhiteSpace(refreshToken))
                     {
-                        var response = await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken);
-                        if (response.IsError)
-                        {
-                            _logger.LogDebug("Error revoking refresh token: {error} for subject id: {sub} and session id: {sid}", response.Error, ticket.GetSubjectId(), ticket.GetSessionId());
-                        }
-                        else
-                        {
-                            _logger.LogDebug("Refresh token revoked successfully for subject id: {sub} and session id: {sid}", ticket.GetSubjectId(), ticket.GetSessionId());
-                        }
+                        await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken, new UserTokenRequestParameters(), cancellationToken);
+                        // todo: no more error response - is logging required?
+                        // if (response.IsError)
+                        // {
+                        //     _logger.LogDebug("Error revoking refresh token: {error} for subject id: {sub} and session id: {sid}", response.Error, ticket.GetSubjectId(), ticket.GetSessionId());
+                        // }
+                        // else
+                        // {
+                        //     _logger.LogDebug("Refresh token revoked successfully for subject id: {sub} and session id: {sid}", ticket.GetSubjectId(), ticket.GetSessionId());
+                        // }
                     }
                 }
             }

@@ -1,10 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System;
-using System.Net.Http;
 using Duende.Bff;
-using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -60,20 +57,5 @@ public class BffBuilder
     {
         Services.AddTransient<IUserSessionStore, T>();
         return AddServerSideSessions();
-    }
-        
-    /// <summary>
-    /// Configures the HTTP client used to do backchannel calls to the token service for token lifetime management
-    /// </summary>
-    /// <param name="configureClient"></param>
-    /// <returns></returns>
-    public IHttpClientBuilder ConfigureTokenClient(Action<HttpClient>? configureClient = null)
-    {
-        if (configureClient == null)
-        {
-            return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
-        }
-
-        return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName, configureClient);
     }
 }

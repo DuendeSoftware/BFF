@@ -47,7 +47,7 @@ public class PostConfigureApplicationCookieRevokeRefreshToken : IPostConfigureOp
         async Task Callback(CookieSigningOutContext ctx)
         {
             _logger.LogDebug("Revoking user's refresh tokens in OnSigningOut for subject id: {subjectId}", ctx.HttpContext.User.FindFirst(JwtClaimTypes.Subject)?.Value);
-            await ctx.HttpContext.RevokeUserRefreshTokenAsync();
+            await ctx.HttpContext.RevokeRefreshTokenAsync();
             if (inner != null)
             {
                 await inner.Invoke(ctx);

@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Http;
 using System;
-using IdentityModel.AspNetCore.AccessTokenManagement;
 
 namespace Duende.Bff;
 
@@ -113,11 +112,6 @@ public class BffOptions
     ///// </summary>
     //public int SessionCleanupBatchSize { get; set; } = 100;
         
-    /// <summary>
-    /// Action to configure the IdentityModel.AspNetCore access token management options
-    /// </summary>
-    public Action<AccessTokenManagementOptions>? AccessTokenManagementConfigureAction { get; set; } = null;
-
     /// <summary>
     /// Controls the response behavior from the ~/bff/user endpoint when the user is anonymous.
     /// Defaults to Response401.

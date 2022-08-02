@@ -1,4 +1,4 @@
-using IdentityModel.AspNetCore.AccessTokenManagement;
+using Duende.AccessTokenManagement.OpenIdConnect;
 
 namespace Duende.Bff;
 
@@ -50,9 +50,9 @@ public class BffUserAccessTokenParameters
     /// Retrieve a UserAccessTokenParameters
     /// </summary>
     /// <returns></returns>
-    public UserAccessTokenParameters ToUserAccessTokenParameters()
+    public UserTokenRequestParameters ToUserAccessTokenRequestParameters()
     {
-        return new UserAccessTokenParameters()
+        return new UserTokenRequestParameters()
         {
             SignInScheme = this.SignInScheme,
             ChallengeScheme = this.ChallengeScheme,
