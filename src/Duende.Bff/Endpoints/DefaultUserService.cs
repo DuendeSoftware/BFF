@@ -14,6 +14,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Duende.Bff.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff;
 
@@ -37,9 +38,9 @@ public class DefaultUserService : IUserService
     /// </summary>
     /// <param name="options"></param>
     /// <param name="loggerFactory"></param>
-    public DefaultUserService(BffOptions options, ILoggerFactory loggerFactory)
+    public DefaultUserService(IOptions<BffOptions> options, ILoggerFactory loggerFactory)
     {
-        Options = options;
+        Options = options.Value;
         Logger = loggerFactory.CreateLogger(LogCategories.ManagementEndpoints);
     }
 

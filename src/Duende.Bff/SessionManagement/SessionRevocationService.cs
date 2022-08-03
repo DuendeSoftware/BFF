@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Duende.AccessTokenManagement.OpenIdConnect;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff;
 
@@ -30,9 +31,9 @@ public class SessionRevocationService : ISessionRevocationService
     /// <param name="sessionStore"></param>
     /// <param name="tokenEndpoint"></param>
     /// <param name="logger"></param>
-    public SessionRevocationService(BffOptions options, IServerTicketStore ticketStore, IUserSessionStore sessionStore, IUserTokenEndpointService tokenEndpoint, ILogger<SessionRevocationService> logger)
+    public SessionRevocationService(IOptions<BffOptions> options, IServerTicketStore ticketStore, IUserSessionStore sessionStore, IUserTokenEndpointService tokenEndpoint, ILogger<SessionRevocationService> logger)
     {
-        _options = options;
+        _options = options.Value;
         _ticketStore = ticketStore;
         _sessionStore = sessionStore;
         _tokenEndpoint = tokenEndpoint;

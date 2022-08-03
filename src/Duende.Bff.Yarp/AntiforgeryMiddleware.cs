@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Duende.Bff.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff.Yarp;
 
@@ -24,10 +25,10 @@ public class AntiforgeryMiddleware
     /// <param name="next"></param>
     /// <param name="options"></param>
     /// <param name="logger"></param>
-    public AntiforgeryMiddleware(RequestDelegate next, BffOptions options, ILogger<AntiforgeryMiddleware> logger)
+    public AntiforgeryMiddleware(RequestDelegate next, IOptions<BffOptions> options, ILogger<AntiforgeryMiddleware> logger)
     {
         _next = next;
-        _options = options;
+        _options = options.Value;
         _logger = logger;
     }
 

@@ -26,9 +26,9 @@ public class PostConfigureApplicationCookieRevokeRefreshToken : IPostConfigureOp
     /// <param name="bffOptions"></param>
     /// <param name="authOptions"></param>
     /// <param name="logger"></param>
-    public PostConfigureApplicationCookieRevokeRefreshToken(BffOptions bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureApplicationCookieRevokeRefreshToken> logger)
+    public PostConfigureApplicationCookieRevokeRefreshToken(IOptions<BffOptions> bffOptions, IOptions<AuthenticationOptions> authOptions, ILogger<PostConfigureApplicationCookieRevokeRefreshToken> logger)
     {
-        _options = bffOptions;
+        _options = bffOptions.Value;
         _scheme = authOptions.Value.DefaultAuthenticateScheme ?? authOptions.Value.DefaultScheme;
         _logger = logger;
     }

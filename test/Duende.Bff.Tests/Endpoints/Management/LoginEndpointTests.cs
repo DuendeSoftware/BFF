@@ -3,6 +3,7 @@
 
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -32,7 +33,11 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task login_endpoint_should_challenge_and_redirect_to_root_with_custom_prefix()
         {
-            BffHost.BffOptions.ManagementBasePath = "/custom/bff";
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => { 
+                    options.ManagementBasePath = "/custom/bff";
+                });
+            };
             await BffHost.InitializeAsync();
             
             var response = await BffHost.BrowserClient.GetAsync(BffHost.Url("/custom/bff/login"));
@@ -52,7 +57,11 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task login_endpoint_should_challenge_and_redirect_to_root_with_custom_prefix_trailing_slash()
         {
-            BffHost.BffOptions.ManagementBasePath = "/custom/bff/";
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => {
+                    options.ManagementBasePath = "/custom/bff/";
+                });
+            };
             await BffHost.InitializeAsync();
             
             var response = await BffHost.BrowserClient.GetAsync(BffHost.Url("/custom/bff/login"));
@@ -72,7 +81,11 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [Fact]
         public async Task login_endpoint_should_challenge_and_redirect_to_root_with_root_prefix()
         {
-            BffHost.BffOptions.ManagementBasePath = "/";
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => {
+                    options.ManagementBasePath = "/";
+                });
+            };
             await BffHost.InitializeAsync();
             
             var response = await BffHost.BrowserClient.GetAsync(BffHost.Url("/login"));

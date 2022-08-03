@@ -25,9 +25,10 @@ public static class BffServiceCollectionExtensions
     /// <returns></returns>
     public static BffBuilder AddBff(this IServiceCollection services, Action<BffOptions>? configureAction = null)
     {
-        var opts = new BffOptions();
-        configureAction?.Invoke(opts);
-        services.AddSingleton(opts);
+        if (configureAction != null)
+        {
+            services.Configure(configureAction);
+        }
 
         services.AddDistributedMemoryCache();
         services.AddOpenIdConnectAccessTokenManagement();

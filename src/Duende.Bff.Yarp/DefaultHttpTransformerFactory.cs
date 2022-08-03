@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
@@ -27,9 +28,9 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
     /// </summary>
     /// <param name="options">The BFF options</param>
     /// <param name="transformBuilder">The YARP transform builder</param>
-    public DefaultHttpTransformerFactory(BffOptions options, ITransformBuilder transformBuilder)
+    public DefaultHttpTransformerFactory(IOptions<BffOptions> options, ITransformBuilder transformBuilder)
     {
-        Options = options;
+        Options = options.Value;
         TransformBuilder = transformBuilder;
     }
         

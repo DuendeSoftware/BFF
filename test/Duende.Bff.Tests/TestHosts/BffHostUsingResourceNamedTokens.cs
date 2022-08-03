@@ -28,7 +28,7 @@ namespace Duende.Bff.Tests.TestHosts
         private readonly string _clientId;
         private readonly bool _useForwardedHeaders;
 
-        public BffOptions BffOptions { get; set; } = new();
+        public BffOptions BffOptions { get; private set; }
 
         public BffHostUsingResourceNamedTokens(IdentityServerHost identityServerHost, ApiHost apiHost, string clientId,
             string baseAddress = "https://app", bool useForwardedHeaders = false)
@@ -48,8 +48,9 @@ namespace Duende.Bff.Tests.TestHosts
             services.AddRouting();
             services.AddAuthorization();
 
-            var bff = services.AddBff();
-            services.AddSingleton(BffOptions);
+            var bff = services.AddBff(options => { 
+                BffOptions = options; 
+            });
 
             services.AddSingleton<IHttpMessageInvokerFactory>(
                 new CallbackHttpMessageInvokerFactory(

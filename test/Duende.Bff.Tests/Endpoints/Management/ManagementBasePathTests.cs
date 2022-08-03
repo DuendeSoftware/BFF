@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Duende.Bff.Tests.Endpoints.Management
 {
@@ -20,7 +21,11 @@ namespace Duende.Bff.Tests.Endpoints.Management
         [InlineData(Constants.ManagementEndpoints.User)]
         public async Task custom_ManagementBasePath_should_affect_basepath(string path)
         {
-            BffHost.BffOptions.ManagementBasePath = new PathString("/{path:regex(^[a-zA-Z\\d-]+$)}/bff");
+            BffHost.OnConfigureServices += svcs => {
+                svcs.Configure<BffOptions>(options => {
+                    options.ManagementBasePath = new PathString("/{path:regex(^[a-zA-Z\\d-]+$)}/bff");
+                });
+            };
             await BffHost.InitializeAsync();
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/custom/bff" + path));

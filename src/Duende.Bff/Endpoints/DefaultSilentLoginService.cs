@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace Duende.Bff;
@@ -18,9 +19,9 @@ public class DefaultSilentLoginService : ISilentLoginService
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    public DefaultSilentLoginService(BffOptions options)
+    public DefaultSilentLoginService(IOptions<BffOptions> options)
     {
-        _options = options;
+        _options = options.Value;
     }
         
     /// <inheritdoc />

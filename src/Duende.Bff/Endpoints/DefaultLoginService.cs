@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,9 +24,9 @@ public class DefaultLoginService : ILoginService
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    public DefaultLoginService(BffOptions options)
+    public DefaultLoginService(IOptions<BffOptions> options)
     {
-        _options = options;
+        _options = options.Value;
     }
         
     /// <inheritdoc />
