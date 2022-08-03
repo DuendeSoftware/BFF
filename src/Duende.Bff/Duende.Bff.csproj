@@ -35,7 +35,7 @@
         <PackageReference Include="MinVer" Version="4.0.0" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
 
-        <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="1.0.0-preview.3" />
+        <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="1.0.0-preview.4" />
     </ItemGroup>
 
     <ItemGroup>
