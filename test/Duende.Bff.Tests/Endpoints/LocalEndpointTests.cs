@@ -191,7 +191,7 @@ namespace Duende.Bff.Tests.Endpoints
             await BffHost.InitializeAsync();
 
             var response = await BffHost.HttpClient.GetAsync(BffHost.Url("/not-found"));
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().NotBe(HttpStatusCode.InternalServerError);
         }
     }
 }
