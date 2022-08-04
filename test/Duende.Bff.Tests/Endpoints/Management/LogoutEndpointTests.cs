@@ -5,6 +5,7 @@ using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,6 +13,25 @@ namespace Duende.Bff.Tests.Endpoints.Management
 {
     public class LogoutEndpointTests : BffIntegrationTestBase
     {
+        [Fact]
+        public async Task logout_endpoint_should_allow_anonymous()
+        {
+            BffHost.OnConfigureServices += svcs =>
+            {
+                svcs.AddAuthorization(opts =>
+                {
+                    opts.FallbackPolicy =
+                        new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                });
+            };
+            await BffHost.InitializeAsync();
+
+            var response = await BffHost.BrowserClient.GetAsync(BffHost.Url("/bff/logout"));
+            response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+        }
+
         [Fact]
         public async Task logout_endpoint_should_signout()
         {
