@@ -50,7 +50,8 @@ public static class BffEndpointRouteBuilderExtensions
             
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
-        endpoints.MapGet(options.LoginPath.Value!, ProcessWith<ILoginService>);
+        endpoints.MapGet(options.LoginPath.Value!, ProcessWith<ILoginService>)
+            .AllowAnonymous();
     }
 
     /// <summary>
@@ -63,8 +64,10 @@ public static class BffEndpointRouteBuilderExtensions
 
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
-        endpoints.MapGet(options.SilentLoginPath.Value!, ProcessWith<ISilentLoginService>);
-        endpoints.MapGet(options.SilentLoginCallbackPath.Value!, ProcessWith<ISilentLoginCallbackService>);
+        endpoints.MapGet(options.SilentLoginPath.Value!, ProcessWith<ISilentLoginService>)
+            .AllowAnonymous();
+        endpoints.MapGet(options.SilentLoginCallbackPath.Value!, ProcessWith<ISilentLoginCallbackService>)
+            .AllowAnonymous();
     }
 
     /// <summary>
@@ -77,7 +80,8 @@ public static class BffEndpointRouteBuilderExtensions
 
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
-        endpoints.MapGet(options.LogoutPath.Value!, ProcessWith<ILogoutService>);
+        endpoints.MapGet(options.LogoutPath.Value!, ProcessWith<ILogoutService>)
+            .AllowAnonymous();
     }
 
     /// <summary>
@@ -91,6 +95,7 @@ public static class BffEndpointRouteBuilderExtensions
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.UserPath.Value!, ProcessWith<IUserService>)
+            .AllowAnonymous()
             .AsBffApiEndpoint();
     }
 
@@ -104,7 +109,8 @@ public static class BffEndpointRouteBuilderExtensions
 
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
-        endpoints.MapPost(options.BackChannelLogoutPath.Value!, ProcessWith<IBackchannelLogoutService>);
+        endpoints.MapPost(options.BackChannelLogoutPath.Value!, ProcessWith<IBackchannelLogoutService>)
+            .AllowAnonymous();
     }
         
     /// <summary>
@@ -117,7 +123,8 @@ public static class BffEndpointRouteBuilderExtensions
 
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
-        endpoints.MapGet(options.DiagnosticsPath.Value!, ProcessWith<IDiagnosticsService>);
+        endpoints.MapGet(options.DiagnosticsPath.Value!, ProcessWith<IDiagnosticsService>)
+            .AllowAnonymous();
     }
         
     internal static void CheckLicense(this IEndpointRouteBuilder endpoints)
