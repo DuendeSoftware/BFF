@@ -95,7 +95,8 @@ namespace Host5
                     .AsBffApiEndpoint();
 
                 // login, logout, user, backchannel logout...
-                endpoints.MapBffManagementEndpoints();
+                endpoints.MapBffManagementEndpoints()
+                    .AllowAnonymous();
                 
                 // proxy endpoint for cross-site APIs
                 // all calls to /api/* will be forwarded to the remote API
@@ -103,6 +104,24 @@ namespace Host5
                 // user access token will be managed automatically using the refresh token
                 endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
                     .RequireAccessToken(TokenType.UserOrClient);
+
+                endpoints.MapBff("/my-bff", bff =>
+                {
+                    //bff.SigninScheme = "foo";
+
+                    bff.AddLogin();
+                    bff.AddLogout("/mylogout");
+                    bff.AddBackchannelLogout();
+                    bff.AddSilentLogin()
+                    //bff.AddUser().
+                })
+                .AllowAnonymous();
+
+                endpoints.MapBff("/my-bff2", eps =>
+                {
+                    eps.AddUser();
+                }).AllowAnonymous();
+
             });
         }
     }

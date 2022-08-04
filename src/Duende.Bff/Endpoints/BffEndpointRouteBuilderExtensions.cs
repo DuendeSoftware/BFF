@@ -30,15 +30,15 @@ public static class BffEndpointRouteBuilderExtensions
     /// Adds the BFF management endpoints (login, logout, logout notifications)
     /// </summary>
     /// <param name="endpoints"></param>
-    public static void MapBffManagementEndpoints(this IEndpointRouteBuilder endpoints)
-    {
-        endpoints.MapBffManagementLoginEndpoint();
-        endpoints.MapBffManagementSilentLoginEndpoints();
-        endpoints.MapBffManagementLogoutEndpoint();
-        endpoints.MapBffManagementUserEndpoint();
-        endpoints.MapBffManagementBackchannelEndpoint();
-        endpoints.MapBffDiagnosticsEndpoint();
-    }
+    //public static void MapBffManagementEndpoints(this IEndpointRouteBuilder endpoints)
+    //{
+    //    endpoints.MapBffManagementLoginEndpoint();
+    //    endpoints.MapBffManagementSilentLoginEndpoints();
+    //    endpoints.MapBffManagementLogoutEndpoint();
+    //    endpoints.MapBffManagementUserEndpoint();
+    //    endpoints.MapBffManagementBackchannelEndpoint();
+    //    endpoints.MapBffDiagnosticsEndpoint();
+    //}
 
     /// <summary>
     /// Adds the login BFF management endpoint

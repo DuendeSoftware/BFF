@@ -53,6 +53,9 @@ public static class BffServiceCollectionExtensions
 
         services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
 
+        // routing 
+        services.AddTransient<BffEndpointDataSource>();
+
         return new BffBuilder(services);
     }
 }
