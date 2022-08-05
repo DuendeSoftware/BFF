@@ -31,21 +31,22 @@ namespace Duende.Bff
         {
             var endpoint = context.GetEndpoint();
 
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
-
-            var isBffEndpoint = endpoint.Metadata.GetMetadata<IBffApiEndpoint>() != null;
-            if (isBffEndpoint)
+            if (endpoint != null)
             {
-                if (authorizeResult.Challenged)
+                var isBffEndpoint = endpoint.Metadata.GetMetadata<IBffApiEndpoint>() != null;
+                if (isBffEndpoint)
                 {
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    return Task.CompletedTask;
-                }
+                    if (authorizeResult.Challenged)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        return Task.CompletedTask;
+                    }
 
-                if (authorizeResult.Forbidden)
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    return Task.CompletedTask;
+                    if (authorizeResult.Forbidden)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return Task.CompletedTask;
+                    }
                 }
             }
 

@@ -4,6 +4,7 @@
 using Duende.Bff.Tests.TestFramework;
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -172,6 +173,25 @@ namespace Duende.Bff.Tests.Endpoints
             var response = await BffHost.BrowserClient.SendAsync(req);
 
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task fallback_policy_should_not_fail()
+        {
+            BffHost.OnConfigureServices += svcs =>
+            {
+                svcs.AddAuthorization(opts =>
+                { 
+                    opts.FallbackPolicy = 
+                        new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                });
+            };
+            await BffHost.InitializeAsync();
+
+            var response = await BffHost.HttpClient.GetAsync(BffHost.Url("/not-found"));
+            response.StatusCode.Should().NotBe(HttpStatusCode.InternalServerError);
         }
     }
 }
