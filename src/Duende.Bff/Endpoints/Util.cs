@@ -25,23 +25,6 @@ internal static class Util
                 return !HasControlCharacter(url.AsSpan(1));
             case '/':
                 return false;
-            // Allows "~/" or "~/foo" but not "~//" or "~/\".
-            case '~' when url.Length > 1 && url[1] == '/':
-            {
-                // url is exactly "~/"
-                if (url.Length == 2)
-                {
-                    return true;
-                }
-
-                // url doesn't start with "~//" or "~/\"
-                if (url[2] != '/' && url[2] != '\\')
-                {
-                    return !HasControlCharacter(url.AsSpan(2));
-                }
-
-                return false;
-            }
         }
 
         return false;
