@@ -3,7 +3,9 @@
 
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,6 +13,25 @@ namespace Duende.Bff.Tests.Endpoints.Management
 {
     public class BackchannelLogoutEndpointTests : BffIntegrationTestBase
     {
+        [Fact]
+        public async Task backchannel_logout_should_allow_anonymous()
+        {
+            BffHost.OnConfigureServices += svcs =>
+            {
+                svcs.AddAuthorization(opts =>
+                {
+                    opts.FallbackPolicy =
+                        new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                });
+            };
+            await BffHost.InitializeAsync();
+
+            var response = await BffHost.HttpClient.PostAsync(BffHost.Url("/bff/backchannel"), null);
+            response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+        }
+
         [Fact]
         public async Task backchannel_logout_endpoint_should_signout()
         {

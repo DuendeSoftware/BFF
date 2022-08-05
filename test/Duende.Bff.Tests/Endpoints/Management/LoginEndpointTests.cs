@@ -14,6 +14,25 @@ namespace Duende.Bff.Tests.Endpoints.Management
     public class LoginEndpointTests : BffIntegrationTestBase
     {
         [Fact]
+        public async Task login_should_allow_anonymous()
+        {
+            BffHost.OnConfigureServices += svcs =>
+            {
+                svcs.AddAuthorization(opts =>
+                {
+                    opts.FallbackPolicy =
+                        new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                });
+            };
+            await BffHost.InitializeAsync();
+
+            var response = await BffHost.BrowserClient.GetAsync(BffHost.Url("/bff/login"));
+            response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+        }
+        
+        [Fact]
         public async Task login_endpoint_should_challenge_and_redirect_to_root()
         {
             var response = await BffHost.BrowserClient.GetAsync(BffHost.Url("/bff/login"));
