@@ -19,11 +19,6 @@ public class SessionDbContext : SessionDbContext<SessionDbContext>
     public SessionDbContext(DbContextOptions<SessionDbContext> options) : base(options)
     {
     }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-    }
 }
 
 /// <summary>
