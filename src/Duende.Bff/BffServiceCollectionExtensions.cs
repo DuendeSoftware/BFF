@@ -33,6 +33,8 @@ public static class BffServiceCollectionExtensions
         services.AddDistributedMemoryCache();
         services.AddOpenIdConnectAccessTokenManagement();
 
+        services.AddTransient<IReturnUrlValidator, LocalUrlReturnUrlValidator>();
+
         // management endpoints
         services.AddTransient<ILoginService, DefaultLoginService>();
         services.AddTransient<ISilentLoginService, DefaultSilentLoginService>();

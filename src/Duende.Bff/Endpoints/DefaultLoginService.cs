@@ -18,29 +18,36 @@ public class DefaultLoginService : ILoginService
     /// <summary>
     /// The BFF options
     /// </summary>
-    protected readonly BffOptions _options;
+    protected readonly BffOptions Options;
+    
+    /// <summary>
+    /// The return URL validator
+    /// </summary>
+    protected readonly IReturnUrlValidator ReturnUrlValidator;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    public DefaultLoginService(IOptions<BffOptions> options)
+    /// <param name="returnUrlValidator"></param>
+    public DefaultLoginService(IOptions<BffOptions> options, IReturnUrlValidator returnUrlValidator)
     {
-        _options = options.Value;
+        Options = options.Value;
+        ReturnUrlValidator = returnUrlValidator;
     }
         
     /// <inheritdoc />
     public virtual async Task ProcessRequestAsync(HttpContext context)
     {
-        context.CheckForBffMiddleware(_options);
+        context.CheckForBffMiddleware(Options);
             
         var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
 
         if (!string.IsNullOrWhiteSpace(returnUrl))
         {
-            if (!Util.IsLocalUrl(returnUrl))
+            if (!await ReturnUrlValidator.IsReturnUrlValid(returnUrl))
             {
-                throw new Exception("returnUrl is not application local: " + returnUrl);
+                throw new Exception("returnUrl is not valid: " + returnUrl);
             }
         }
 

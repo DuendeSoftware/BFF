@@ -27,14 +27,21 @@ public class DefaultLogoutService : ILogoutService
     protected readonly IAuthenticationSchemeProvider AuthenticationSchemeProvider;
 
     /// <summary>
+    /// The return URL validator
+    /// </summary>
+    protected readonly IReturnUrlValidator ReturnUrlValidator;
+
+    /// <summary>
     /// Ctor
     /// </summary>
     /// <param name="options"></param>
     /// <param name="authenticationAuthenticationSchemeProviderProvider"></param>
-    public DefaultLogoutService(IOptions<BffOptions> options, IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider)
+    /// <param name="returnUrlValidator"></param>
+    public DefaultLogoutService(IOptions<BffOptions> options, IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider, IReturnUrlValidator returnUrlValidator)
     {
         Options = options.Value;
         AuthenticationSchemeProvider = authenticationAuthenticationSchemeProviderProvider;
+        ReturnUrlValidator = returnUrlValidator;
     }
 
     /// <inheritdoc />
@@ -67,9 +74,9 @@ public class DefaultLogoutService : ILogoutService
 
         if (!string.IsNullOrWhiteSpace(returnUrl))
         {
-            if (!Util.IsLocalUrl(returnUrl))
+            if (!await ReturnUrlValidator.IsReturnUrlValid(returnUrl))
             {
-                throw new Exception("returnUrl is not application local: " + returnUrl);
+                throw new Exception("returnUrl is not valid: " + returnUrl);
             }
         }
 
