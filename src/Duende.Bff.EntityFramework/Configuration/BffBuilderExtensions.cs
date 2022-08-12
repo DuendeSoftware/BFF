@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Duende.Bff;
+using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Duende.Bff.EntityFramework;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extensions for BffBuilder
