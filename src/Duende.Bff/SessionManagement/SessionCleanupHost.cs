@@ -43,11 +43,18 @@ public class SessionCleanupHost : IHostedService
         {
             if (_source != null) throw new InvalidOperationException("Already started. Call Stop first.");
 
-            _logger.LogDebug("Starting BFF session cleanup");
+            if (IsIUserSessionStoreCleanupRegistered())
+            {
+                _logger.LogDebug("Starting BFF session cleanup");
 
-            _source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                _source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            Task.Factory.StartNew(() => StartInternalAsync(_source.Token));
+                Task.Factory.StartNew(() => StartInternalAsync(_source.Token));
+            }
+            else
+            {
+                _logger.LogWarning("BFF session cleanup is enabled, but no IUserSessionStoreCleanup is registered in DI. BFF session cleanup will not run.");
+            }
         }
 
         return Task.CompletedTask;
@@ -58,10 +65,8 @@ public class SessionCleanupHost : IHostedService
     /// </summary>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_options.EnableSessionCleanup)
+        if (_options.EnableSessionCleanup && _source != null)
         {
-            if (_source == null) throw new InvalidOperationException("Not started. Call Start first.");
-
             _logger.LogDebug("Stopping BFF session cleanup");
 
             _source.Cancel();
@@ -119,6 +124,15 @@ public class SessionCleanupHost : IHostedService
         catch (Exception ex)
         {
             _logger.LogError("Exception deleting expired sessions: {exception}", ex.Message);
+        }
+    }
+
+    bool IsIUserSessionStoreCleanupRegistered()
+    {
+        using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        {
+            var tokenCleanupService = serviceScope.ServiceProvider.GetService<IUserSessionStoreCleanup>();
+            return tokenCleanupService != null;
         }
     }
 }

@@ -16,11 +16,3 @@ public interface IUserSessionStoreCleanup
     /// </summary>
     Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default);
 }
-
-class NopUserSessionStoreCleanup : IUserSessionStoreCleanup
-{
-    public Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default)
-    {
-        return Task.CompletedTask;
-    }
-}
