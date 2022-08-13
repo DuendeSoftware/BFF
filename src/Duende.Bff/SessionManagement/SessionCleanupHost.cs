@@ -129,10 +129,7 @@ public class SessionCleanupHost : IHostedService
 
     bool IsIUserSessionStoreCleanupRegistered()
     {
-        using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-        {
-            var tokenCleanupService = serviceScope.ServiceProvider.GetService<IUserSessionStoreCleanup>();
-            return tokenCleanupService != null;
-        }
+        var isService = _serviceProvider.GetRequiredService<IServiceProviderIsService>();
+        return isService.IsService(typeof(IUserSessionStoreCleanup));
     }
 }
