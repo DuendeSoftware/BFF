@@ -74,7 +74,7 @@ public class DefaultLogoutService : ILogoutService
 
         if (!string.IsNullOrWhiteSpace(returnUrl))
         {
-            if (!await ReturnUrlValidator.IsReturnUrlValid(returnUrl))
+            if (!await ReturnUrlValidator.IsValidAsync(returnUrl))
             {
                 throw new Exception("returnUrl is not valid: " + returnUrl);
             }
