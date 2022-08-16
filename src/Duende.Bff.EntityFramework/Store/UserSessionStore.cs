@@ -21,7 +21,7 @@ namespace Duende.Bff.EntityFramework;
 public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
 {
     private readonly string _applicationDiscriminator;
-    private readonly SessionDbContext _sessionDbContext;
+    private readonly ISessionDbContext _sessionDbContext;
     private readonly ILogger<UserSessionStore> _logger;
 
     /// <summary>
@@ -30,7 +30,7 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     /// <param name="options"></param>
     /// <param name="sessionDbContext"></param>
     /// <param name="logger"></param>
-    public UserSessionStore(IOptions<DataProtectionOptions> options, SessionDbContext sessionDbContext, ILogger<UserSessionStore> logger)
+    public UserSessionStore(IOptions<DataProtectionOptions> options, ISessionDbContext sessionDbContext, ILogger<UserSessionStore> logger)
     {
         _applicationDiscriminator = options.Value.ApplicationDiscriminator;
         _sessionDbContext = sessionDbContext;
@@ -62,12 +62,12 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
             {
                 await _sessionDbContext.SaveChangesAsync(cancellationToken);
             }
-            catch(DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException ex)
             {
                 // suppressing exception for concurrent deletes
                 // https://github.com/DuendeSoftware/BFF/issues/63
                 _logger.LogDebug("DbUpdateConcurrencyException: {error}", ex.Message);
-                    
+
                 foreach (var entry in ex.Entries)
                 {
                     // mark detatched so another call to SaveChangesAsync won't throw again
@@ -101,12 +101,12 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
         {
             items = items.Where(x => x.SubjectId == filter.SubjectId).ToArray();
         }
-        if (!String.IsNullOrWhiteSpace(filter.SessionId))
+        if (!string.IsNullOrWhiteSpace(filter.SessionId))
         {
             items = items.Where(x => x.SessionId == filter.SessionId).ToArray();
         }
 
-        _sessionDbContext.RemoveRange(items);
+        _sessionDbContext.UserSessions.RemoveRange(items);
 
         try
         {
@@ -131,7 +131,7 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     {
         var items = await _sessionDbContext.UserSessions.Where(x => x.Key == key && x.ApplicationName == _applicationDiscriminator).ToArrayAsync(cancellationToken);
         var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationName == _applicationDiscriminator);
-            
+
         UserSession result = null;
         if (item != null)
         {
@@ -171,7 +171,8 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
             items = items.Where(x => x.SessionId == filter.SessionId).ToArray();
         }
 
-        return items.Select(x => {
+        return items.Select(x =>
+        {
             var item = new UserSession();
             x.CopyTo(item);
             return item;
@@ -197,7 +198,7 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     /// <inheritdoc/>
     public async Task DeleteExpiredSessionsAsync(CancellationToken cancellationToken = default)
     {
-        var found = Int32.MaxValue;
+        var found = int.MaxValue;
         var batchSize = 100;
 
         while (found >= batchSize)

@@ -1,5 +1,4 @@
 using Duende.Bff;
-using Duende.Bff.EntityFramework;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
