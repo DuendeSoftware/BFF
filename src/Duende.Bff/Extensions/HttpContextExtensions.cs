@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Duende.Bff;
 
-internal static class Extensions
+internal static class HttpContextExtensions
 {
     public static void CheckForBffMiddleware(this HttpContext context, BffOptions options)
     {
