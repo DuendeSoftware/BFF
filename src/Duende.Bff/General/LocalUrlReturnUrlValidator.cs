@@ -1,12 +1,19 @@
-// Copyright (c) Duende Software. All rights reserved.
+﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 
 namespace Duende.Bff;
 
-internal static class Util
+class LocalUrlReturnUrlValidator : IReturnUrlValidator
 {
+    /// <inheritdoc/>
+    public Task<bool> IsValidAsync(string returnUrl)
+    {
+        return Task.FromResult(IsLocalUrl(returnUrl));
+    }
+
     internal static bool IsLocalUrl(string url)
     {
         if (string.IsNullOrEmpty(url))

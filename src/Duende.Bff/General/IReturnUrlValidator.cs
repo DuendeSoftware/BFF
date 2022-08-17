@@ -17,12 +17,3 @@ public interface IReturnUrlValidator
     /// <returns></returns>
     Task<bool> IsValidAsync(string returnUrl);
 }
-
-class LocalUrlReturnUrlValidator : IReturnUrlValidator
-{
-    /// <inheritdoc/>
-    public Task<bool> IsValidAsync(string returnUrl)
-    {
-        return Task.FromResult(Util.IsLocalUrl(returnUrl));
-    }
-}
