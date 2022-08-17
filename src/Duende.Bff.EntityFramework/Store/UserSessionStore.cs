@@ -38,7 +38,7 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     }
 
     /// <inheritdoc/>
-    public Task CreateUserSessionAsync(UserSession session, CancellationToken cancellationToken)
+    public async Task CreateUserSessionAsync(UserSession session, CancellationToken cancellationToken)
     {
         var item = new UserSessionEntity()
         {
@@ -46,7 +46,15 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
         };
         session.CopyTo(item);
         _sessionDbContext.UserSessions.Add(item);
-        return _sessionDbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _sessionDbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogWarning("Exception creating new server-side session in database: {error}", ex.Message);
+        }
     }
 
     /// <inheritdoc/>
