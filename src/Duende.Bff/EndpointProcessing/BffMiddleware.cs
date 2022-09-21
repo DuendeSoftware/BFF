@@ -67,6 +67,28 @@ public class BffMiddleware
             }
         }
 
+        context.Response.OnStarting(() =>
+        {
+            // outbound: we assume that an API will never return a 302
+            // if a 302 is returned, that must be the challenge to the OIDC provider
+            // we convert this to a 401
+            if (isBffEndpoint)
+            {
+                if (context.Response.StatusCode == 302)
+                {
+                    var requireResponseHandling = endpoint.Metadata.GetMetadata<IBffApiSkipResponseHandling>() == null;
+                    if (requireResponseHandling)
+                    {
+                        context.Response.StatusCode = 401;
+                        context.Response.Headers.Remove("Location");
+                        context.Response.Headers.Remove("Set-Cookie");
+                    }
+                }
+            }
+
+            return Task.CompletedTask;
+        });
+
         await _next(context);
     }
 }

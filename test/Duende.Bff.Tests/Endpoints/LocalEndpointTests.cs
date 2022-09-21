@@ -149,7 +149,7 @@ namespace Duende.Bff.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact(Skip = "need to restore manual response handling")]
+        [Fact]
         public async Task challenge_response_should_return_401()
         {
             await BffHost.BffLoginAsync("alice");
@@ -162,7 +162,7 @@ namespace Duende.Bff.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact(Skip = "need to restore manual response handling")]
+        [Fact(Skip = "need to handle Forbid when cookie handler triggers redirect to access denied page")]
         public async Task forbid_response_should_return_403()
         {
             await BffHost.BffLoginAsync("alice");
