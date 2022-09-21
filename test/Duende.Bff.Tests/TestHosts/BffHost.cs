@@ -16,12 +16,17 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Duende.Bff.Tests.TestHosts
 {
     public class BffHost : GenericHost
     {
-        public int? LocalApiStatusCodeToReturn { get; set; }
+        public enum ResponseStatus
+        {
+            Ok, Challenge, Forbid
+        }
+        public ResponseStatus LocalApiResponseStatus { get; set; } = ResponseStatus.Ok;
 
         private readonly IdentityServerHost _identityServerHost;
         private readonly ApiHost _apiHost;
@@ -48,7 +53,8 @@ namespace Duende.Bff.Tests.TestHosts
             services.AddRouting();
             services.AddAuthorization();
 
-            var bff = services.AddBff(options => {
+            var bff = services.AddBff(options =>
+            {
                 BffOptions = options;
             });
 
@@ -158,14 +164,28 @@ namespace Duende.Bff.Tests.TestHosts
                             RequestHeaders = requestHeaders
                         };
 
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
+                        if (LocalApiResponseStatus == ResponseStatus.Ok)
+                        {
+                            context.Response.StatusCode = 200;
 
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Challenge)
+                        {
+                            await context.ChallengeAsync();
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Forbid)
+                        {
+                            await context.ForbidAsync();
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid LocalApiResponseStatus");
+                        }
                     })
                     .AsBffApiEndpoint();
-                
+
                 endpoints.Map("/local_anon_no_csrf", async context =>
                     {
                         // capture body if present
@@ -197,14 +217,84 @@ namespace Duende.Bff.Tests.TestHosts
                             RequestHeaders = requestHeaders
                         };
 
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
+                        if (LocalApiResponseStatus == ResponseStatus.Ok)
+                        {
+                            context.Response.StatusCode = 200;
 
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Challenge)
+                        {
+                            await context.ChallengeAsync();
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Forbid)
+                        {
+                            await context.ForbidAsync();
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid LocalApiResponseStatus");
+                        }
                     })
                     .AsBffApiEndpoint()
                     .SkipAntiforgery();
+
+                endpoints.Map("/local_anon_no_csrf_no_response_handling", async context =>
+                {
+                    // capture body if present
+                    var body = default(string);
+                    if (context.Request.HasJsonContentType())
+                    {
+                        using (var sr = new StreamReader(context.Request.Body))
+                        {
+                            body = await sr.ReadToEndAsync();
+                        }
+                    }
+
+                    // capture request headers
+                    var requestHeaders = new Dictionary<string, List<string>>();
+                    foreach (var header in context.Request.Headers)
+                    {
+                        var values = new List<string>(header.Value.Select(v => v));
+                        requestHeaders.Add(header.Key, values);
+                    }
+
+                    var response = new ApiResponse(
+                        context.Request.Method,
+                        context.Request.Path.Value,
+                        context.User.FindFirst(("sub"))?.Value,
+                        context.User.FindFirst(("client_id"))?.Value,
+                        context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
+                    {
+                        Body = body,
+                        RequestHeaders = requestHeaders
+                    };
+
+                    if (LocalApiResponseStatus == ResponseStatus.Ok)
+                    {
+                        context.Response.StatusCode = 200;
+
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                    }
+                    else if (LocalApiResponseStatus == ResponseStatus.Challenge)
+                    {
+                        await context.ChallengeAsync();
+                    }
+                    else if (LocalApiResponseStatus == ResponseStatus.Forbid)
+                    {
+                        await context.ForbidAsync();
+                    }
+                    else
+                    {
+                        throw new Exception("Invalid LocalApiResponseStatus");
+                    }
+                })
+                .AsBffApiEndpoint()
+                .SkipAntiforgery()
+                .SkipResponseHandling();
+
 
                 endpoints.Map("/local_authz", async context =>
                     {
@@ -230,11 +320,25 @@ namespace Duende.Bff.Tests.TestHosts
                             Body = body
                         };
 
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
+                        if (LocalApiResponseStatus == ResponseStatus.Ok)
+                        {
+                            context.Response.StatusCode = 200;
 
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Challenge)
+                        {
+                            await context.ChallengeAsync();
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Forbid)
+                        {
+                            await context.ForbidAsync();
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid LocalApiResponseStatus");
+                        }
                     })
                     .RequireAuthorization()
                     .AsBffApiEndpoint();
@@ -263,11 +367,25 @@ namespace Duende.Bff.Tests.TestHosts
                             Body = body
                         };
 
-                        context.Response.StatusCode = LocalApiStatusCodeToReturn ?? 200;
-                        LocalApiStatusCodeToReturn = null;
+                        if (LocalApiResponseStatus == ResponseStatus.Ok)
+                        {
+                            context.Response.StatusCode = 200;
 
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Challenge)
+                        {
+                            await context.ChallengeAsync();
+                        }
+                        else if (LocalApiResponseStatus == ResponseStatus.Forbid)
+                        {
+                            await context.ForbidAsync();
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid LocalApiResponseStatus");
+                        }
                     })
                     .RequireAuthorization()
                     .AsBffApiEndpoint()
@@ -306,7 +424,7 @@ namespace Duende.Bff.Tests.TestHosts
                     "/api_anon_only", _apiHost.Url());
 
                 endpoints.Map(
-                    "/not_bff_endpoint", 
+                    "/not_bff_endpoint",
                     RemoteApiEndpoint.Map("/not_bff_endpoint", _apiHost.Url()));
             });
 

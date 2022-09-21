@@ -149,11 +149,11 @@ namespace Duende.Bff.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task response_status_401_should_return_401()
+        [Fact(Skip = "need to restore manual response handling")]
+        public async Task challenge_response_should_return_401()
         {
             await BffHost.BffLoginAsync("alice");
-            BffHost.LocalApiStatusCodeToReturn = 401;
+            BffHost.LocalApiResponseStatus = BffHost.ResponseStatus.Challenge;
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_authz"));
             req.Headers.Add("x-csrf", "1");
@@ -162,11 +162,11 @@ namespace Duende.Bff.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact]
-        public async Task response_status_403_should_return_403()
+        [Fact(Skip = "need to restore manual response handling")]
+        public async Task forbid_response_should_return_403()
         {
             await BffHost.BffLoginAsync("alice");
-            BffHost.LocalApiStatusCodeToReturn = 403;
+            BffHost.LocalApiResponseStatus = BffHost.ResponseStatus.Forbid;
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_authz"));
             req.Headers.Add("x-csrf", "1");
@@ -174,6 +174,19 @@ namespace Duende.Bff.Tests.Endpoints
 
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
+
+        [Fact]
+        public async Task challenge_response_when_response_handling_skipped_should_trigger_redirect_for_login()
+        {
+            await BffHost.BffLoginAsync("alice");
+            BffHost.LocalApiResponseStatus = BffHost.ResponseStatus.Challenge;
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/local_anon_no_csrf_no_response_handling"));
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        }
+
 
         [Fact]
         public async Task fallback_policy_should_not_fail()

@@ -36,16 +36,20 @@ namespace Duende.Bff
                 var isBffEndpoint = endpoint.Metadata.GetMetadata<IBffApiEndpoint>() != null;
                 if (isBffEndpoint)
                 {
-                    if (authorizeResult.Challenged)
+                    var requireResponseHandling = endpoint.Metadata.GetMetadata<IBffApiSkipResponseHandling>() == null;
+                    if (requireResponseHandling)
                     {
-                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        return Task.CompletedTask;
-                    }
+                        if (authorizeResult.Challenged)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                            return Task.CompletedTask;
+                        }
 
-                    if (authorizeResult.Forbidden)
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        return Task.CompletedTask;
+                        if (authorizeResult.Forbidden)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            return Task.CompletedTask;
+                        }
                     }
                 }
             }
