@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -54,6 +56,10 @@ public static class BffServiceCollectionExtensions
         services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOidcOptionsForSilentLogin>();
 
         services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
+
+        // wrap ASP.NET Core
+        services.AddAuthentication();
+        services.AddTransientDecorator<IAuthenticationService, BffAuthenticationService>();
 
         return new BffBuilder(services);
     }

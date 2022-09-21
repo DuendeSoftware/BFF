@@ -162,7 +162,7 @@ namespace Duende.Bff.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact(Skip = "need to handle Forbid when cookie handler triggers redirect to access denied page")]
+        [Fact]
         public async Task forbid_response_should_return_403()
         {
             await BffHost.BffLoginAsync("alice");
