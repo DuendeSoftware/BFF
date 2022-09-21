@@ -55,8 +55,6 @@ public static class BffServiceCollectionExtensions
         
         services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOidcOptionsForSilentLogin>();
 
-        services.AddTransient<IAuthorizationMiddlewareResultHandler, BffAuthorizationMiddlewareResultHandler>();
-
         // wrap ASP.NET Core
         services.AddAuthentication();
         services.AddTransientDecorator<IAuthenticationService, BffAuthenticationService>();
