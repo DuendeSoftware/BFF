@@ -4,6 +4,7 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,21 +16,33 @@ namespace Duende.Bff;
 /// </summary>
 public class DefaultSilentLoginCallbackService : ISilentLoginCallbackService
 {
-    private readonly BffOptions _options;
+    /// <summary>
+    /// The BFF options
+    /// </summary>
+    protected readonly BffOptions Options;
+    
+    /// <summary>
+    /// The logger
+    /// </summary>
+    protected readonly ILogger Logger;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    public DefaultSilentLoginCallbackService(IOptions<BffOptions> options)
+    /// <param name="logger"></param>
+    public DefaultSilentLoginCallbackService(IOptions<BffOptions> options, ILogger<DefaultSilentLoginCallbackService> logger)
     {
-        _options = options.Value;
+        Options = options.Value;
+        Logger = logger;
     }
 
     /// <inheritdoc />
-    public async Task ProcessRequestAsync(HttpContext context)
+    public virtual async Task ProcessRequestAsync(HttpContext context)
     {
-        context.CheckForBffMiddleware(_options);
+        Logger.LogDebug("Processing silent login callback request");
+        
+        context.CheckForBffMiddleware(Options);
 
         var result = (await context.AuthenticateAsync()).Succeeded ? "true" : "false";
         var json = $"{{source:'bff-silent-login', isLoggedIn:{result}}}";
@@ -46,6 +59,8 @@ public class DefaultSilentLoginCallbackService : ISilentLoginCallbackService
         context.Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
         context.Response.Headers["Pragma"] = "no-cache";
 
+        Logger.LogDebug("Silent login endpoint rendering HTML with JS postMessage to origin {origin} with isLoggedIn {isLoggedIn}", origin, result);
+        
         await context.Response.WriteAsync(html, Encoding.UTF8);
     }
 }

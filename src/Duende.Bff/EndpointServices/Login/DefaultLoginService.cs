@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -19,26 +20,35 @@ public class DefaultLoginService : ILoginService
     /// The BFF options
     /// </summary>
     protected readonly BffOptions Options;
-    
+
     /// <summary>
     /// The return URL validator
     /// </summary>
     protected readonly IReturnUrlValidator ReturnUrlValidator;
+    
+    /// <summary>
+    /// The logger
+    /// </summary>
+    protected readonly ILogger Logger;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
     /// <param name="returnUrlValidator"></param>
-    public DefaultLoginService(IOptions<BffOptions> options, IReturnUrlValidator returnUrlValidator)
+    /// <param name="logger"></param>
+    public DefaultLoginService(IOptions<BffOptions> options, IReturnUrlValidator returnUrlValidator, ILogger<DefaultLoginService> logger)
     {
         Options = options.Value;
         ReturnUrlValidator = returnUrlValidator;
+        Logger = logger;
     }
         
     /// <inheritdoc />
     public virtual async Task ProcessRequestAsync(HttpContext context)
     {
+        Logger.LogDebug("Processing login request");
+
         context.CheckForBffMiddleware(Options);
             
         var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
@@ -67,6 +77,8 @@ public class DefaultLoginService : ILoginService
         {
             RedirectUri = returnUrl
         };
+
+        Logger.LogDebug("Login endpoint triggering Challenge with returnUrl {returnUrl}", returnUrl);
 
         await context.ChallengeAsync(props);
     }

@@ -4,6 +4,7 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -30,6 +31,11 @@ public class DefaultLogoutService : ILogoutService
     /// The return URL validator
     /// </summary>
     protected readonly IReturnUrlValidator ReturnUrlValidator;
+    
+    /// <summary>
+    /// The logger
+    /// </summary>
+    protected readonly ILogger Logger;
 
     /// <summary>
     /// Ctor
@@ -37,16 +43,23 @@ public class DefaultLogoutService : ILogoutService
     /// <param name="options"></param>
     /// <param name="authenticationAuthenticationSchemeProviderProvider"></param>
     /// <param name="returnUrlValidator"></param>
-    public DefaultLogoutService(IOptions<BffOptions> options, IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider, IReturnUrlValidator returnUrlValidator)
+    /// <param name="logger"></param>
+    public DefaultLogoutService(IOptions<BffOptions> options, 
+        IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider, 
+        IReturnUrlValidator returnUrlValidator,
+        ILogger<DefaultLogoutService> logger)
     {
         Options = options.Value;
         AuthenticationSchemeProvider = authenticationAuthenticationSchemeProviderProvider;
         ReturnUrlValidator = returnUrlValidator;
+        Logger = logger;
     }
 
     /// <inheritdoc />
     public virtual async Task ProcessRequestAsync(HttpContext context)
     {
+        Logger.LogDebug("Processing logout request");
+
         context.CheckForBffMiddleware(Options);
             
         var result = await context.AuthenticateAsync();
@@ -66,12 +79,7 @@ public class DefaultLogoutService : ILogoutService
             }
         }
             
-        // get rid of local cookie first
-        var signInScheme = await AuthenticationSchemeProvider.GetDefaultSignInSchemeAsync();
-        await context.SignOutAsync(signInScheme?.Name);
-
         var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
-
         if (!string.IsNullOrWhiteSpace(returnUrl))
         {
             if (!await ReturnUrlValidator.IsValidAsync(returnUrl))
@@ -79,6 +87,10 @@ public class DefaultLogoutService : ILogoutService
                 throw new Exception("returnUrl is not valid: " + returnUrl);
             }
         }
+
+        // get rid of local cookie first
+        var signInScheme = await AuthenticationSchemeProvider.GetDefaultSignInSchemeAsync();
+        await context.SignOutAsync(signInScheme?.Name);
 
         if (String.IsNullOrWhiteSpace(returnUrl))
         {
@@ -96,6 +108,8 @@ public class DefaultLogoutService : ILogoutService
         {
             RedirectUri = returnUrl
         };
+
+        Logger.LogDebug("Logout endpoint triggering SignOut with returnUrl {returnUrl}", returnUrl);
 
         // trigger idp logout
         await context.SignOutAsync(props);

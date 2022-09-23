@@ -66,6 +66,8 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
     /// <inheritdoc />
     public virtual async Task ProcessRequestAsync(HttpContext context)
     {
+        Logger.LogDebug("Processing back-channel logout request");
+        
         context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
         context.Response.Headers.Add("Pragma", "no-cache");
 
@@ -120,7 +122,13 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
         var claims = await ValidateJwt(logoutToken);
         if (claims == null)
         {
+            Logger.LogDebug("No claims in back-channel JWT");
             return null;
+        }
+        else
+        {
+            // TODO: any sensitive data here, or are we ok with LogDebug?
+            Logger.LogDebug("Claims found in back-channel JWT {claims}", claims);
         }
 
         if (claims.FindFirst("sub") == null && claims.FindFirst("sid") == null)
@@ -174,6 +182,7 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
         var result = handler.ValidateToken(jwt, parameters);
         if (result.IsValid)
         {
+            Logger.LogDebug("Back-channel JWT validation successful");
             return result.ClaimsIdentity;
         }
 
