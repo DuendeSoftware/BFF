@@ -127,8 +127,7 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
         }
         else
         {
-            // TODO: any sensitive data here, or are we ok with LogDebug?
-            Logger.LogDebug("Claims found in back-channel JWT {claims}", claims.Claims);
+            Logger.LogTrace("Claims found in back-channel JWT {claims}", claims.Claims);
         }
 
         if (claims.FindFirst("sub") == null && claims.FindFirst("sid") == null)

@@ -80,8 +80,7 @@ public class DefaultUserService : IUserService
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(json, Encoding.UTF8);
 
-            // TODO: any PII filtering we need here, or are we ok since it's Debug?
-            Logger.LogDebug("User endpoint indicates the user is logged in with claims {claims}", claims);
+            Logger.LogTrace("User endpoint indicates the user is logged in with claims {claims}", claims);
         }
     }
 
