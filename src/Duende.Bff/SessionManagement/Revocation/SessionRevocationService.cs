@@ -48,6 +48,8 @@ public class SessionRevocationService : ISessionRevocationService
             filter.SessionId = null;
         }
 
+        _logger.LogDebug("Revoking sessions for sub {sub} and sid {sid}", filter.SubjectId, filter.SessionId);
+
         if (_options.RevokeRefreshTokenOnLogout)
         {
             var tickets = await _ticketStore.GetUserTicketsAsync(filter);
@@ -59,15 +61,8 @@ public class SessionRevocationService : ISessionRevocationService
                     if (!String.IsNullOrWhiteSpace(refreshToken))
                     {
                         await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken, new UserTokenRequestParameters(), cancellationToken);
-                        // todo: no more error response - is logging required?
-                        // if (response.IsError)
-                        // {
-                        //     _logger.LogDebug("Error revoking refresh token: {error} for subject id: {sub} and session id: {sid}", response.Error, ticket.GetSubjectId(), ticket.GetSessionId());
-                        // }
-                        // else
-                        // {
-                        //     _logger.LogDebug("Refresh token revoked successfully for subject id: {sub} and session id: {sid}", ticket.GetSubjectId(), ticket.GetSessionId());
-                        // }
+                        
+                        _logger.LogDebug("Refresh token revoked for sub {sub} and sid {sid}", ticket.GetSubjectId(), ticket.GetSessionId());
                     }
                 }
             }

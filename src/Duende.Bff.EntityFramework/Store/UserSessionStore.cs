@@ -40,6 +40,8 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
     /// <inheritdoc/>
     public async Task CreateUserSessionAsync(UserSession session, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Creating user session record in store for sub {sub} sid {sid}", session.SubjectId, session.SessionId);
+
         var item = new UserSessionEntity()
         {
             ApplicationName = _applicationDiscriminator
@@ -65,6 +67,8 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
 
         if (item != null)
         {
+            _logger.LogDebug("Deleting user session record in store for sub {sub} sid {sid}", item.SubjectId, item.SessionId);
+
             _sessionDbContext.UserSessions.Remove(item);
             try
             {
@@ -114,6 +118,8 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
             items = items.Where(x => x.SessionId == filter.SessionId).ToArray();
         }
 
+        _logger.LogDebug("Deleting {count} user session(s) from store for sub {sub} sid {sid}", items.Length, filter.SubjectId, filter.SessionId);
+
         _sessionDbContext.UserSessions.RemoveRange(items);
 
         try
@@ -143,6 +149,8 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
         UserSession result = null;
         if (item != null)
         {
+            _logger.LogDebug("Getting user session record from store for sub {sub} sid {sid}", item.SubjectId, item.SessionId);
+            
             result = new UserSession();
             item.CopyTo(result);
         }
@@ -179,12 +187,16 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
             items = items.Where(x => x.SessionId == filter.SessionId).ToArray();
         }
 
-        return items.Select(x =>
+        var results = items.Select(x =>
         {
             var item = new UserSession();
             x.CopyTo(item);
             return item;
         }).ToArray();
+
+        _logger.LogDebug("Getting {count} user session(s) from store for sub {sub} sid {sid}", results.Length, filter.SubjectId, filter.SessionId);
+
+        return results;
     }
 
     /// <inheritdoc/>
@@ -194,6 +206,8 @@ public class UserSessionStore : IUserSessionStore, IUserSessionStoreCleanup
         var item = items.SingleOrDefault(x => x.Key == key && x.ApplicationName == _applicationDiscriminator);
         if (item != null)
         {
+            _logger.LogDebug("Updating user session record in store for sub {sub} sid {sid}", item.SubjectId, item.SessionId);
+
             session.CopyTo(item);
             await _sessionDbContext.SaveChangesAsync(cancellationToken);
         }
