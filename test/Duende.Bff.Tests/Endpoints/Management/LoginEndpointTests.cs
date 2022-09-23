@@ -149,10 +149,10 @@ namespace Duende.Bff.Tests.Endpoints.Management
         }
 
         [Fact]
-        public void login_endpoint_should_not_accept_non_local_returnUrl()
+        public async Task login_endpoint_should_not_accept_non_local_returnUrl()
         {
             Func<Task> f = () => BffHost.BrowserClient.GetAsync(BffHost.Url("/bff/login") + "?returnUrl=https://foo");
-            f.Should().Throw<Exception>().And.Message.Should().Contain("returnUrl");
+            (await f.Should().ThrowAsync<Exception>()).And.Message.Should().Contain("returnUrl");
         }
     }
 }

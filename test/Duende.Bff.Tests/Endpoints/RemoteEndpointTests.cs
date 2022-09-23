@@ -331,21 +331,21 @@ namespace Duende.Bff.Tests.Endpoints
         }
 
         [Fact]
-        public void calls_to_endpoint_without_bff_metadata_should_fail()
+        public async Task calls_to_endpoint_without_bff_metadata_should_fail()
         {
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/not_bff_endpoint"));
 
             Func<Task> f = () => BffHost.BrowserClient.SendAsync(req);
-            f.Should().Throw<Exception>();
+            await f.Should().ThrowAsync<Exception>();
         }
         
         [Fact]
-        public void calls_to_bff_not_in_endpoint_routing_should_fail()
+        public async Task calls_to_bff_not_in_endpoint_routing_should_fail()
         {
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/invalid_endpoint/test"));
 
             Func<Task> f = () => BffHost.BrowserClient.SendAsync(req);
-            f.Should().Throw<Exception>();
+            await f.Should().ThrowAsync<Exception>();
         }
     }
 }

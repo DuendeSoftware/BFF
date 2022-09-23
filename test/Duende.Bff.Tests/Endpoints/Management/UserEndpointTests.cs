@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using System.Net;
 
 namespace Duende.Bff.Tests.Endpoints.Management
 {
@@ -58,7 +59,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/bff/user"));
             var response = await BffHost.BrowserClient.SendAsync(req);
             
-            response.StatusCode.Should().Be(401);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
@@ -68,7 +69,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
             req.Headers.Add("x-csrf", "1");
             var response = await BffHost.BrowserClient.SendAsync(req);
 
-            response.StatusCode.Should().Be(401);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]

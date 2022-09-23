@@ -486,10 +486,10 @@ namespace Duende.Bff.EntityFramework.Tests
             }
         }
         [Fact]
-        public void GetUserSessionsAsync_for_missing_sub_and_sid_should_throw()
+        public async Task GetUserSessionsAsync_for_missing_sub_and_sid_should_throw()
         {
             Func<Task> f = () => _subject.GetUserSessionsAsync(new UserSessionsFilter());
-            f.Should().Throw<Exception>();
+            await f.Should().ThrowAsync<Exception>();
         }
 
 
@@ -801,10 +801,10 @@ namespace Duende.Bff.EntityFramework.Tests
             }
         }
         [Fact]
-        public void DeleteUserSessionsAsync_for_missing_sub_and_sid_should_throw()
+        public async Task DeleteUserSessionsAsync_for_missing_sub_and_sid_should_throw()
         {
             Func<Task> f = () => _subject.DeleteUserSessionsAsync(new UserSessionsFilter());
-            f.Should().Throw<Exception>();
+            await f.Should().ThrowAsync<Exception>();
         }
         
         [Fact]
@@ -841,7 +841,7 @@ namespace Duende.Bff.EntityFramework.Tests
             await ctx1.SaveChangesAsync();
 
             Func<Task> f1 = async () => await ctx2.SaveChangesAsync();
-            f1.Should().Throw<DbUpdateConcurrencyException>();
+            await f1.Should().ThrowAsync<DbUpdateConcurrencyException>();
 
             try
             {
