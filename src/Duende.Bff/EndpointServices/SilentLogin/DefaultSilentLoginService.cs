@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
@@ -13,24 +14,36 @@ namespace Duende.Bff;
 /// </summary>
 public class DefaultSilentLoginService : ISilentLoginService
 {
-    private readonly BffOptions _options;
+    /// <summary>
+    /// The BFF options
+    /// </summary>
+    protected readonly BffOptions Options;
+
+    /// <summary>
+    /// The logger
+    /// </summary>
+    protected readonly ILogger Logger;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    public DefaultSilentLoginService(IOptions<BffOptions> options)
+    /// <param name="logger"></param>
+    public DefaultSilentLoginService(IOptions<BffOptions> options, ILogger<DefaultSilentLoginService> logger)
     {
-        _options = options.Value;
+        Options = options.Value;
+        Logger = logger;
     }
         
     /// <inheritdoc />
-    public async Task ProcessRequestAsync(HttpContext context)
+    public virtual async Task ProcessRequestAsync(HttpContext context)
     {
-        context.CheckForBffMiddleware(_options);
+        Logger.LogDebug("Processing silent login request");
+        
+        context.CheckForBffMiddleware(Options);
 
         var pathBase = context.Request.PathBase;
-        var redirectPath = pathBase + _options.SilentLoginCallbackPath;
+        var redirectPath = pathBase + Options.SilentLoginCallbackPath;
 
         var props = new AuthenticationProperties
         {
@@ -41,6 +54,8 @@ public class DefaultSilentLoginService : ISilentLoginService
             },
         };
 
+        Logger.LogDebug("Silent login endpoint triggering Challenge with returnUrl {redirectUri}", redirectPath);
+        
         await context.ChallengeAsync(props);
     }
 }

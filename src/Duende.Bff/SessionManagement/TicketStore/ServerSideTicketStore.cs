@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff;
@@ -141,6 +142,8 @@ public class ServerSideTicketStore : IServerTicketStore
     /// <inheritdoc />
     public async Task<IReadOnlyCollection<AuthenticationTicket>> GetUserTicketsAsync(UserSessionsFilter filter, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Getting AuthenticationTickets from store for sub {sub} sid {sid}", filter.SubjectId, filter.SessionId);
+        
         var list = new List<AuthenticationTicket>();
             
         var sessions = await _store.GetUserSessionsAsync(filter, cancellationToken);

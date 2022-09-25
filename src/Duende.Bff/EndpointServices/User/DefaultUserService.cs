@@ -47,6 +47,8 @@ public class DefaultUserService : IUserService
     /// <inheritdoc />
     public virtual async Task ProcessRequestAsync(HttpContext context)
     {
+        Logger.LogDebug("Processing user request");
+        
         context.CheckForBffMiddleware(Options);
 
         var result = await context.AuthenticateAsync();
@@ -63,6 +65,8 @@ public class DefaultUserService : IUserService
             {
                 context.Response.StatusCode = 401;
             }
+
+            Logger.LogDebug("User endpoint indicates the user is not logged in, using status code {code}", context.Response.StatusCode);
         }
         else
         {
@@ -75,6 +79,8 @@ public class DefaultUserService : IUserService
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(json, Encoding.UTF8);
+
+            Logger.LogTrace("User endpoint indicates the user is logged in with claims {claims}", claims);
         }
     }
 
