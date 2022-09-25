@@ -20,7 +20,7 @@ public static class EndpointConventionBuilderExtensions
     {
         return builder.WithMetadata(new BffApiAttribute());
     }
-    
+
     /// <summary>
     /// Adds marker that will cause the BFF framework to skip all antiforgery for this endpoint.
     /// </summary>
@@ -29,5 +29,15 @@ public static class EndpointConventionBuilderExtensions
     public static IEndpointConventionBuilder SkipAntiforgery(this IEndpointConventionBuilder builder)
     {
         return builder.WithMetadata(new BffApiSkipAntiforgeryAttribute());
+    }
+
+    /// <summary>
+    /// Adds marker that will cause the BFF framework will not override the HTTP response status code.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IEndpointConventionBuilder SkipResponseHandling(this IEndpointConventionBuilder builder)
+    {
+        return builder.WithMetadata(new BffApiSkipResponseHandlingAttribute());
     }
 }
