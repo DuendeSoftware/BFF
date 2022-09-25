@@ -4,6 +4,7 @@
 using Duende.Bff.Tests.TestFramework;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Duende.Bff.Tests
 
             var response = await host.HttpClient.GetAsync("/test");
 
-            response.StatusCode.Should().Be(204);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
     }
 }

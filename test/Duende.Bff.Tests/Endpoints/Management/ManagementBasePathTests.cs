@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace Duende.Bff.Tests.Endpoints.Management
 {
@@ -33,7 +34,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
 
             var response = await BffHost.BrowserClient.SendAsync(req);
 
-            response.StatusCode.Should().NotBe(404);
+            response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }
     }
 }

@@ -4,23 +4,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0"/>
-        <PackageReference Include="xunit" Version="2.4.1"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
+        <PackageReference Include="xunit" Version="2.4.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="5.10.3"/>
-        <PackageReference Include="coverlet.collector" Version="3.0.3">
+        <PackageReference Include="FluentAssertions" Version="6.7.0" />
+        <PackageReference Include="coverlet.collector" Version="3.1.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Duende.Bff.EntityFramework\Duende.Bff.EntityFramework.csproj"/>
+        <ProjectReference Include="..\..\src\Duende.Bff.EntityFramework\Duende.Bff.EntityFramework.csproj" />
     </ItemGroup>
 
 </Project>

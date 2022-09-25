@@ -91,7 +91,7 @@ namespace Duende.Bff.Tests.TestFramework
 
         public async Task FollowRedirectAsync()
         {
-            LastResponse.StatusCode.Should().Be(302);
+            LastResponse.StatusCode.Should().Be(HttpStatusCode.Redirect);
             var location = LastResponse.Headers.Location.ToString();
             await GetAsync(location);
         }
