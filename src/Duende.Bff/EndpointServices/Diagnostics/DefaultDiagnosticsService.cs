@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff;
 
@@ -22,18 +23,25 @@ public class DefaultDiagnosticsService : IDiagnosticsService
     protected readonly IWebHostEnvironment Environment;
 
     /// <summary>
+    /// The BFF options
+    /// </summary>
+    protected readonly IOptions<BffOptions> Options;
+
+    /// <summary>
     /// ctor
     /// </summary>
     /// <param name="environment"></param>
-    public DefaultDiagnosticsService(IWebHostEnvironment environment)
+    /// <param name="options"></param>
+    public DefaultDiagnosticsService(IWebHostEnvironment environment, IOptions<BffOptions> options)
     {
         Environment = environment;
+        Options = options;
     }
         
     /// <inheritdoc />
     public virtual async Task ProcessRequestAsync(HttpContext context)
     {
-        if (!Environment.IsDevelopment())
+        if (Options.Value.DiagnosticsEnvironments?.Contains(Environment.EnvironmentName) is null or false)
         {
             context.Response.StatusCode = 404;
             return;

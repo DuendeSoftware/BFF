@@ -114,7 +114,7 @@ public static class BffEndpointRouteBuilderExtensions
     }
         
     /// <summary>
-    /// Adds the logout BFF management endpoint
+    /// Adds the diagnostics BFF management endpoint
     /// </summary>
     /// <param name="endpoints"></param>
     public static void MapBffDiagnosticsEndpoint(this IEndpointRouteBuilder endpoints)
