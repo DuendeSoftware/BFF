@@ -9,12 +9,12 @@ namespace Duende.Bff.Yarp;
 
 /// <summary>
 /// Default implementation of the message invoker factory.
-/// This implementation creates one message invoke per remote API endpoint
+/// This implementation creates one message invoker per remote API endpoint.
 /// </summary>
 public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
 {
     /// <summary>
-    /// Dictionary to cachen invoker instances
+    /// Dictionary to cache invoker instances
     /// </summary>
     protected readonly ConcurrentDictionary<string, HttpMessageInvoker> Clients = new();
 
@@ -23,15 +23,19 @@ public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
     {
         return Clients.GetOrAdd(localPath, (key) =>
         {
-            var socketsHandler = new SocketsHttpHandler
-            {
-                UseProxy = false,
-                AllowAutoRedirect = false,
-                AutomaticDecompression = DecompressionMethods.None,
-                UseCookies = false
-            };
-            
-            return new HttpMessageInvoker(socketsHandler);
+            var handler = CreateHandler(key);
+            return new HttpMessageInvoker(handler);
         });
+    }
+    
+    protected virtual HttpMessageHandler CreateHandler(string localPath)
+    {
+        return new SocketsHttpHandler
+        {
+            UseProxy = false,
+            AllowAutoRedirect = false,
+            AutomaticDecompression = DecompressionMethods.None,
+            UseCookies = false
+        };
     }
 }
