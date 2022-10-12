@@ -2,7 +2,10 @@
 // See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Duende.Bff;
 
@@ -117,6 +120,15 @@ public class BffOptions
     /// Defaults to Response401.
     /// </summary>
     public AnonymousSessionResponse AnonymousSessionResponse { get; set; } = AnonymousSessionResponse.Response401;
+
+    /// <summary>
+    /// The ASP.NET environment names to enable the diagnostics endpoint.
+    /// Defaults to "Development".
+    /// </summary>
+    public ICollection<string> DiagnosticsEnvironments { get; set; } = new HashSet<string>()
+    {
+        Environments.Development
+    };
 }
 
 /// <summary>
