@@ -28,6 +28,11 @@ public class DefaultHttpMessageInvokerFactory : IHttpMessageInvokerFactory
         });
     }
     
+    /// <summary>
+    /// Creates the HTTP message handler
+    /// </summary>
+    /// <param name="localPath"></param>
+    /// <returns></returns>
     protected virtual HttpMessageHandler CreateHandler(string localPath)
     {
         return new SocketsHttpHandler
