@@ -7,26 +7,7 @@
         <Nullable>enable</Nullable>
 
         <AssemblyName>Duende.BFF</AssemblyName>
-
-        <PackageTags>OAuth 2.0;OpenID Connect;Security;BFF;IdentityServer;ASP.NET Core;SPA;Blazor</PackageTags>
         <Description>Backend for frontend (BFF) host for ASP.NET Core</Description>
-
-        <Authors>Duende Software</Authors>
-        <Company>Duende Software</Company>
-        <Copyright>Duende Software</Copyright>
-        <Product>Duende BFF</Product>
-
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-
-        <PackageIcon>icon.png</PackageIcon>
-        <PackageProjectUrl>https://github.com/DuendeSoftware/BFF</PackageProjectUrl>
-        <PackageReleaseNotes>https://github.com/DuendeSoftware/BFF/releases</PackageReleaseNotes>
-
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <DebugType>embedded</DebugType>
-        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,10 +18,4 @@
 
         <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="1.0.0" />
     </ItemGroup>
-
-    <ItemGroup>
-        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
-        <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
-    </ItemGroup>
-
 </Project>
