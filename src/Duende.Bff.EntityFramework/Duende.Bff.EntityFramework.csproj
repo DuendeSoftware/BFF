@@ -6,46 +6,14 @@
     <LangVersion>latest</LangVersion>
 
     <AssemblyName>Duende.BFF.EntityFramework</AssemblyName>
-
-    <PackageTags>OAuth 2.0;OpenID Connect;Security;BFF;IdentityServer;ASP.NET Core;SPA;Blazor</PackageTags>
     <Description>Entity Framework Core support for backend for frontend (BFF) host for ASP.NET Core</Description>
-
-    <Authors>Duende Software</Authors>
-    <Company>Duende Software</Company>
-    <Copyright>Duende Software</Copyright>
-    <Product>Duende BFF</Product>
-
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/DuendeSoftware/BFF</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/DuendeSoftware/BFF/releases</PackageReleaseNotes>
-
-    <!-- source link -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <DebugType>embedded</DebugType>
-
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild> 
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Duende.Bff\Duende.Bff.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
-    <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MinVer" Version="4.2.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-  </ItemGroup>
 
+    <ProjectReference Include="..\Duende.Bff\Duende.Bff.csproj" />
+  </ItemGroup>
 </Project>
