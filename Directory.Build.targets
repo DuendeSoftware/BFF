@@ -1,0 +1,51 @@
+<Project>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0'">
+        <FrameworkVersionRuntime>6.0.0</FrameworkVersionRuntime>
+        <FrameworkVersionTesting>6.0.0</FrameworkVersionTesting>
+        <YarpVersion>1.0.1</YarpVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
+        <FrameworkVersionRuntime>7.0.0-rc.2.*</FrameworkVersionRuntime>
+        <FrameworkVersionTesting>7.0.0-rc.2.*</FrameworkVersionTesting>
+        <YarpVersion>1.0.1</YarpVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- build -->
+        <PackageReference Include="MinVer" Version="4.2.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+
+        <!-- runtime -->
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="1.0.0" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
+
+        <!-- testing -->
+        <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="$(FrameworkVersionTesting)" />
+        <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(FrameworkVersionTesting)" />
+        <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(FrameworkVersionTesting)" />
+        
+        <PackageReference Update="Duende.IdentityServer" Version="6.1.5" />
+        
+        <PackageReference Update="CsQuery.NETStandard" Version="1.3.6.1" />
+        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.1" />
+        <PackageReference Update="xunit" Version="2.4.2" />
+        <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Update="FluentAssertions" Version="6.7.0" />
+        <PackageReference Update="coverlet.collector" Version="3.1.2">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <Target Name="SetAssemblyVersion" AfterTargets="MinVer">
+        <PropertyGroup>
+            <AssemblyVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).0</AssemblyVersion>
+        </PropertyGroup>
+    </Target>
+</Project>
