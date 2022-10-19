@@ -1,0 +1,29 @@
+<Project>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0'">
+        <FrameworkVersion>6.0.0</FrameworkVersion>
+        <YarpVersion>1.0.1</YarpVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
+        <FrameworkVersion>7.0.0-rc.2.*</FrameworkVersion>
+        <YarpVersion>1.0.1</YarpVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MinVer" Version="4.2.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="1.0.0" />
+
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+        
+        <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
+    </ItemGroup>
+
+    <Target Name="SetAssemblyVersion" AfterTargets="MinVer">
+        <PropertyGroup>
+            <AssemblyVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).0</AssemblyVersion>
+        </PropertyGroup>
+    </Target>
+</Project>
