@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
-        <FrameworkVersionRuntime>7.0.0-rc.2.*</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>7.0.0-rc.2.*</FrameworkVersionTesting>
+        <FrameworkVersionRuntime>7.0.0</FrameworkVersionRuntime>
+        <FrameworkVersionTesting>7.0.0</FrameworkVersionTesting>
         <YarpVersion>1.0.1</YarpVersion>
     </PropertyGroup>
 
