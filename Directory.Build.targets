@@ -2,14 +2,14 @@
 
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0'">
         <FrameworkVersionRuntime>6.0.0</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>6.0.0</FrameworkVersionTesting>
-        <YarpVersion>1.0.1</YarpVersion>
+        <FrameworkVersionTesting>6.0.11</FrameworkVersionTesting>
+        <YarpVersion>1.1.0</YarpVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
         <FrameworkVersionRuntime>7.0.0</FrameworkVersionRuntime>
         <FrameworkVersionTesting>7.0.0</FrameworkVersionTesting>
-        <YarpVersion>1.0.1</YarpVersion>
+        <YarpVersion>1.1.0</YarpVersion>
     </PropertyGroup>
 
     <ItemGroup>
