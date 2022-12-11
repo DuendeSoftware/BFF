@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Microsoft.AspNetCore.DataProtection;
+using System.Threading.Tasks;
 
 namespace Host5.EntityFramework
 {
@@ -32,8 +33,8 @@ namespace Host5.EntityFramework
             services.AddBff()
                 .AddRemoteApis()
                 .AddEntityFrameworkServerSideSessions(options=> {
-                    //options.UseSqlServer(cn);
-                    options.UseSqlite(cn);
+                    options.UseSqlServer(cn);
+                    //options.UseSqlite(cn);
                 });
 
             // local APIs
@@ -64,7 +65,7 @@ namespace Host5.EntityFramework
                     options.ResponseType = "code";
                     options.ResponseMode = "query";
 
-                    options.MapInboundClaims = false;
+                    options.MapInboundClaims = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
 
@@ -74,6 +75,11 @@ namespace Host5.EntityFramework
                     options.Scope.Add("profile");
                     options.Scope.Add("api");
                     options.Scope.Add("offline_access");
+
+                    options.Events.OnTokenValidated = ctx =>
+                    {
+                        return Task.CompletedTask;
+                    };
                 });
         }
 
