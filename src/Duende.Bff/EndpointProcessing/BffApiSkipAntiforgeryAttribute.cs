@@ -6,7 +6,7 @@ using System;
 namespace Duende.Bff;
 
 /// <summary>
-/// This attribute indicates that the BFF midleware will ignore the antiforgery header checks.
+/// This attribute indicates that the BFF middleware will ignore the antiforgery header checks.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class BffApiSkipAntiforgeryAttribute : Attribute, IBffApiSkipAntiforgry
