@@ -27,10 +27,7 @@ public class Startup
                 .LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
         // Add BFF services to DI - also add server-side session management
-        services.AddBff(options => 
-            {
-                //options.UserEndpointReturnNullForAnonymousUser = true;
-            })
+        services.AddBff()
             .AddRemoteApis()
             .AddServerSideSessions();
         
