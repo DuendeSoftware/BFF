@@ -132,7 +132,7 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
 
         if (claims.FindFirst("sub") == null && claims.FindFirst("sid") == null)
         {
-            Logger.BackChannelLogoutError("Logout token missing sub or sid claims.");
+            Logger.BackChannelLogoutError("Logout token missing sub and sid claims.");
             return null;
         }
 
