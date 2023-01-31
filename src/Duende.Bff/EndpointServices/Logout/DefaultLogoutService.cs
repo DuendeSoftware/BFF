@@ -69,7 +69,7 @@ public class DefaultLogoutService : ILogoutService
             if (!String.IsNullOrWhiteSpace(userSessionId))
             {
                 var passedSessionId = context.Request.Query[JwtClaimTypes.SessionId].FirstOrDefault();
-                // for an authenticated user, if they have a sesison id claim,
+                // for an authenticated user, if they have a session id claim,
                 // we require the logout request to pass that same value to
                 // prevent unauthenticated logout requests (similar to OIDC front channel)
                 if (Options.RequireLogoutSessionId && userSessionId != passedSessionId)
