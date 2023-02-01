@@ -55,7 +55,7 @@ internal class BffAuthenticationService : IAuthenticationService
                     var requireResponseHandling = endpoint.Metadata.GetMetadata<IBffApiSkipResponseHandling>() == null;
                     if (requireResponseHandling)
                     {
-                        _logger.LogDebug("Challenge was called for a BFF API endpoint, BFF response handing changing status code to 401.");
+                        _logger.LogDebug("Challenge was called for a BFF API endpoint, BFF response handling changing status code to 401.");
 
                         context.Response.StatusCode = 401;
                         context.Response.Headers.Remove("Location");
@@ -81,7 +81,7 @@ internal class BffAuthenticationService : IAuthenticationService
                     var requireResponseHandling = endpoint.Metadata.GetMetadata<IBffApiSkipResponseHandling>() == null;
                     if (requireResponseHandling)
                     {
-                        _logger.LogDebug("Forbid was called for a BFF API endpoint, BFF response handing changing status code to 403.");
+                        _logger.LogDebug("Forbid was called for a BFF API endpoint, BFF response handling changing status code to 403.");
 
                         context.Response.StatusCode = 403;
                         context.Response.Headers.Remove("Location");
