@@ -54,7 +54,7 @@ public class BffMiddleware
         var isBffEndpoint = endpoint.Metadata.GetMetadata<IBffApiEndpoint>() != null;
         if (isBffEndpoint)
         {
-            var requireAntiForgeryCheck = endpoint.Metadata.GetMetadata<IBffApiSkipAntiforgry>() == null;
+            var requireAntiForgeryCheck = endpoint.Metadata.GetMetadata<IBffApiSkipAntiforgery>() == null;
             if (requireAntiForgeryCheck)
             {
                 if (!context.CheckAntiForgeryHeader(_options))
