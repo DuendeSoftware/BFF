@@ -83,7 +83,9 @@ public class AccessTokenTransformProvider : ITransformProvider
             }
             else
             {
+                // todo: add test for new behavior
                 transformContext.HttpContext.Response.StatusCode = 401;
+                
                 _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
             }
         });
