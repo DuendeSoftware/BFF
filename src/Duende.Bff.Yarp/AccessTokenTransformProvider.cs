@@ -83,6 +83,9 @@ public class AccessTokenTransformProvider : ITransformProvider
             }
             else
             {
+                // short circuit forwarder and return 401
+                transformContext.HttpContext.Response.StatusCode = 401;
+                
                 _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
             }
         });
