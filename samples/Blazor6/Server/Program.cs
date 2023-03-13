@@ -38,6 +38,9 @@ try
         .AddCookie("cookie", options =>
         {
             options.Cookie.Name = "__Host-blazor";
+
+            // If your authority is on a different domain from your SPA (blazor in this case), you might want to use Lax instead of Strict
+            // See https://github.com/DuendeSoftware/Support/issues/565
             options.Cookie.SameSite = SameSiteMode.Strict;
         })
         .AddOpenIdConnect("oidc", options =>
