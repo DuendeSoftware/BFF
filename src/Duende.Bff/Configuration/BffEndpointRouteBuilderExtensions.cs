@@ -51,6 +51,7 @@ public static class BffEndpointRouteBuilderExtensions
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.LoginPath.Value!, ProcessWith<ILoginService>)
+            .WithMetadata(new BffUIEndpointAttribute())
             .AllowAnonymous();
     }
 
@@ -65,8 +66,10 @@ public static class BffEndpointRouteBuilderExtensions
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.SilentLoginPath.Value!, ProcessWith<ISilentLoginService>)
+            .WithMetadata(new BffUIEndpointAttribute())
             .AllowAnonymous();
         endpoints.MapGet(options.SilentLoginCallbackPath.Value!, ProcessWith<ISilentLoginCallbackService>)
+            .WithMetadata(new BffUIEndpointAttribute())
             .AllowAnonymous();
     }
 
@@ -81,6 +84,7 @@ public static class BffEndpointRouteBuilderExtensions
         var options = endpoints.ServiceProvider.GetRequiredService<IOptions<BffOptions>>().Value;
 
         endpoints.MapGet(options.LogoutPath.Value!, ProcessWith<ILogoutService>)
+            .WithMetadata(new BffUIEndpointAttribute())
             .AllowAnonymous();
     }
 

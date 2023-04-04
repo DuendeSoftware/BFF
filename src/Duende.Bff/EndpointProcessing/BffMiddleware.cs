@@ -66,6 +66,12 @@ public class BffMiddleware
                 }
             }
         }
+        
+        var isUIEndpoint = endpoint.Metadata.GetMetadata<IBffUIApiEndpoint>() != null;
+        if (isUIEndpoint && context.IsAjaxRequest())
+        {
+            _logger.LogDebug("BFF management endpoint {endpoint} is only intended for a browser window to request and load. It is not intended to be accessed with Ajax or fetch requests.", context.Request.Path);
+        }
 
         await _next(context);
     }
