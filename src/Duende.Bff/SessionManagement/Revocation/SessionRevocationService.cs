@@ -60,7 +60,7 @@ public class SessionRevocationService : ISessionRevocationService
                     var refreshToken = ticket.Properties.GetTokenValue("refresh_token");
                     if (!String.IsNullOrWhiteSpace(refreshToken))
                     {
-                        await _tokenEndpoint.RevokeRefreshTokenAsync(refreshToken, new UserTokenRequestParameters(), cancellationToken);
+                        await _tokenEndpoint.RevokeRefreshTokenAsync(new UserToken { RefreshToken = refreshToken }, new UserTokenRequestParameters(), cancellationToken);
                         
                         _logger.LogDebug("Refresh token revoked for sub {sub} and sid {sid}", ticket.GetSubjectId(), ticket.GetSessionId());
                     }
