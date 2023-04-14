@@ -122,7 +122,7 @@ public class BffOptions
     public AnonymousSessionResponse AnonymousSessionResponse { get; set; } = AnonymousSessionResponse.Response401;
 
     /// <summary>
-    /// The ASP.NET environment names to enable the diagnostics endpoint.
+    /// The ASP.NET environment names that enable the diagnostics endpoint.
     /// Defaults to "Development".
     /// </summary>
     public ICollection<string> DiagnosticsEnvironments { get; set; } = new HashSet<string>()
