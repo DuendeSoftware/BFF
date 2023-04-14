@@ -12,6 +12,17 @@ namespace Microsoft.AspNetCore.Builder;
 /// </summary>
 public static class BffRemoteApiEndpointExtensions
 {
+    private static BffRemoteApiEndpointMetadata GetBffRemoteApiEndpointMetadata(this EndpointBuilder builder)
+    {
+        var t = typeof(BffRemoteApiEndpointMetadata);
+        if(builder.Metadata.First(m => m.GetType() == t) 
+            is not BffRemoteApiEndpointMetadata metadata)
+        {
+            throw new InvalidOperationException("no metadata found");
+        }
+        return metadata;
+    }
+
     /// <summary>
     /// Specifies the access tokens requirements for an endpoint
     /// </summary>
@@ -23,8 +34,8 @@ public static class BffRemoteApiEndpointExtensions
     {
         builder.Add(endpointBuilder =>
         {
-            var metadata =
-                endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
+            metadata.RequiredTokenType = type;
 
             if (metadata == null) throw new InvalidOperationException("no metadata found");
                 
@@ -44,11 +55,7 @@ public static class BffRemoteApiEndpointExtensions
     {
         builder.Add(endpointBuilder =>
         {
-            var metadata =
-                endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
-
-            if (metadata == null) throw new InvalidOperationException("no metadata found");
-                
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
             metadata.OptionalUserToken = true;
         });
 
@@ -66,11 +73,7 @@ public static class BffRemoteApiEndpointExtensions
     {
         builder.Add(endpointBuilder =>
         {
-            var metadata =
-                endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
-
-            if (metadata == null) throw new InvalidOperationException("no metadata found");
-                
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
             metadata.BffUserAccessTokenParameters = bffUserAccessTokenParameters;
         });
 
