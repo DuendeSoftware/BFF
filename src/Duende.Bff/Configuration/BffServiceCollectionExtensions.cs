@@ -36,6 +36,7 @@ public static class BffServiceCollectionExtensions
         services.AddOpenIdConnectAccessTokenManagement();
 
         services.AddTransient<IReturnUrlValidator, LocalUrlReturnUrlValidator>();
+        services.TryAddSingleton<IAccessTokenRetriever, DefaultAccessTokenRetriever>();
 
         // management endpoints
         services.AddTransient<ILoginService, DefaultLoginService>();

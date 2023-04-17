@@ -36,15 +36,34 @@ public static class BffRemoteApiEndpointExtensions
         {
             var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
             metadata.RequiredTokenType = type;
-
-            if (metadata == null) throw new InvalidOperationException("no metadata found");
-                
-            metadata.RequiredTokenType = type;
         });
-
         return builder;
     }
-        
+
+
+    /// <summary>
+    /// Specifies a type to use for access token retrieval.
+    /// </summary>
+    /// <typeparam name="TRetriever"></typeparam>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">When invoked multiple times for the same endpoint.</exception>
+    public static IEndpointConventionBuilder WithAccessTokenRetriever<TRetriever>(this IEndpointConventionBuilder builder) 
+        where TRetriever : IAccessTokenRetriever
+    {
+        builder.Add(endpointBuilder =>
+        {
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
+            if (metadata.AccessTokenRetriever != null)
+            {
+                throw new InvalidOperationException("Only call WithTokenRetriever once per endpoint");
+            }
+
+            metadata.AccessTokenRetriever = typeof(TRetriever);
+        });
+        return builder;
+    }
+
     /// <summary>
     /// Allows for anonymous access with an optional user token for an endpoint
     /// </summary>

@@ -24,9 +24,9 @@ internal static class Log
         EventIds.ProxyError,
         "Proxy response error. local path: '{localPath}', error: '{error}'");
         
-    public static void AccessTokenMissing(this ILogger logger, string localPath, TokenType tokenType)
+    public static void AccessTokenMissing(this ILogger logger, string localPath, TokenType? tokenType)
     {
-        _accessTokenMissing(logger, tokenType.ToString(), localPath, null);
+        _accessTokenMissing(logger, tokenType?.ToString() ?? "Unknown token type", localPath, null);
     }
         
     public static void ProxyResponseError(this ILogger logger, string localPath, string error)
