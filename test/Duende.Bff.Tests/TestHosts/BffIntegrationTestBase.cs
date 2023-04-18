@@ -40,6 +40,8 @@ namespace Duende.Bff.Tests.TestHosts
                         BffHost.HttpClient, 
                         provider.GetRequiredService<ILoggerFactory>(), 
                         provider.GetRequiredService<ICancellationTokenProvider>()));
+
+                services.AddSingleton<DefaultAccessTokenRetriever>();
             };
             
             IdentityServerHost.InitializeAsync().Wait();
