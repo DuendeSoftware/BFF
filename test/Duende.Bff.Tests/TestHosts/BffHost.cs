@@ -156,8 +156,8 @@ namespace Duende.Bff.Tests.TestHosts
                         var response = new ApiResponse(
                             context.Request.Method,
                             context.Request.Path.Value,
-                            context.User.FindFirst(("sub"))?.Value,
-                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.FindFirst("sub")?.Value,
+                            context.User.FindFirst("client_id")?.Value,
                             context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                         {
                             Body = body,
@@ -209,8 +209,8 @@ namespace Duende.Bff.Tests.TestHosts
                         var response = new ApiResponse(
                             context.Request.Method,
                             context.Request.Path.Value,
-                            context.User.FindFirst(("sub"))?.Value,
-                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.FindFirst("sub")?.Value,
+                            context.User.FindFirst("client_id")?.Value,
                             context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                         {
                             Body = body,
@@ -263,8 +263,8 @@ namespace Duende.Bff.Tests.TestHosts
                     var response = new ApiResponse(
                         context.Request.Method,
                         context.Request.Path.Value,
-                        context.User.FindFirst(("sub"))?.Value,
-                        context.User.FindFirst(("client_id"))?.Value,
+                        context.User.FindFirst("sub")?.Value,
+                        context.User.FindFirst("client_id")?.Value,
                         context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                     {
                         Body = body,
@@ -298,7 +298,7 @@ namespace Duende.Bff.Tests.TestHosts
 
                 endpoints.Map("/local_authz", async context =>
                     {
-                        var sub = context.User.FindFirst(("sub"))?.Value;
+                        var sub = context.User.FindFirst("sub")?.Value;
                         if (sub == null) throw new Exception("sub is missing");
 
                         var body = default(string);
@@ -314,7 +314,7 @@ namespace Duende.Bff.Tests.TestHosts
                             context.Request.Method,
                             context.Request.Path.Value,
                             sub,
-                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.FindFirst("client_id")?.Value,
                             context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                         {
                             Body = body
@@ -345,7 +345,7 @@ namespace Duende.Bff.Tests.TestHosts
 
                 endpoints.Map("/local_authz_no_csrf", async context =>
                     {
-                        var sub = context.User.FindFirst(("sub"))?.Value;
+                        var sub = context.User.FindFirst("sub")?.Value;
                         if (sub == null) throw new Exception("sub is missing");
 
                         var body = default(string);
@@ -361,7 +361,7 @@ namespace Duende.Bff.Tests.TestHosts
                             context.Request.Method,
                             context.Request.Path.Value,
                             sub,
-                            context.User.FindFirst(("client_id"))?.Value,
+                            context.User.FindFirst("client_id")?.Value,
                             context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                         {
                             Body = body
