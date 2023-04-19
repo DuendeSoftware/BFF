@@ -70,7 +70,6 @@ public static class RemoteApiEndpoint
 
             if (result.IsError)
             {
-                logger.AccessTokenMissing(localPath, metadata.RequiredTokenType);
                 context.Response.StatusCode = 401;
                 return;
             } 
