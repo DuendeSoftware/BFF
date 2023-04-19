@@ -3,20 +3,18 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Host5
+namespace Host6;
+[Route("local")]
+public class LocalApiController : ControllerBase
 {
-    [Route("local")]
-    public class LocalApiController : ControllerBase
+    public IActionResult Get()
     {
-        public IActionResult Get()
+        var data = new
         {
-            var data = new
-            {
-                Message = "Hello from local API",
-                User = User!.FindFirst("name")?.Value ?? User!.FindFirst("sub")!.Value
-            };
+            Message = "Hello from local API",
+            User = User!.FindFirst("name")?.Value ?? User!.FindFirst("sub")!.Value
+        };
 
-            return Ok(data);
-        }
+        return Ok(data);
     }
 }

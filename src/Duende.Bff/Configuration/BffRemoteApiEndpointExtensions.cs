@@ -14,8 +14,7 @@ public static class BffRemoteApiEndpointExtensions
 {
     private static BffRemoteApiEndpointMetadata GetBffRemoteApiEndpointMetadata(this EndpointBuilder builder)
     {
-        var t = typeof(BffRemoteApiEndpointMetadata);
-        if(builder.Metadata.First(m => m.GetType() == t) 
+        if(builder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) 
             is not BffRemoteApiEndpointMetadata metadata)
         {
             throw new InvalidOperationException("no metadata found");
@@ -40,7 +39,6 @@ public static class BffRemoteApiEndpointExtensions
         return builder;
     }
 
-
     /// <summary>
     /// Specifies a type to use for access token retrieval.
     /// </summary>
@@ -54,11 +52,6 @@ public static class BffRemoteApiEndpointExtensions
         builder.Add(endpointBuilder =>
         {
             var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
-            if (metadata.AccessTokenRetriever != null)
-            {
-                throw new InvalidOperationException("Only call WithTokenRetriever once per endpoint");
-            }
-
             metadata.AccessTokenRetriever = typeof(TRetriever);
         });
         return builder;

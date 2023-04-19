@@ -3,6 +3,7 @@
 
 
 using Duende.IdentityServer.Models;
+using IdentityModel;
 
 namespace IdentityServerHost
 {
@@ -29,7 +30,12 @@ namespace IdentityServerHost
                     ClientId = "spa",
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     
-                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                    AllowedGrantTypes = 
+                    { 
+                        GrantType.AuthorizationCode, 
+                        GrantType.ClientCredentials,
+                        OidcConstants.GrantTypes.TokenExchange 
+                    },
 
                     RedirectUris = { "https://localhost:5002/signin-oidc" },
                     
