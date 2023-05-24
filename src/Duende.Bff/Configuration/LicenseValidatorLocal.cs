@@ -14,7 +14,7 @@ internal partial class LicenseValidator
 {
     public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)
     {
-        Initalize(loggerFactory, options.LicenseKey);
+        Initalize(loggerFactory.CreateLogger("Duende.Bff"), options.LicenseKey);
     }
 
     public static void ValidateLicenseForProduct(IList<string> errors)
