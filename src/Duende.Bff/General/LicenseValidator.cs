@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+#nullable disable
 
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -11,9 +12,10 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.JsonWebTokens;
 
-namespace Duende.Bff.Endpoints;
+namespace Duende;
 
-internal class LicenseValidator
+// shared APIs needed for Duende license validation
+internal partial class LicenseValidator
 {
     static readonly string[] LicenseFileNames = new[]
     {
@@ -21,18 +23,34 @@ internal class LicenseValidator
         "Duende_IdentityServer_License.key",
     };
 
-    static ILogger _logger = default!;
-    static License? _license;
+    static ILogger _logger;
+    static Action<string, object[]> _errorLog;
+    static Action<string, object[]> _informationLog;
+    static Action<string, object[]> _debugLog;
 
-    public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)
+    static License _license;
+
+    static void Initalize(ILoggerFactory loggerFactory, string key, bool isDevelopment = false)
     {
-        _logger = loggerFactory.CreateLogger("Duende.Bff");
+        _logger = loggerFactory.CreateLogger("Duende.License");
 
-        var key = options.LicenseKey ?? LoadFromFile();
+        key ??= LoadFromFile();
         _license = ValidateKey(key);
+
+        if (_license?.RedistributionFeature == true && !isDevelopment)
+        {
+            // for redistribution/prod scenarios, we want most of these to be at trace level
+            _errorLog = _informationLog = _debugLog = LogToTrace;
+        }
+        else
+        {
+            _errorLog = LogToError;
+            _informationLog = LogToInformation;
+            _debugLog = LogToDebug;
+        }
     }
 
-    private static string? LoadFromFile()
+    private static string LoadFromFile()
     {
         foreach (var name in LicenseFileNames)
         {
@@ -54,68 +72,58 @@ internal class LicenseValidator
         {
             var message = "You do not have a valid license key for the Duende software. " +
                           "This is allowed for development and testing scenarios. " +
-                          "If you are running in production you are required to have a licensed version. Please start a conversation with us: https://duendesoftware.com/contact";
+                          "If you are running in production you are required to have a licensed version. " +
+                          "Please start a conversation with us: https://duendesoftware.com/contact";
 
             _logger.LogWarning(message);
             return;
         }
-        else if (!_license.BffFeature)
-        {
-            errors.Add($"Your Duende software license does not include the BFF feature.");
-        }
-        else
-        {
-            Action<string, object[]> func = _license.ISVFeature ? _logger.LogTrace : _logger.LogDebug;
-            func.Invoke("The validated licence key details: {@license}", new[] { _license });
 
-            if (_license.Expiration.HasValue)
+        _debugLog.Invoke("The Duende license key details: {@license}", new[] { _license });
+
+        if (_license.Expiration.HasValue)
+        {
+            var diff = DateTime.UtcNow.Date.Subtract(_license.Expiration.Value.Date).TotalDays;
+            if (diff > 0 && !_license.RedistributionFeature)
             {
-                var diff = DateTime.UtcNow.Date.Subtract(_license.Expiration.Value.Date).TotalDays;
-                if (diff > 0 && !_license.ISVFeature)
-                {
-                    errors.Add($"Your license for the Duende software expired {diff} days ago.");
-                }
+                errors.Add($"Your license for the Duende software expired {diff} days ago.");
             }
         }
+
+        ValidateLicenseForProduct(errors);
 
         if (errors.Count > 0)
         {
             foreach (var err in errors)
             {
-                _logger.LogError(err);
+                _errorLog.Invoke(err, Array.Empty<object>());
             }
 
-            if (_license != null)
-            {
-                _logger.LogError(
-                    "Please contact {licenceContact} from {licenseCompany} to obtain a valid license for the Duende software.",
-                    _license.ContactInfo, _license.CompanyName);
-            }
+            _errorLog.Invoke(
+                "Please contact {licenseContact} from {licenseCompany} to obtain a valid license for the Duende software.",
+                new[] { _license.ContactInfo, _license.CompanyName });
         }
         else
         {
             if (_license.Expiration.HasValue)
             {
-                Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
-                log.Invoke("You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}. The license expires on {licenseExpiration}.",
-                    new object[] { _license.Edition, _license.CompanyName!, _license.Expiration.Value.ToLongDateString() });
+                _informationLog.Invoke("You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}. The license expires on {licenseExpiration}.",
+                    new object[] { _license.Edition, _license.CompanyName, _license.Expiration.Value.ToLongDateString() });
             }
             else
             {
-                Action<string, object[]> log = _license.ISVFeature ? _logger.LogTrace : _logger.LogInformation;
-                log.Invoke(
+                _informationLog.Invoke(
                     "You have a valid license key for the Duende software {edition} edition for use at {licenseCompany}.",
-                    new object[] { _license.Edition, _license.CompanyName! });
+                    new object[] { _license.Edition, _license.CompanyName });
             }
         }
     }
 
-    internal static License? ValidateKey(string? licenseKey)
+    internal static License ValidateKey(string licenseKey)
     {
         if (!String.IsNullOrWhiteSpace(licenseKey))
         {
             var handler = new JsonWebTokenHandler();
-
 
             var rsa = new RSAParameters
             {
@@ -144,10 +152,42 @@ internal class LicenseValidator
             }
             else
             {
-                _logger.LogCritical(validateResult.Exception, "Error validating Duende IdentityServer license key");
+                _logger.LogCritical(validateResult.Exception, "Error validating the Duende software license key");
             }
         }
 
         return null;
+    }
+
+    private static void LogToTrace(string message, params object[] args)
+    {
+        if (_logger.IsEnabled(LogLevel.Trace))
+        {
+            LoggerExtensions.LogTrace(_logger, message, args);
+        }
+    }
+
+    private static void LogToDebug(string message, params object[] args)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            LoggerExtensions.LogDebug(_logger, message, args);
+        }
+    }
+
+    private static void LogToInformation(string message, params object[] args)
+    {
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            LoggerExtensions.LogInformation(_logger, message, args);
+        }
+    }
+
+    private static void LogToError(string message, params object[] args)
+    {
+        if (_logger.IsEnabled(LogLevel.Error))
+        {
+            LoggerExtensions.LogError(_logger, message, args);
+        }
     }
 }
