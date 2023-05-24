@@ -5,9 +5,8 @@
 
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using Duende.Bff;
 
-namespace Duende;
+namespace Duende.Bff;
 
 // APIs needed for IdentityServer specific license validation
 internal partial class LicenseValidator

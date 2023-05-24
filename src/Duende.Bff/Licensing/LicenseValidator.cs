@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.JsonWebTokens;
 
-namespace Duende;
+namespace Duende.Bff;
 
 // shared APIs needed for Duende license validation
 internal partial class LicenseValidator
