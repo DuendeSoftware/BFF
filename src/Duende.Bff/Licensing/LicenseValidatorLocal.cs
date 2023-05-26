@@ -3,17 +3,18 @@
 
 #nullable disable
 
+using Duende.Bff;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Duende.Bff;
+namespace Duende;
 
 // APIs needed for IdentityServer specific license validation
 internal partial class LicenseValidator
 {
     public static void Initalize(ILoggerFactory loggerFactory, BffOptions options)
     {
-        Initalize(loggerFactory.CreateLogger("Duende.Bff"), options.LicenseKey);
+        Initalize(loggerFactory, "Bff", options.LicenseKey);
     }
 
     public static void ValidateLicenseForProduct(IList<string> errors)
