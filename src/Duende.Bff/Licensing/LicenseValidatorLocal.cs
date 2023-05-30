@@ -17,11 +17,16 @@ internal partial class LicenseValidator
         Initalize(loggerFactory, "Bff", options.LicenseKey);
     }
 
-    public static void ValidateLicenseForProduct(IList<string> errors)
+    // this should just add to the error list
+    public static void ValidateProductFeaturesForLicense(IList<string> errors)
     {
         if (!_license.BffFeature)
         {
             errors.Add($"Your Duende software license does not include the BFF feature.");
         }
+    }
+    static void WarnForProductFeaturesWhenMissingLicense()
+    {
+        // none
     }
 }

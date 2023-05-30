@@ -90,7 +90,7 @@ internal class License
                 DynamicProvidersFeature = true;
                 break;
         }
-        
+
         CibaFeature = claims.HasClaim("feature", "ciba");
         switch (Edition)
         {
@@ -161,7 +161,7 @@ internal class License
                         break;
                 }
             }
-                    
+
             if (Int32.TryParse(claims.FindFirst("client_limit")?.Value, out var clientLimit))
             {
                 // explicit, so use that value
