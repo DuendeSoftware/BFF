@@ -25,6 +25,7 @@ internal static class Extensions
         isBuilder.AddInMemoryIdentityResources(Config.IdentityResources);
         isBuilder.AddInMemoryApiScopes(Config.ApiScopes);
         isBuilder.AddInMemoryClients(Config.Clients);
+        isBuilder.AddExtensionGrantValidator<TokenExchangeGrantValidator>();
 
         return builder.Build();
     }

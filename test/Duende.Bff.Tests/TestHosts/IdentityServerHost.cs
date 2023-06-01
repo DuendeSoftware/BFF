@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using Duende.Bff.Tests.TestFramework;
+using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -13,82 +14,110 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Duende.Bff.Tests.TestHosts
-{
-    public class IdentityServerHost : GenericHost
-    {
-        public IdentityServerHost(string baseAddress = "https://identityserver") 
-            : base(baseAddress)
-        {
-            OnConfigureServices += ConfigureServices;
-            OnConfigure += Configure;
-        }
+namespace Duende.Bff.Tests.TestHosts;
 
-        public List<Client> Clients { get; set; } = new List<Client>();
-        public List<IdentityResource> IdentityResources { get; set; } = new List<IdentityResource>()
+public class IdentityServerHost : GenericHost
+{
+    public IdentityServerHost(string baseAddress = "https://identityserver")
+        : base(baseAddress)
+    {
+        OnConfigureServices += ConfigureServices;
+        OnConfigure += Configure;
+    }
+
+    public List<Client> Clients { get; set; } = new List<Client>();
+    public List<IdentityResource> IdentityResources { get; set; } = new List<IdentityResource>()
         {
             new IdentityResources.OpenId(),
             new IdentityResources.Profile(),
             new IdentityResources.Email(),
         };
-        public List<ApiScope> ApiScopes { get; set; } = new List<ApiScope>();
+    public List<ApiScope> ApiScopes { get; set; } = new List<ApiScope>();
 
-        private void ConfigureServices(IServiceCollection services)
+    private void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddAuthorization();
+
+        services.AddLogging(logging =>
         {
-            services.AddRouting();
-            services.AddAuthorization();
+            logging.AddFilter("Duende", LogLevel.Debug);
+        });
 
-            services.AddLogging(logging => {
-                logging.AddFilter("Duende", LogLevel.Debug);
+        services.AddIdentityServer(options =>
+        {
+            options.EmitStaticAudienceClaim = true;
+        })
+            .AddInMemoryClients(Clients)
+            .AddInMemoryIdentityResources(IdentityResources)
+            .AddInMemoryApiScopes(ApiScopes);
+    }
+
+    private void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+
+        app.UseIdentityServer();
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapGet("/account/login", context =>
+            {
+                return Task.CompletedTask;
             });
-
-            services.AddIdentityServer(options=> 
+            endpoints.MapGet("/account/logout", async context =>
             {
-                options.EmitStaticAudienceClaim = true;
-            })
-                .AddInMemoryClients(Clients)
-                .AddInMemoryIdentityResources(IdentityResources)
-                .AddInMemoryApiScopes(ApiScopes);
-        }
+                // signout as if the user were prompted
+                await context.SignOutAsync();
 
-        private void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
+                var logoutId = context.Request.Query["logoutId"];
+                var interaction = context.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
 
-            app.UseIdentityServer();
-            app.UseAuthorization();
+                var signOutContext = await interaction.GetLogoutContextAsync(logoutId);
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/account/login", context =>
-                {
-                    return Task.CompletedTask;
-                });
-                endpoints.MapGet("/account/logout", async context =>
-                {
-                    // signout as if the user were prompted
-                    await context.SignOutAsync();
-
-                    var logoutId = context.Request.Query["logoutId"];
-                    var interaction = context.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
-
-                    var signOutContext = await interaction.GetLogoutContextAsync(logoutId);
-                    
-                    context.Response.Redirect(signOutContext.PostLogoutRedirectUri);
-                });
+                context.Response.Redirect(signOutContext.PostLogoutRedirectUri);
             });
+            endpoints.MapGet("/__token", async (ITokenService tokens) =>
+            {
+                var token = new Token(IdentityServerConstants.TokenTypes.AccessToken)
+                {
+                    Issuer = "https://identityserver",
+                    Lifetime = Convert.ToInt32(TimeSpan.FromDays(1).TotalSeconds),
+                    CreationTime = DateTime.UtcNow,
+
+                    Claims = new List<Claim>
+                    {
+                            new("client_id", "fake-client"),
+                            new("sub", "123")
+                    },
+                    Audiences = new List<string>
+                    {
+                            "https://identityserver/resources"
+                    },
+                    AccessTokenType = AccessTokenType.Jwt
+                };
+
+                return await tokens.CreateSecurityTokenAsync(token);
+            });
+        });
+    }
+
+    public async Task CreateIdentityServerSessionCookieAsync(string sub, string sid = null)
+    {
+        var props = new AuthenticationProperties();
+
+        if (!String.IsNullOrWhiteSpace(sid))
+        {
+            props.Items.Add("session_id", sid);
         }
 
-        public async Task CreateIdentityServerSessionCookieAsync(string sub, string sid = null)
-        {
-            var props = new AuthenticationProperties();
-            
-            if (!String.IsNullOrWhiteSpace(sid))
-            {
-                props.Items.Add("session_id", sid);
-            }
-            
-            await IssueSessionCookieAsync(props, new Claim("sub", sub));
-        }
+        await IssueSessionCookieAsync(props, new Claim("sub", sub));
+    }
+
+    public async Task<string> CreateJwtAccessTokenAsync()
+    {
+        var response = await BrowserClient.GetAsync(Url("__token"));
+        return await response.Content.ReadAsStringAsync();
     }
 }

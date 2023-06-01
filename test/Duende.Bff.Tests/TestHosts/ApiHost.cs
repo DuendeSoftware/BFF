@@ -91,8 +91,8 @@ namespace Duende.Bff.Tests.TestHosts
                     var response = new ApiResponse(
                         context.Request.Method,
                         context.Request.Path.Value,
-                        context.User.FindFirst(("sub"))?.Value,
-                        context.User.FindFirst(("client_id"))?.Value,
+                        context.User.FindFirst("sub")?.Value,
+                        context.User.FindFirst("client_id")?.Value,
                         context.User.Claims.Select(x => new ClaimRecord(x.Type, x.Value)).ToArray())
                     {
                         Body = body,

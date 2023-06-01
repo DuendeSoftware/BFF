@@ -14,7 +14,7 @@ namespace Api
         public IActionResult Get()
         {
             string message;
-            var sub = User.FindFirst(("sub"));
+            var sub = User.FindFirst("sub");
             
             if (!User.Identity.IsAuthenticated)
             {
@@ -22,7 +22,7 @@ namespace Api
             }
             else if (sub != null)
             {
-                var userName = User.FindFirst(("name"));
+                var userName = User.FindFirst("name");
                 message = $"Hello user, {userName.Value}";
             }
             else

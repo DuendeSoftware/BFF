@@ -12,6 +12,16 @@ namespace Microsoft.AspNetCore.Builder;
 /// </summary>
 public static class BffRemoteApiEndpointExtensions
 {
+    private static BffRemoteApiEndpointMetadata GetBffRemoteApiEndpointMetadata(this EndpointBuilder builder)
+    {
+        if(builder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) 
+            is not BffRemoteApiEndpointMetadata metadata)
+        {
+            throw new InvalidOperationException("no metadata found");
+        }
+        return metadata;
+    }
+
     /// <summary>
     /// Specifies the access tokens requirements for an endpoint
     /// </summary>
@@ -23,17 +33,30 @@ public static class BffRemoteApiEndpointExtensions
     {
         builder.Add(endpointBuilder =>
         {
-            var metadata =
-                endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
-
-            if (metadata == null) throw new InvalidOperationException("no metadata found");
-                
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
             metadata.RequiredTokenType = type;
         });
-
         return builder;
     }
-        
+
+    /// <summary>
+    /// Specifies a type to use for access token retrieval.
+    /// </summary>
+    /// <typeparam name="TRetriever"></typeparam>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">When invoked multiple times for the same endpoint.</exception>
+    public static IEndpointConventionBuilder WithAccessTokenRetriever<TRetriever>(this IEndpointConventionBuilder builder) 
+        where TRetriever : IAccessTokenRetriever
+    {
+        builder.Add(endpointBuilder =>
+        {
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
+            metadata.AccessTokenRetriever = typeof(TRetriever);
+        });
+        return builder;
+    }
+
     /// <summary>
     /// Allows for anonymous access with an optional user token for an endpoint
     /// </summary>
@@ -44,11 +67,7 @@ public static class BffRemoteApiEndpointExtensions
     {
         builder.Add(endpointBuilder =>
         {
-            var metadata =
-                endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
-
-            if (metadata == null) throw new InvalidOperationException("no metadata found");
-                
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
             metadata.OptionalUserToken = true;
         });
 
@@ -66,11 +85,7 @@ public static class BffRemoteApiEndpointExtensions
     {
         builder.Add(endpointBuilder =>
         {
-            var metadata =
-                endpointBuilder.Metadata.First(m => m.GetType() == typeof(BffRemoteApiEndpointMetadata)) as BffRemoteApiEndpointMetadata;
-
-            if (metadata == null) throw new InvalidOperationException("no metadata found");
-                
+            var metadata = endpointBuilder.GetBffRemoteApiEndpointMetadata();
             metadata.BffUserAccessTokenParameters = bffUserAccessTokenParameters;
         });
 

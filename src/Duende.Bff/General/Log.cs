@@ -17,6 +17,7 @@ internal static class EventIds
     public static readonly EventId AntiForgeryValidationFailed = new (1, "AntiForgeryValidationFailed");
     public static readonly EventId BackChannelLogout = new (2, "BackChannelLogout");
     public static readonly EventId BackChannelLogoutError = new (3, "BackChannelLogoutError");
+    public static readonly EventId AccessTokenMissing = new (4, "AccessTokenMissing");
 }
     
 internal static class Log
@@ -36,6 +37,12 @@ internal static class Log
         EventIds.BackChannelLogoutError,
         "Back-channel logout error. error: '{error}'");
 
+    private static readonly Action<ILogger, string, string, Exception?> _accessTokenMissing = LoggerMessage.Define<string, string>(
+        LogLevel.Warning,
+        EventIds.AccessTokenMissing,
+        "Access token is missing. token type: '{tokenType}', local path: '{localpath}'.");
+
+
     public static void AntiForgeryValidationFailed(this ILogger logger, string localPath)
     {
         _antiForgeryValidationFailed(logger, localPath, null);
@@ -49,5 +56,10 @@ internal static class Log
     public static void BackChannelLogoutError(this ILogger logger, string error)
     { 
         _backChannelLogoutError(logger, error, null);
+    }
+
+    public static void AccessTokenMissing(this ILogger logger, string localPath, TokenType tokenType)
+    {
+        _accessTokenMissing(logger, tokenType.ToString(), localPath, null);
     }
 }

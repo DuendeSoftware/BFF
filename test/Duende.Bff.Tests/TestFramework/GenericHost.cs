@@ -113,8 +113,6 @@ namespace Duende.Bff.Tests.TestFramework
             ConfigureSignout(app);
         }
 
-
-
         void ConfigureSignout(IApplicationBuilder app)
         {
             app.Use(async (ctx, next) =>
@@ -129,12 +127,12 @@ namespace Duende.Bff.Tests.TestFramework
                 await next();
             });
         }
+
         public async Task RevokeSessionCookieAsync()
         {
             var response = await BrowserClient.GetAsync(Url("__signout"));
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
-
 
         void ConfigureSignin(IApplicationBuilder app)
         {

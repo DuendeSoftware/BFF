@@ -179,6 +179,33 @@ namespace Duende.Bff.Tests.Endpoints
         }
 
         [Fact]
+        public async Task calls_to_remote_endpoint_should_fail_when_token_retrieval_fails()
+        {
+            await BffHost.BffLoginAsync("alice");
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_with_access_token_retrieval_that_fails"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task calls_to_remote_endpoint_should_send_token_from_token_retriever_when_token_retrieval_succeeds()
+        {
+            await BffHost.BffLoginAsync("alice");
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_with_access_token_retriever"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+            apiResult.Sub.Should().Be("123");
+            apiResult.ClientId.Should().Be("fake-client");
+        }
+
+        [Fact]
         public async Task calls_to_remote_endpoint_should_forward_user_or_client_to_api()
         {
             {

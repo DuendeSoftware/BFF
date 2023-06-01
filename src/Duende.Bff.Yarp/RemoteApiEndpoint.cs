@@ -41,53 +41,57 @@ public static class RemoteApiEndpoint
             var metadata = endpoint.Metadata.GetMetadata<BffRemoteApiEndpointMetadata>();
             if (metadata == null)
             {
-                throw new InvalidOperationException("API endoint is missing BFF metadata");
+                throw new InvalidOperationException("API endpoint is missing BFF metadata");
             }
 
-            UserTokenRequestParameters? toUserAccessTokenParameters = null;
+            UserTokenRequestParameters? userAccessTokenParameters = null;
 
             if (metadata.BffUserAccessTokenParameters != null)
             {
-                toUserAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenRequestParameters();
+                userAccessTokenParameters = metadata.BffUserAccessTokenParameters.ToUserAccessTokenRequestParameters();
             }
 
-            string? token = null;
-            if (metadata.RequiredTokenType.HasValue)
+            if (context.RequestServices.GetRequiredService(metadata.AccessTokenRetriever) 
+                is not IAccessTokenRetriever accessTokenRetriever)
             {
-                token = await context.GetManagedAccessToken(metadata.RequiredTokenType.Value, toUserAccessTokenParameters);
-                if (string.IsNullOrWhiteSpace(token))
+                throw new InvalidOperationException("TokenRetriever is not an IAccessTokenRetriever");
+            }
+
+            var accessTokenContext = new AccessTokenRetrievalContext()
+            {
+                HttpContext = context,
+                Metadata = metadata,
+                UserTokenRequestParameters = userAccessTokenParameters,
+                ApiAddress = apiAddress,
+                LocalPath = localPath,
+
+            };
+            var result = await accessTokenRetriever.GetAccessToken(accessTokenContext);
+
+            if (result.IsError)
+            {
+                context.Response.StatusCode = 401;
+                return;
+            } 
+            else
+            {
+                var forwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
+                var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
+                var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
+
+                var httpClient = clientFactory.CreateClient(localPath);
+                var transformer = transformerFactory.CreateTransformer(localPath, result.Token);
+
+                await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
+
+                var errorFeature = context.Features.Get<IForwarderErrorFeature>();
+                if (errorFeature != null)
                 {
-                    logger.AccessTokenMissing(localPath, metadata.RequiredTokenType.Value);
+                    var error = errorFeature.Error;
+                    var exception = errorFeature.Exception;
 
-                    context.Response.StatusCode = 401;
-                    return;
+                    logger.ProxyResponseError(localPath, exception?.ToString() ?? error.ToString());
                 }
-            }
-
-            if (token == null)
-            {
-                if (metadata.OptionalUserToken)
-                {
-                    token = (await context.GetUserAccessTokenAsync(toUserAccessTokenParameters)).AccessToken;
-                }
-            }
-
-            var forwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
-            var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
-            var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
-                
-            var httpClient = clientFactory.CreateClient(localPath);
-            var transformer = transformerFactory.CreateTransformer(localPath, token);
-
-            await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
-
-            var errorFeature = context.Features.Get<IForwarderErrorFeature>();
-            if (errorFeature != null)
-            {
-                var error = errorFeature.Error;
-                var exception = errorFeature.Exception;
-
-                logger.ProxyResponseError(localPath, exception?.ToString() ?? error.ToString());
             }
         };
     }

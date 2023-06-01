@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
