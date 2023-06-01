@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Duende.Bff.Endpoints;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Duende;
 
 namespace Microsoft.AspNetCore.Builder;
 

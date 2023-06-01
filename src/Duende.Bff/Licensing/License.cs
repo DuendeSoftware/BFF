@@ -1,13 +1,14 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+#nullable disable
 
 using System;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Duende.Bff.Endpoints;
+namespace Duende;
 
 internal class License
 {
@@ -19,6 +20,11 @@ internal class License
 
     public License(ClaimsPrincipal claims)
     {
+        if (Int32.TryParse(claims.FindFirst("id")?.Value, out var id))
+        {
+            Id = id;
+        }
+
         CompanyName = claims.FindFirst("company_name")?.Value;
         ContactInfo = claims.FindFirst("contact_info")?.Value;
 
@@ -31,20 +37,21 @@ internal class License
         var edition = claims.FindFirst("edition")?.Value;
         if (!Enum.TryParse<License.LicenseEdition>(edition, true, out var editionValue))
         {
-            throw new Exception($"Invalid edition in licence: '{edition}'");
+            throw new Exception($"Invalid edition in license: '{edition}'");
         }
 
         Edition = editionValue;
-        ISVFeature = claims.HasClaim("feature", "isv");
+        RedistributionFeature = claims.HasClaim("feature", "isv") || claims.HasClaim("feature", "redistribution");
+        Extras = claims.FindFirst("extras")?.Value;
 
-        if (IsCommunityEdition && ISVFeature)
+        if (IsCommunityEdition && RedistributionFeature)
         {
-            throw new Exception("Invalid License: ISV is not valid for community edition.");
+            throw new Exception("Invalid License: Redistribution is not valid for community edition.");
         }
 
-        if (IsBffEdition && ISVFeature)
+        if (IsBffEdition && RedistributionFeature)
         {
-            throw new Exception("Invalid License: ISV is not valid for BFF edition.");
+            throw new Exception("Invalid License: Redistribution is not valid for BFF edition.");
         }
 
         if (IsBffEdition)
@@ -84,6 +91,44 @@ internal class License
                 break;
         }
 
+        CibaFeature = claims.HasClaim("feature", "ciba");
+        switch (Edition)
+        {
+            case LicenseEdition.Enterprise:
+            case LicenseEdition.Community:
+                CibaFeature = true;
+                break;
+        }
+
+        ServerSideSessionsFeature = claims.HasClaim("feature", "server_side_sessions");
+        switch (Edition)
+        {
+            case LicenseEdition.Enterprise:
+            case LicenseEdition.Business:
+            case LicenseEdition.Community:
+                ServerSideSessionsFeature = true;
+                break;
+        }
+
+        ConfigApiFeature = claims.HasClaim("feature", "config_api");
+        switch (Edition)
+        {
+            case LicenseEdition.Enterprise:
+            case LicenseEdition.Business:
+            case LicenseEdition.Community:
+                ConfigApiFeature = true;
+                break;
+        }
+
+        DPoPFeature = claims.HasClaim("feature", "dpop");
+        switch (Edition)
+        {
+            case LicenseEdition.Enterprise:
+            case LicenseEdition.Community:
+                DPoPFeature = true;
+                break;
+        }
+
         BffFeature = claims.HasClaim("feature", "bff");
         switch (Edition)
         {
@@ -98,7 +143,7 @@ internal class License
         if (!claims.HasClaim("feature", "unlimited_clients"))
         {
             // default values
-            if (ISVFeature)
+            if (RedistributionFeature)
             {
                 // default for all ISV editions
                 ClientLimit = 5;
@@ -123,7 +168,7 @@ internal class License
                 ClientLimit = clientLimit;
             }
 
-            if (!ISVFeature)
+            if (!RedistributionFeature)
             {
                 // these for the non-ISV editions that always have unlimited, regardless of explicit value
                 switch (Edition)
@@ -159,8 +204,10 @@ internal class License
         }
     }
 
-    public string? CompanyName { get; set; }
-    public string? ContactInfo { get; set; }
+    public int Id { get; set; }
+
+    public string CompanyName { get; set; }
+    public string ContactInfo { get; set; }
 
     public DateTime? Expiration { get; set; }
 
@@ -178,8 +225,14 @@ internal class License
     public bool KeyManagementFeature { get; set; }
     public bool ResourceIsolationFeature { get; set; }
     public bool DynamicProvidersFeature { get; set; }
-    public bool ISVFeature { get; set; }
+    public bool RedistributionFeature { get; set; }
     public bool BffFeature { get; set; }
+    public bool CibaFeature { get; set; }
+    public bool ServerSideSessionsFeature { get; set; }
+    public bool ConfigApiFeature { get; set; }
+    public bool DPoPFeature { get; set; }
+
+    public string Extras { get; set; }
 
     public enum LicenseEdition
     {
@@ -192,6 +245,19 @@ internal class License
 
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+        return ObjectSerializer.ToString(this);
+    }
+
+    internal static class ObjectSerializer
+    {
+        private static readonly JsonSerializerOptions Options = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        public static string ToString(object o)
+        {
+            return JsonSerializer.Serialize(o, Options);
+        }
     }
 }
