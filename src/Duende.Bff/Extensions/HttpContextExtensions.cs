@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -31,29 +32,16 @@ internal static class HttpContextExtensions
         return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
     }
 
-    public static async Task<string?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserTokenRequestParameters? userAccessTokenParameters = null)
+    public static async Task<ClientCredentialsToken?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserTokenRequestParameters? userAccessTokenParameters = null)
     {
-        string? token;
-
-        if (tokenType == TokenType.User)
+        return tokenType switch
         {
-            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).AccessToken;
-        }
-        else if (tokenType == TokenType.Client)
-        {
-            token = (await context.GetClientAccessTokenAsync()).AccessToken;
-        }
-        else
-        {
-            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).AccessToken;
-
-            if (string.IsNullOrEmpty(token))
-            {
-                token = (await context.GetClientAccessTokenAsync()).AccessToken;
-            }
-        }
-
-        return token;
+            TokenType.User => await context.GetUserAccessTokenAsync(userAccessTokenParameters),
+            TokenType.Client => await context.GetClientAccessTokenAsync(),
+            TokenType.UserOrClient => (await context.GetUserAccessTokenAsync(userAccessTokenParameters)) ??
+                (await context.GetClientAccessTokenAsync()),
+            _ => throw new ArgumentOutOfRangeException(nameof(tokenType), $"Unexpected TokenType: {tokenType}")
+        };
     }
 
     public static bool IsAjaxRequest(this HttpContext context)

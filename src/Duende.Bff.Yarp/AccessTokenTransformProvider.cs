@@ -5,8 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
+using IdentityModel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
@@ -21,16 +24,19 @@ public class AccessTokenTransformProvider : ITransformProvider
 {
     private readonly BffOptions _options;
     private readonly ILogger _logger;
+    private readonly IDPoPProofService _dPoPProofService;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
     /// <param name="logger"></param>
-    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger)
+    /// <param name="dPoPProofService"></param>
+    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger, IDPoPProofService dPoPProofService)
     {
         _options = options.Value;
         _logger = logger;
+        _dPoPProofService = dPoPProofService;
     }
 
     /// <inheritdoc />
@@ -77,10 +83,20 @@ public class AccessTokenTransformProvider : ITransformProvider
 
             var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
 
-            if (!string.IsNullOrEmpty(token))
+            if (token != null)
             {
-                transformContext.ProxyRequest.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                if(token.AccessTokenType == OidcConstants.TokenResponse.BearerTokenType)
+                {
+                    ApplyBearerToken(transformContext, token);
+                }
+                else if (token.AccessTokenType == OidcConstants.TokenResponse.DPoPTokenType) 
+                {
+                    await ApplyDPoPToken(transformContext, token);
+                }
+                else 
+                {
+                    // TODO - log a warning that the token type is weird
+                }
             }
             else
             {
@@ -90,5 +106,30 @@ public class AccessTokenTransformProvider : ITransformProvider
                 _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
             }
         });
+    }
+
+    private void ApplyBearerToken(RequestTransformContext context, ClientCredentialsToken token)
+    {
+        context.ProxyRequest.Headers.Authorization = 
+            new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
+    }
+
+    private async Task ApplyDPoPToken(RequestTransformContext context, ClientCredentialsToken token)
+    {
+        ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
+
+        var proofToken = await _dPoPProofService.CreateProofTokenAsync(new DPoPProofRequest
+        {
+            AccessToken = token.AccessToken,
+            DPoPJsonWebKey = token.DPoPJsonWebKey,
+            Method = context.ProxyRequest.Method.ToString(),
+            Url = context.ProxyRequest.GetDPoPUrl()
+        });
+        if(proofToken != null)
+        {
+            context.ProxyRequest.Headers.Add(OidcConstants.HttpHeaders.DPoP, proofToken.ProofToken);
+            context.ProxyRequest.Headers.Authorization = 
+                new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, token.AccessToken);
+        }
     }
 }

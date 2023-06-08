@@ -3,17 +3,18 @@
 
 using System;
 using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 
 namespace Duende.Bff.Tests.TestHosts;
 
 public class TestAccessTokenRetriever : IAccessTokenRetriever
 {
-    public TestAccessTokenRetriever(Func<Task<string>> accessTokenGetter)
+    public TestAccessTokenRetriever(Func<Task<ClientCredentialsToken>> accessTokenGetter)
     {
         _accessTokenGetter = accessTokenGetter;
     }
 
-    private Func<Task<string>> _accessTokenGetter { get; set; }
+    private Func<Task<ClientCredentialsToken>> _accessTokenGetter { get; set; }
 
     public async Task<AccessTokenResult> GetAccessToken(AccessTokenRetrievalContext context)
     {

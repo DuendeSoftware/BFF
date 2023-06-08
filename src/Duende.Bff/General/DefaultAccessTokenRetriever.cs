@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 using Duende.Bff.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -32,12 +33,12 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
     /// <inheritdoc />
     public virtual async Task<AccessTokenResult> GetAccessToken(AccessTokenRetrievalContext context)
     {
-        string? token = null;
+        ClientCredentialsToken? token = null;
         if (context.Metadata.RequiredTokenType.HasValue)
         {
             var tokenType = context.Metadata.RequiredTokenType.Value;
             token = await context.HttpContext.GetManagedAccessToken(tokenType, context.UserTokenRequestParameters);
-            if (string.IsNullOrWhiteSpace(token))
+            if (token == null)
             {
                 Logger.AccessTokenMissing(context.LocalPath, tokenType);
                 return new AccessTokenResult
@@ -51,7 +52,7 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
         {
             if (context.Metadata.OptionalUserToken)
             {
-                token = (await context.HttpContext.GetUserAccessTokenAsync(context.UserTokenRequestParameters)).AccessToken;
+                token = await context.HttpContext.GetUserAccessTokenAsync(context.UserTokenRequestParameters);
             }
 
         }

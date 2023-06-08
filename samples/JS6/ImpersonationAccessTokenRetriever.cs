@@ -3,6 +3,7 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 using Duende.Bff;
 using IdentityModel;
 using IdentityModel.Client;
@@ -31,7 +32,7 @@ public class ImpersonationAccessTokenRetriever : DefaultAccessTokenRetriever
                 ClientId = "spa",
                 ClientSecret = "secret",
 
-                SubjectToken = result.Token,
+                SubjectToken = result.Token.AccessToken,
                 SubjectTokenType = OidcConstants.TokenTypeIdentifiers.AccessToken
             });
             if(exchangeResponse.IsError)
@@ -44,7 +45,11 @@ public class ImpersonationAccessTokenRetriever : DefaultAccessTokenRetriever
             return new AccessTokenResult
             {
                 IsError = false,
-                Token = exchangeResponse.AccessToken
+                Token = new ClientCredentialsToken
+                {
+                    AccessToken = exchangeResponse.AccessToken,
+                    AccessTokenType = OidcConstants.TokenResponse.BearerTokenType
+                }
             };
         }
 

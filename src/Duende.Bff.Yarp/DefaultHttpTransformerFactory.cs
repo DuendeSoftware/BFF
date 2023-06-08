@@ -1,6 +1,7 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Duende.AccessTokenManagement;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.Transforms;
@@ -23,19 +24,22 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
     /// </summary>
     protected readonly ITransformBuilder TransformBuilder;
 
+    protected readonly IDPoPProofService ProofService;
+
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options">The BFF options</param>
     /// <param name="transformBuilder">The YARP transform builder</param>
-    public DefaultHttpTransformerFactory(IOptions<BffOptions> options, ITransformBuilder transformBuilder)
+    public DefaultHttpTransformerFactory(IOptions<BffOptions> options, ITransformBuilder transformBuilder, IDPoPProofService proofService)
     {
         Options = options.Value;
         TransformBuilder = transformBuilder;
+        ProofService = proofService;
     }
-        
+
     /// <inheritdoc />
-    public virtual HttpTransformer CreateTransformer(string localPath, string? accessToken = null)
+    public virtual HttpTransformer CreateTransformer(string localPath, ClientCredentialsToken? accessToken = null)
     {
         return TransformBuilder.Create(context =>
         {
@@ -51,9 +55,9 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
             // transform path to remove prefix
             context.RequestTransforms.Add(new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath));
                 
-            if (!string.IsNullOrWhiteSpace(accessToken))
+            if (accessToken != null)
             {
-                context.RequestTransforms.Add(new AccessTokenRequestTransform(accessToken));
+                context.RequestTransforms.Add(new AccessTokenRequestTransform(accessToken, ProofService));
             }
         });
     }
