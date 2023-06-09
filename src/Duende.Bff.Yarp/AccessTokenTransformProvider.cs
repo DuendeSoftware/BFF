@@ -81,19 +81,19 @@ public class AccessTokenTransformProvider : ITransformProvider
         {
             transformContext.HttpContext.CheckForBffMiddleware(_options);
 
-            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+            var managedAccessToken = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
 
-            if (token != null)
+            if (managedAccessToken != null)
             {
-                if(token.AccessTokenType == OidcConstants.TokenResponse.BearerTokenType)
+                if (managedAccessToken is BearerAccessToken bearerToken)
                 {
-                    ApplyBearerToken(transformContext, token);
+                    ApplyBearerToken(transformContext, bearerToken);
                 }
-                else if (token.AccessTokenType == OidcConstants.TokenResponse.DPoPTokenType) 
+                else if (managedAccessToken is DPoPAccessToken dpopToken)
                 {
-                    await ApplyDPoPToken(transformContext, token);
+                    await ApplyDPoPToken(transformContext, dpopToken);
                 }
-                else 
+                else
                 {
                     // TODO - log a warning that the token type is weird
                 }
@@ -102,19 +102,18 @@ public class AccessTokenTransformProvider : ITransformProvider
             {
                 // short circuit forwarder and return 401
                 transformContext.HttpContext.Response.StatusCode = 401;
-                
                 _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
             }
         });
     }
 
-    private void ApplyBearerToken(RequestTransformContext context, ClientCredentialsToken token)
+    private void ApplyBearerToken(RequestTransformContext context, BearerAccessToken token)
     {
         context.ProxyRequest.Headers.Authorization = 
             new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
     }
 
-    private async Task ApplyDPoPToken(RequestTransformContext context, ClientCredentialsToken token)
+    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPAccessToken token)
     {
         ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
 

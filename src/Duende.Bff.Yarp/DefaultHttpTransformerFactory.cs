@@ -39,7 +39,7 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
     }
 
     /// <inheritdoc />
-    public virtual HttpTransformer CreateTransformer(string localPath, ClientCredentialsToken? accessToken = null)
+    public virtual HttpTransformer CreateTransformer(string localPath, AccessTokenResult? accessToken = null)
     {
         return TransformBuilder.Create(context =>
         {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
 using Duende.AccessTokenManagement.OpenIdConnect;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -32,15 +33,33 @@ internal static class HttpContextExtensions
         return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
     }
 
-    public static async Task<ClientCredentialsToken?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserTokenRequestParameters? userAccessTokenParameters = null)
+    public static async Task<AccessTokenResult?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, bool optional = false, UserTokenRequestParameters? userAccessTokenParameters = null)
     {
-        return tokenType switch
+        // Retrieve the appropriate type of access token (user vs client)
+        var token = tokenType switch
         {
             TokenType.User => await context.GetUserAccessTokenAsync(userAccessTokenParameters),
             TokenType.Client => await context.GetClientAccessTokenAsync(),
             TokenType.UserOrClient => (await context.GetUserAccessTokenAsync(userAccessTokenParameters)) ??
                 (await context.GetClientAccessTokenAsync()),
             _ => throw new ArgumentOutOfRangeException(nameof(tokenType), $"Unexpected TokenType: {tokenType}")
+        };
+
+        // Map the result onto the appropriate type of access token result (Bearer vs DPoP)
+        return token switch
+        {
+            null or { AccessToken: null } => 
+                optional ? 
+                    new OptionalAccessTokenNotFound() : 
+                    new AccessTokenError("Missing access token"),
+            { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } => 
+                new BearerAccessToken(token.AccessToken),
+            { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: not null } =>
+                 new DPoPAccessToken(token.AccessToken, token.DPoPJsonWebKey),
+            { AccessTokenType: string accessTokenType } => 
+                new AccessTokenError($"Unexpected AccessTokenType: {accessTokenType}"),
+            { AccessTokenType: null } =>
+                new AccessTokenError($"Missing AccessTokenType")
         };
     }
 

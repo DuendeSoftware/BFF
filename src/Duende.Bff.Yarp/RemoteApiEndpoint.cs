@@ -68,7 +68,7 @@ public static class RemoteApiEndpoint
             };
             var result = await accessTokenRetriever.GetAccessToken(accessTokenContext);
 
-            if (result.IsError)
+            if (result is AccessTokenError)
             {
                 context.Response.StatusCode = 401;
                 return;
@@ -80,7 +80,7 @@ public static class RemoteApiEndpoint
                 var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
 
                 var httpClient = clientFactory.CreateClient(localPath);
-                var transformer = transformerFactory.CreateTransformer(localPath, result.Token);
+                var transformer = transformerFactory.CreateTransformer(localPath, result);
 
                 await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
 

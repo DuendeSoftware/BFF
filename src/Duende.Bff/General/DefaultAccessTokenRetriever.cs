@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
 using Duende.Bff.Logging;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
@@ -33,18 +34,15 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
     /// <inheritdoc />
     public virtual async Task<AccessTokenResult> GetAccessToken(AccessTokenRetrievalContext context)
     {
-        ClientCredentialsToken? token = null;
+        AccessTokenResult? token = null;
         if (context.Metadata.RequiredTokenType.HasValue)
         {
             var tokenType = context.Metadata.RequiredTokenType.Value;
-            token = await context.HttpContext.GetManagedAccessToken(tokenType, context.UserTokenRequestParameters);
+            token = await context.HttpContext.GetManagedAccessToken(tokenType, optional: true, context.UserTokenRequestParameters);
             if (token == null)
             {
                 Logger.AccessTokenMissing(context.LocalPath, tokenType);
-                return new AccessTokenResult
-                {
-                    IsError = true
-                };
+                return new AccessTokenError("Access token not found");
             }
         }
 
@@ -52,14 +50,23 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
         {
             if (context.Metadata.OptionalUserToken)
             {
-                token = await context.HttpContext.GetUserAccessTokenAsync(context.UserTokenRequestParameters);
+                var userAccessToken = await context.HttpContext.GetUserAccessTokenAsync(context.UserTokenRequestParameters);
+                
+                // TODO - This is more copy-pasta
+                return userAccessToken switch
+                {
+                    null or { AccessToken: null } => new OptionalAccessTokenNotFound(),
+                    { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } => 
+                        new BearerAccessToken(userAccessToken.AccessToken),
+                    { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: not null } =>
+                        new DPoPAccessToken(userAccessToken.AccessToken, userAccessToken.DPoPJsonWebKey),
+                    { AccessTokenType: string accessTokenType } => 
+                        new AccessTokenError($"Unexpected AccessTokenType: {accessTokenType}"),
+                    { AccessTokenType: null } =>
+                        new AccessTokenError($"Missing AccessTokenType")
+                };
             }
-
         }
-        return new AccessTokenResult
-        {
-            Token = token,
-            IsError = false
-        };
+        return token;
     }
 }

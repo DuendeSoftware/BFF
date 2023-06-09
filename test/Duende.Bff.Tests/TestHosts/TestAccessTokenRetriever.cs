@@ -9,20 +9,15 @@ namespace Duende.Bff.Tests.TestHosts;
 
 public class TestAccessTokenRetriever : IAccessTokenRetriever
 {
-    public TestAccessTokenRetriever(Func<Task<ClientCredentialsToken>> accessTokenGetter)
+    public TestAccessTokenRetriever(Func<Task<AccessTokenResult>> accessTokenGetter)
     {
         _accessTokenGetter = accessTokenGetter;
     }
 
-    private Func<Task<ClientCredentialsToken>> _accessTokenGetter { get; set; }
+    private readonly Func<Task<AccessTokenResult>> _accessTokenGetter;
 
     public async Task<AccessTokenResult> GetAccessToken(AccessTokenRetrievalContext context)
     {
-        var token = await _accessTokenGetter();
-        return new AccessTokenResult
-        {
-            IsError = false,
-            Token = token
-        };
+        return  await _accessTokenGetter();
     }
 }

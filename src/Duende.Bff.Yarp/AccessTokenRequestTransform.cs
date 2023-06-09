@@ -15,15 +15,14 @@ namespace Duende.Bff.Yarp;
 /// </summary>
 public class AccessTokenRequestTransform : RequestTransform
 {
-    private readonly ClientCredentialsToken _token;
+    private readonly AccessTokenResult _token;
     private readonly IDPoPProofService _dPoPProofService;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="accessToken"></param>
-    /// <param name="dPoPProofService"></param>
-    public AccessTokenRequestTransform(ClientCredentialsToken accessToken, IDPoPProofService dPoPProofService)
+    public AccessTokenRequestTransform(AccessTokenResult accessToken, IDPoPProofService dPoPProofService)
     {
         _token = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
         this._dPoPProofService = dPoPProofService;
@@ -32,34 +31,38 @@ public class AccessTokenRequestTransform : RequestTransform
     /// <inheritdoc />
     public override async ValueTask ApplyAsync(RequestTransformContext context)
     {
-        if(_token.AccessTokenType == OidcConstants.TokenResponse.BearerTokenType)
+        // TODO - This logic is almost identical to the AccessTokenTransformProvider
+        if (_token != null)
         {
-            ApplyBearerToken(context);
-        }
-        else if (_token.AccessTokenType == OidcConstants.TokenResponse.DPoPTokenType) 
-        {
-            await ApplyDPoPToken(context);
-        }
-        else 
-        {
-            // TODO - log a warning that the token type is weird
+            if (_token is BearerAccessToken bearerToken)
+            {
+                ApplyBearerToken(context, bearerToken);
+            }
+            else if (_token is DPoPAccessToken dpopToken)
+            {
+                await ApplyDPoPToken(context, dpopToken);
+            }
+            else
+            {
+                // TODO - log a warning that the token type is weird
+            }
         }
     }
 
-    private void ApplyBearerToken(RequestTransformContext context)
+    private void ApplyBearerToken(RequestTransformContext context, BearerAccessToken token)
     {
         context.ProxyRequest.Headers.Authorization = 
-            new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, _token.AccessToken);
+            new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
     }
 
-    private async Task ApplyDPoPToken(RequestTransformContext context)
+    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPAccessToken token)
     {
-        ArgumentNullException.ThrowIfNull(_token.DPoPJsonWebKey, nameof(_token.DPoPJsonWebKey));
+        ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
 
         var proofToken = await _dPoPProofService.CreateProofTokenAsync(new DPoPProofRequest
         {
-            AccessToken = _token.AccessToken,
-            DPoPJsonWebKey = _token.DPoPJsonWebKey,
+            AccessToken = token.AccessToken,
+            DPoPJsonWebKey = token.DPoPJsonWebKey,
             Method = context.ProxyRequest.Method.ToString(),
             Url = context.ProxyRequest.GetDPoPUrl()
         });
@@ -67,7 +70,7 @@ public class AccessTokenRequestTransform : RequestTransform
         {
             context.ProxyRequest.Headers.Add(OidcConstants.HttpHeaders.DPoP, proofToken.ProofToken);
             context.ProxyRequest.Headers.Authorization = 
-                new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, _token.AccessToken);
+                new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, token.AccessToken);
         }
     }
 }

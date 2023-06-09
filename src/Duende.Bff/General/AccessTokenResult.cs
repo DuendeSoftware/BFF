@@ -8,18 +8,52 @@ namespace Duende.Bff;
 /// <summary>
 /// Represents the result of attempting to obtain an access token.
 /// </summary>
-public class AccessTokenResult
+// TODO "Result" isn't meaningful
+public abstract class AccessTokenResult
 {
-    /// <summary>
-    /// Flag that indicates if access token retrieval failed.
-    /// </summary>
-    public bool IsError { get; set; }
+}
+
+public class AccessTokenError : AccessTokenResult
+{
+    public AccessTokenError(string error)
+    {
+        Error = error;
+    }
+
+    public string Error { get; set; }
+}
+
+public class OptionalAccessTokenNotFound : AccessTokenResult {}
+
+// TODO - Split into files, add xmldoc
+public class DPoPAccessToken : AccessTokenResult
+{
+    public DPoPAccessToken(string accessToken, string dpopJWK)
+    {
+        AccessToken = accessToken;
+        DPoPJsonWebKey = dpopJWK;
+    }
 
     /// <summary>
-    /// The access token, or null if an error occurred or an optional token was
-    /// not found.
+    /// The access token.
     /// </summary>
-    public ClientCredentialsToken? Token { get; set; } 
-    // REVIEW: Should we add a more generically named type that
-    // ClientCredentialsToken derives from? This type might confuse callers.
+    public string AccessToken { get; set; } 
+    
+
+    /// <summary>
+    /// The DPoP Json Web key
+    /// </summary>
+    public string DPoPJsonWebKey { get; set; }
+}
+
+public class BearerAccessToken : AccessTokenResult
+{
+    public BearerAccessToken(string accessToken)
+    {
+        AccessToken = accessToken;
+    }
+    /// <summary>
+    /// The access token.
+    /// </summary>
+    public string AccessToken { get; private set; } 
 }
