@@ -50,16 +50,16 @@ internal static class HttpContextExtensions
         {
             null or { AccessToken: null } => 
                 optional ? 
-                    new OptionalAccessTokenNotFound() : 
-                    new AccessTokenError("Missing access token"),
+                    new NoAccessTokenResult() : 
+                    new AccessTokenRetrievalError("Missing access token"),
             { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } => 
-                new BearerAccessToken(token.AccessToken),
+                new BearerTokenResult(token.AccessToken),
             { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: not null } =>
-                 new DPoPAccessToken(token.AccessToken, token.DPoPJsonWebKey),
+                 new DPoPTokenResult(token.AccessToken, token.DPoPJsonWebKey),
             { AccessTokenType: string accessTokenType } => 
-                new AccessTokenError($"Unexpected AccessTokenType: {accessTokenType}"),
+                new AccessTokenRetrievalError($"Unexpected AccessTokenType: {accessTokenType}"),
             { AccessTokenType: null } =>
-                new AccessTokenError($"Missing AccessTokenType")
+                new AccessTokenRetrievalError($"Missing AccessTokenType")
         };
     }
 

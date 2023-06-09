@@ -68,7 +68,7 @@ public static class RemoteApiEndpoint
             };
             var result = await accessTokenRetriever.GetAccessToken(accessTokenContext);
 
-            if (result is AccessTokenError)
+            if (result is AccessTokenRetrievalError)
             {
                 context.Response.StatusCode = 401;
                 return;

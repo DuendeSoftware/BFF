@@ -34,11 +34,11 @@ public class AccessTokenRequestTransform : RequestTransform
         // TODO - This logic is almost identical to the AccessTokenTransformProvider
         if (_token != null)
         {
-            if (_token is BearerAccessToken bearerToken)
+            if (_token is BearerTokenResult bearerToken)
             {
                 ApplyBearerToken(context, bearerToken);
             }
-            else if (_token is DPoPAccessToken dpopToken)
+            else if (_token is DPoPTokenResult dpopToken)
             {
                 await ApplyDPoPToken(context, dpopToken);
             }
@@ -49,13 +49,13 @@ public class AccessTokenRequestTransform : RequestTransform
         }
     }
 
-    private void ApplyBearerToken(RequestTransformContext context, BearerAccessToken token)
+    private void ApplyBearerToken(RequestTransformContext context, BearerTokenResult token)
     {
         context.ProxyRequest.Headers.Authorization = 
             new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
     }
 
-    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPAccessToken token)
+    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPTokenResult token)
     {
         ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
 

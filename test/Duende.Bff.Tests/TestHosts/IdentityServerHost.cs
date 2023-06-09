@@ -117,10 +117,10 @@ public class IdentityServerHost : GenericHost
         await IssueSessionCookieAsync(props, new Claim("sub", sub));
     }
 
-    public async Task<BearerAccessToken> CreateJwtAccessTokenAsync()
+    public async Task<BearerTokenResult> CreateJwtAccessTokenAsync()
     {
         var response = await BrowserClient.GetAsync(Url("__token"));
         var accessToken = await response.Content.ReadAsStringAsync();
-        return new BearerAccessToken(accessToken);
+        return new BearerTokenResult(accessToken);
     }
 }

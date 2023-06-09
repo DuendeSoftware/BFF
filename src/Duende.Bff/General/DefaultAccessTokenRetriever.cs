@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Duende.AccessTokenManagement;
 using Duende.Bff.Logging;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
@@ -42,7 +41,7 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
             if (token == null)
             {
                 Logger.AccessTokenMissing(context.LocalPath, tokenType);
-                return new AccessTokenError("Access token not found");
+                return new AccessTokenRetrievalError("Access token not found");
             }
         }
 
@@ -55,15 +54,15 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
                 // TODO - This is more copy-pasta
                 return userAccessToken switch
                 {
-                    null or { AccessToken: null } => new OptionalAccessTokenNotFound(),
+                    null or { AccessToken: null } => new NoAccessTokenResult(),
                     { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } => 
-                        new BearerAccessToken(userAccessToken.AccessToken),
+                        new BearerTokenResult(userAccessToken.AccessToken),
                     { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: not null } =>
-                        new DPoPAccessToken(userAccessToken.AccessToken, userAccessToken.DPoPJsonWebKey),
+                        new DPoPTokenResult(userAccessToken.AccessToken, userAccessToken.DPoPJsonWebKey),
                     { AccessTokenType: string accessTokenType } => 
-                        new AccessTokenError($"Unexpected AccessTokenType: {accessTokenType}"),
+                        new AccessTokenRetrievalError($"Unexpected AccessTokenType: {accessTokenType}"),
                     { AccessTokenType: null } =>
-                        new AccessTokenError($"Missing AccessTokenType")
+                        new AccessTokenRetrievalError($"Missing AccessTokenType")
                 };
             }
         }

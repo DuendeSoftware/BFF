@@ -85,11 +85,11 @@ public class AccessTokenTransformProvider : ITransformProvider
 
             if (managedAccessToken != null)
             {
-                if (managedAccessToken is BearerAccessToken bearerToken)
+                if (managedAccessToken is BearerTokenResult bearerToken)
                 {
                     ApplyBearerToken(transformContext, bearerToken);
                 }
-                else if (managedAccessToken is DPoPAccessToken dpopToken)
+                else if (managedAccessToken is DPoPTokenResult dpopToken)
                 {
                     await ApplyDPoPToken(transformContext, dpopToken);
                 }
@@ -107,13 +107,13 @@ public class AccessTokenTransformProvider : ITransformProvider
         });
     }
 
-    private void ApplyBearerToken(RequestTransformContext context, BearerAccessToken token)
+    private void ApplyBearerToken(RequestTransformContext context, BearerTokenResult token)
     {
         context.ProxyRequest.Headers.Authorization = 
             new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
     }
 
-    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPAccessToken token)
+    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPTokenResult token)
     {
         ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
 
