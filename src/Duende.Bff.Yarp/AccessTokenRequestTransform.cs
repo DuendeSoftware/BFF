@@ -88,18 +88,26 @@ public class AccessTokenRequestTransform : RequestTransform
     {
         ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
 
+        var baseUri = new Uri(context.DestinationPrefix);
         var proofToken = await _dPoPProofService.CreateProofTokenAsync(new DPoPProofRequest
         {
             AccessToken = token.AccessToken,
             DPoPJsonWebKey = token.DPoPJsonWebKey,
             Method = context.ProxyRequest.Method.ToString(),
-            Url = context.ProxyRequest.GetDPoPUrl()
+            Url = new Uri(baseUri, context.Path).ToString()
         });
         if (proofToken != null)
         {
+            context.ProxyRequest.Headers.Remove(OidcConstants.HttpHeaders.DPoP);
             context.ProxyRequest.Headers.Add(OidcConstants.HttpHeaders.DPoP, proofToken.ProofToken);
             context.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, token.AccessToken);
+        } else
+        {
+            // The proof service can opt out of DPoP by returning null. If so,
+            // we just use the access token as a bearer token.
+            context.ProxyRequest.Headers.Authorization =
+                new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
         }
     }
 }
