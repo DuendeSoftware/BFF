@@ -99,6 +99,10 @@ public class Startup
             // login, logout, user, backchannel logout...
             endpoints.MapBffManagementEndpoints();
 
+            // On this path, we use a client credentials token
+            endpoints.MapRemoteBffApiEndpoint("/api/client-credentials-token", "https://localhost:5010")
+                .RequireAccessToken(TokenType.Client);
+
             // On this path, we perform token exchange to impersonate a different user
             // before making the api request
             endpoints.MapRemoteBffApiEndpoint("/api/impersonation", "https://localhost:5010")
