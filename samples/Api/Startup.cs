@@ -33,6 +33,9 @@ namespace Api
                     };
                 });
 
+            // layers DPoP onto the "token" scheme above
+            services.ConfigureDPoPTokensForScheme("token");
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("ApiCaller", policy =>
