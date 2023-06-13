@@ -36,7 +36,7 @@ public static class BffServiceCollectionExtensions
         services.AddOpenIdConnectAccessTokenManagement(opt =>
         {
             var bffOptions = services.GetOptions<BffOptions>();
-            if(bffOptions.DPoPJsonWebKey is not null)
+            if (bffOptions.DPoPJsonWebKey is not null)
             {
                 opt.DPoPJsonWebKey = bffOptions.DPoPJsonWebKey;
             }

@@ -27,7 +27,7 @@
         <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(FrameworkVersionTesting)" />
         
-        <PackageReference Update="Duende.IdentityServer" Version="6.1.5" />
+        <PackageReference Update="Duende.IdentityServer" Version="6.3.2" />
         
         <PackageReference Update="CsQuery.NETStandard" Version="1.3.6.1" />
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.1" />

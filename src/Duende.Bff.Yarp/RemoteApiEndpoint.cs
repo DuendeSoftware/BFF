@@ -63,7 +63,6 @@ public static class RemoteApiEndpoint
                 UserTokenRequestParameters = userAccessTokenParameters,
                 ApiAddress = apiAddress,
                 LocalPath = localPath,
-
             };
             var result = await accessTokenRetriever.GetAccessToken(accessTokenContext);
 
