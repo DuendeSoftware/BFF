@@ -129,6 +129,8 @@ public class BffOptions
     {
         Environments.Development
     };
+
+    public string? DPoPJsonWebKey { get; set; }
 }
 
 /// <summary>

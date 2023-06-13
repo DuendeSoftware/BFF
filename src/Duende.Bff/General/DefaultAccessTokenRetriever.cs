@@ -15,7 +15,6 @@ namespace Duende.Bff;
 /// </summary>
 public class DefaultAccessTokenRetriever : IAccessTokenRetriever
 {
-
     /// <summary>
     /// The logger.
     /// </summary>

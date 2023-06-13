@@ -33,7 +33,14 @@ public static class BffServiceCollectionExtensions
         }
 
         services.AddDistributedMemoryCache();
-        services.AddOpenIdConnectAccessTokenManagement();
+        services.AddOpenIdConnectAccessTokenManagement(opt =>
+        {
+            var bffOptions = services.GetOptions<BffOptions>();
+            if(bffOptions.DPoPJsonWebKey is not null)
+            {
+                opt.DPoPJsonWebKey = bffOptions.DPoPJsonWebKey;
+            }
+        });
 
         services.AddTransient<IReturnUrlValidator, LocalUrlReturnUrlValidator>();
         services.TryAddSingleton<DefaultAccessTokenRetriever>();
@@ -61,5 +68,11 @@ public static class BffServiceCollectionExtensions
         services.AddTransientDecorator<IAuthenticationService, BffAuthenticationService>();
 
         return new BffBuilder(services);
+    }
+
+    private static TOptions GetOptions<TOptions>(this IServiceCollection services) where TOptions : class
+    {
+        // REVIEW - Is there a better way to get the options we need?
+        return services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<TOptions>>().Value;
     }
 }
