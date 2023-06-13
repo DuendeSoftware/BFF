@@ -40,7 +40,7 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
             token = await context.HttpContext.GetManagedAccessToken(tokenType, optional: true, context.UserTokenRequestParameters);
             if (token == null)
             {
-                Logger.AccessTokenMissing(context.LocalPath, tokenType);
+                Logger.AccessTokenMissing(context.LocalPath, tokenType.ToString());
                 return new AccessTokenRetrievalError("Access token not found");
             }
         }

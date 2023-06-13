@@ -33,7 +33,7 @@ internal static class HttpContextExtensions
         return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
     }
 
-    public static async Task<AccessTokenResult?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, bool optional = false, UserTokenRequestParameters? userAccessTokenParameters = null)
+    public static async Task<AccessTokenResult> GetManagedAccessToken(this HttpContext context, TokenType tokenType, bool optional = false, UserTokenRequestParameters? userAccessTokenParameters = null)
     {
         // Retrieve the appropriate type of access token (user vs client)
         var token = tokenType switch

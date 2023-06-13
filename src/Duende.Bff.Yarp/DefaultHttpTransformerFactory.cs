@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using Duende.AccessTokenManagement;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.Transforms;
@@ -25,21 +26,29 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
     protected readonly ITransformBuilder TransformBuilder;
 
     protected readonly IDPoPProofService ProofService;
+    protected readonly ILoggerFactory LoggerFactory;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options">The BFF options</param>
     /// <param name="transformBuilder">The YARP transform builder</param>
-    public DefaultHttpTransformerFactory(IOptions<BffOptions> options, ITransformBuilder transformBuilder, IDPoPProofService proofService)
+    /// <param name="proofService"></param>
+    /// <param name="loggerFactory"></param>
+    public DefaultHttpTransformerFactory(
+        IOptions<BffOptions> options,
+        ITransformBuilder transformBuilder,
+        IDPoPProofService proofService,
+        ILoggerFactory loggerFactory)
     {
         Options = options.Value;
         TransformBuilder = transformBuilder;
         ProofService = proofService;
+        LoggerFactory = loggerFactory;
     }
 
     /// <inheritdoc />
-    public virtual HttpTransformer CreateTransformer(string localPath, AccessTokenResult? accessToken = null)
+    public virtual HttpTransformer CreateTransformer(string localPath, AccessTokenResult accessToken)
     {
         return TransformBuilder.Create(context =>
         {
@@ -54,11 +63,11 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
                 
             // transform path to remove prefix
             context.RequestTransforms.Add(new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath));
-                
-            if (accessToken != null)
-            {
-                context.RequestTransforms.Add(new AccessTokenRequestTransform(accessToken, ProofService));
-            }
+
+             context.RequestTransforms.Add(new AccessTokenRequestTransform(
+                ProofService,
+                LoggerFactory.CreateLogger<AccessTokenRequestTransform>(),
+                accessToken));
         });
     }
 }

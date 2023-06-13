@@ -58,8 +58,8 @@ internal static class Log
         _backChannelLogoutError(logger, error, null);
     }
 
-    public static void AccessTokenMissing(this ILogger logger, string localPath, TokenType tokenType)
+    public static void AccessTokenMissing(this ILogger logger, string localPath, string tokenType)
     {
-        _accessTokenMissing(logger, tokenType.ToString(), localPath, null);
+        _accessTokenMissing(logger, tokenType, localPath, null);
     }
 }

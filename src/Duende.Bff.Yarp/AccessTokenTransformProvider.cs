@@ -23,19 +23,19 @@ namespace Duende.Bff.Yarp;
 public class AccessTokenTransformProvider : ITransformProvider
 {
     private readonly BffOptions _options;
-    private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IDPoPProofService _dPoPProofService;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    /// <param name="logger"></param>
+    /// <param name="loggerFactory"></param>
     /// <param name="dPoPProofService"></param>
-    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger, IDPoPProofService dPoPProofService)
+    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILoggerFactory loggerFactory, IDPoPProofService dPoPProofService)
     {
         _options = options.Value;
-        _logger = logger;
+        _loggerFactory = loggerFactory;
         _dPoPProofService = dPoPProofService;
     }
 
@@ -81,54 +81,15 @@ public class AccessTokenTransformProvider : ITransformProvider
         {
             transformContext.HttpContext.CheckForBffMiddleware(_options);
 
-            var managedAccessToken = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
 
-            if (managedAccessToken != null)
-            {
-                if (managedAccessToken is BearerTokenResult bearerToken)
-                {
-                    ApplyBearerToken(transformContext, bearerToken);
-                }
-                else if (managedAccessToken is DPoPTokenResult dpopToken)
-                {
-                    await ApplyDPoPToken(transformContext, dpopToken);
-                }
-                else
-                {
-                    // TODO - log a warning that the token type is weird
-                }
-            }
-            else
-            {
-                // short circuit forwarder and return 401
-                transformContext.HttpContext.Response.StatusCode = 401;
-                _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
-            }
+            var accessTokenTransform = new AccessTokenRequestTransform(
+                _dPoPProofService,
+                _loggerFactory.CreateLogger<AccessTokenRequestTransform>(),
+                token,
+                transformBuildContext?.Route?.RouteId, tokenType);
+
+            await accessTokenTransform.ApplyAsync(transformContext);
         });
-    }
-
-    private void ApplyBearerToken(RequestTransformContext context, BearerTokenResult token)
-    {
-        context.ProxyRequest.Headers.Authorization = 
-            new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
-    }
-
-    private async Task ApplyDPoPToken(RequestTransformContext context, DPoPTokenResult token)
-    {
-        ArgumentNullException.ThrowIfNull(token.DPoPJsonWebKey, nameof(token.DPoPJsonWebKey));
-
-        var proofToken = await _dPoPProofService.CreateProofTokenAsync(new DPoPProofRequest
-        {
-            AccessToken = token.AccessToken,
-            DPoPJsonWebKey = token.DPoPJsonWebKey,
-            Method = context.ProxyRequest.Method.ToString(),
-            Url = context.ProxyRequest.GetDPoPUrl()
-        });
-        if(proofToken != null)
-        {
-            context.ProxyRequest.Headers.Add(OidcConstants.HttpHeaders.DPoP, proofToken.ProofToken);
-            context.ProxyRequest.Headers.Authorization = 
-                new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, token.AccessToken);
-        }
     }
 }

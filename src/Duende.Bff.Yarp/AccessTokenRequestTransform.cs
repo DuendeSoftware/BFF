@@ -5,7 +5,9 @@ using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
+using Duende.Bff.Logging;
 using IdentityModel;
+using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
 
 namespace Duende.Bff.Yarp;
@@ -15,43 +17,70 @@ namespace Duende.Bff.Yarp;
 /// </summary>
 public class AccessTokenRequestTransform : RequestTransform
 {
-    private readonly AccessTokenResult _token;
     private readonly IDPoPProofService _dPoPProofService;
+    private readonly ILogger<AccessTokenRequestTransform> _logger;
+    private readonly AccessTokenResult _token;
+    private readonly string? _routeId;
+    private readonly TokenType? _tokenType;
 
     /// <summary>
     /// ctor
     /// </summary>
+    /// <param name="proofService"></param>
+    /// <param name="logger"></param>
     /// <param name="accessToken"></param>
-    public AccessTokenRequestTransform(AccessTokenResult accessToken, IDPoPProofService dPoPProofService)
+    /// <param name="routeId"></param>
+    /// <param name="tokenType"></param>
+    public AccessTokenRequestTransform(
+        IDPoPProofService proofService,
+        ILogger<AccessTokenRequestTransform> logger,
+        AccessTokenResult accessToken,
+        string? routeId = null,
+        TokenType? tokenType = null)
     {
+        _dPoPProofService = proofService;
+        _logger = logger;
         _token = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
-        this._dPoPProofService = dPoPProofService;
+        _routeId = routeId;
+        _tokenType = tokenType;
     }
-        
+
     /// <inheritdoc />
     public override async ValueTask ApplyAsync(RequestTransformContext context)
     {
-        // TODO - This logic is almost identical to the AccessTokenTransformProvider
-        if (_token != null)
+        // REVIEW - We now return 401 from here if we fail to find a token. Is
+        // that what we want?
+        switch (_token)
         {
-            if (_token is BearerTokenResult bearerToken)
-            {
+            case BearerTokenResult bearerToken:
                 ApplyBearerToken(context, bearerToken);
-            }
-            else if (_token is DPoPTokenResult dpopToken)
-            {
+                break;
+            case DPoPTokenResult dpopToken:
                 await ApplyDPoPToken(context, dpopToken);
-            }
-            else
-            {
-                // TODO - log a warning that the token type is weird
-            }
+                break;
+            case AccessTokenRetrievalError tokenError:
+                ApplyError(context, tokenError, _routeId ?? "Unknown Route", _tokenType);
+                break;
+            case NoAccessTokenResult noToken:
+                // TODO - what do we do here? Probably a no op, maybe need to log?
+                break;
+            default:
+                break;
         }
+    }
+
+    private void ApplyError(RequestTransformContext context, AccessTokenRetrievalError tokenError, string routeId, TokenType? tokenType)
+    {
+        // short circuit forwarder and return 401
+        context.HttpContext.Response.StatusCode = 401;
+
+        // TODO - Include the error from tokenError in the log
+        _logger.AccessTokenMissing(routeId, tokenType?.ToString() ?? "Unknown token type");
     }
 
     private void ApplyBearerToken(RequestTransformContext context, BearerTokenResult token)
     {
-        context.ProxyRequest.Headers.Authorization = 
+        context.ProxyRequest.Headers.Authorization =
             new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer, token.AccessToken);
     }
 
@@ -66,10 +95,10 @@ public class AccessTokenRequestTransform : RequestTransform
             Method = context.ProxyRequest.Method.ToString(),
             Url = context.ProxyRequest.GetDPoPUrl()
         });
-        if(proofToken != null)
+        if (proofToken != null)
         {
             context.ProxyRequest.Headers.Add(OidcConstants.HttpHeaders.DPoP, proofToken.ProofToken);
-            context.ProxyRequest.Headers.Authorization = 
+            context.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, token.AccessToken);
         }
     }
