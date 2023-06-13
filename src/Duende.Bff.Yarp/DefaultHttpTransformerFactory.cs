@@ -54,10 +54,10 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
         {
             // apply default YARP logic for forwarding headers
             context.CopyRequestHeaders = true;
-                
+
             // use YARP default logic for x-forwarded headers
             context.UseDefaultForwarders = true;
-                
+
             // always remove cookie header since this contains the session
             context.RequestTransforms.Add(new RequestHeaderRemoveTransform("Cookie"));
                 

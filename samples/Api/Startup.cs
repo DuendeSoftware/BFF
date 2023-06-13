@@ -52,10 +52,19 @@ namespace Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost,
-            });
+            // The BFF sets the X-Forwarded-* headers to reflect that it
+            // forwarded the request here. Using the forwarded headers
+            // middleware here would therefore change the request's host to be
+            // the bff instead of this API, which is not what the DPoP
+            // validation code expects when it checks the htu value. If this API
+            // were hosted behind a load balancer, you might need to add back
+            // the forwarded headers middleware, or consider changing the DPoP
+            // proof validation.
+            
+            // app.UseForwardedHeaders(new ForwardedHeadersOptions
+            // {
+            //     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost,
+            // });
             
             app.UseSerilogRequestLogging();
             
