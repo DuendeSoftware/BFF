@@ -43,7 +43,7 @@ public class Startup
                 options.SlidingExpiration = false;
 
                 // host prefixed cookie name
-                options.Cookie.Name = "__Host-spa5";
+                options.Cookie.Name = "__Host-spa6";
 
                 // strict SameSite handling
                 options.Cookie.SameSite = SameSiteMode.Strict;
