@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
-namespace Api;
+namespace Api.DPoP;
 
 /// <summary>
 /// Extensions methods for DPoP

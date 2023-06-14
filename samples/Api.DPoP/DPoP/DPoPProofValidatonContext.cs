@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Api;
+namespace Api.DPoP;
 
 public class DPoPProofValidatonContext
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Api;
+namespace Api.DPoP;
 
 public class DPoPProofValidatonResult
 {

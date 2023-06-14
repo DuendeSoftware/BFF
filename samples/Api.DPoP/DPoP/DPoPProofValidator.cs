@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Api;
+namespace Api.DPoP;
 
 public class DPoPProofValidator
 {

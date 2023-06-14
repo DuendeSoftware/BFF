@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static IdentityModel.OidcConstants;
 
-namespace Api;
+namespace Api.DPoP;
 
 public class DPoPJwtBearerEvents : JwtBearerEvents
 {

@@ -1,4 +1,4 @@
-namespace Api;
+namespace Api.DPoP;
 
 public enum DPoPMode
 {

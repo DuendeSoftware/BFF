@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using System;
 
-namespace Api;
+namespace Api.DPoP;
 
 public class ConfigureJwtBearerOptions : IPostConfigureOptions<JwtBearerOptions>
 {

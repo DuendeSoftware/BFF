@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 
-namespace Api;
+namespace Api.DPoP;
 
 static class DPoPServiceCollectionExtensions
 {

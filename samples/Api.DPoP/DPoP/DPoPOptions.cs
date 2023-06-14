@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Api;
+namespace Api.DPoP;
 
 public class DPoPOptions
 {

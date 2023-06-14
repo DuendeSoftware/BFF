@@ -106,16 +106,14 @@ public class Startup
             endpoints.MapBffManagementEndpoints();
 
             // On this path, we use a client credentials token
-            endpoints.MapRemoteBffApiEndpoint("/api/client-credentials-token", "https://localhost:5010")
+            endpoints.MapRemoteBffApiEndpoint("/api/client-credentials-token", "https://localhost:5011")
                 .RequireAccessToken(TokenType.Client);
 
             // proxy endpoint for cross-site APIs
             // all calls to /api/* will be forwarded to the remote API
             // user or client access token will be attached in API call
             // user access token will be managed automatically using the refresh token
-            endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                .RequireAccessToken(TokenType.UserOrClient);
-
+            endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5011")
         });
     }
 }
