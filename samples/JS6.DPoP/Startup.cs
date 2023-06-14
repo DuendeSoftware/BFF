@@ -76,7 +76,6 @@ public class Startup
                 options.Scope.Add("api");
                 options.Scope.Add("offline_access");
             });
-        services.AddSingleton<ImpersonationAccessTokenRetriever>();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -109,12 +108,6 @@ public class Startup
             // On this path, we use a client credentials token
             endpoints.MapRemoteBffApiEndpoint("/api/client-credentials-token", "https://localhost:5010")
                 .RequireAccessToken(TokenType.Client);
-
-            // On this path, we perform token exchange to impersonate a different user
-            // before making the api request
-            endpoints.MapRemoteBffApiEndpoint("/api/impersonation", "https://localhost:5010")
-                .RequireAccessToken(TokenType.UserOrClient)
-                .WithAccessTokenRetriever<ImpersonationAccessTokenRetriever>();
 
             // proxy endpoint for cross-site APIs
             // all calls to /api/* will be forwarded to the remote API

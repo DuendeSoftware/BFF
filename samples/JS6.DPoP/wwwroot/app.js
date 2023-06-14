@@ -91,20 +91,6 @@ async function callCrossApi() {
     }
 }
 
-async function callImpersonationApi() {
-    var req = new Request(remoteApiUrl + "/impersonation", {
-        headers: new Headers({
-            'X-CSRF': '1'
-        })
-    })
-    var resp = await fetch(req);
-
-    log("API Result: " + resp.status);
-    if (resp.ok) {
-        showApi(await resp.json());
-    }
-}
-
 async function callClientCredentialsApi() {
     var req = new Request(remoteApiUrl + "/client-credentials-token", {
         headers: new Headers({
@@ -121,7 +107,6 @@ async function callClientCredentialsApi() {
 
 document.querySelector(".login").addEventListener("click", login, false);
 document.querySelector(".call_cross").addEventListener("click", callCrossApi, false);
-document.querySelector(".call_impersonation").addEventListener("click", callImpersonationApi, false);
 document.querySelector(".call_client_credentials").addEventListener("click", callClientCredentialsApi, false);
 document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
