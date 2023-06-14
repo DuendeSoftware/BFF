@@ -25,7 +25,14 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
     /// </summary>
     protected readonly ITransformBuilder TransformBuilder;
 
+    /// <summary>
+    /// The DPoP Proof service
+    /// </summary>
     protected readonly IDPoPProofService ProofService;
+    
+    /// <summary>
+    /// The logger factory
+    /// </summary>
     protected readonly ILoggerFactory LoggerFactory;
 
     /// <summary>

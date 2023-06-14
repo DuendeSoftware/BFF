@@ -7,14 +7,24 @@ using Duende.AccessTokenManagement.OpenIdConnect;
 
 namespace Microsoft.AspNetCore.Builder;
 
+/// <summary>
+/// Configures the Duende.AccessTokenManagement's UserTokenManagementOptions
+/// based on the BFF's options.
+/// </summary>
 public class ConfigureUserTokenManagmentOptions : IConfigureOptions<UserTokenManagementOptions>
 {
     private readonly BffOptions _bffOptions;
 
+    /// <summary>
+    /// Creates an instance of the <see cref="ConfigureUserTokenManagmentOptions"/>
+    /// class.
+    /// </summary>
+    /// <param name="bffOptions"></param>
     public ConfigureUserTokenManagmentOptions(IOptions<BffOptions> bffOptions)
     {
         _bffOptions = bffOptions.Value;
     }
+    /// <inheritdoc/>
     public void Configure(UserTokenManagementOptions options)
     {
         options.DPoPJsonWebKey = _bffOptions.DPoPJsonWebKey;

@@ -130,6 +130,10 @@ public class BffOptions
         Environments.Development
     };
 
+    /// <summary>
+    /// The Json Web Key to use when creating DPoP proof tokens. Defaults to
+    /// null, which is appropriate when not using DPoP.
+    /// </summary>
     public string? DPoPJsonWebKey { get; set; }
 }
 
