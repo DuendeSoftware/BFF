@@ -64,7 +64,8 @@ public class DefaultHttpTransformerFactory : IHttpTransformerFactory
             // transform path to remove prefix
             context.RequestTransforms.Add(new PathStringTransform(PathStringTransform.PathTransformMode.RemovePrefix, localPath));
 
-             context.RequestTransforms.Add(new AccessTokenRequestTransform(
+            // add the access token
+            context.RequestTransforms.Add(new AccessTokenRequestTransform(
                 ProofService,
                 LoggerFactory.CreateLogger<AccessTokenRequestTransform>(),
                 accessToken));

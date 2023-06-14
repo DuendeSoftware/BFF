@@ -40,27 +40,38 @@ internal static class HttpContextExtensions
         {
             TokenType.User => await context.GetUserAccessTokenAsync(userAccessTokenParameters),
             TokenType.Client => await context.GetClientAccessTokenAsync(),
-            TokenType.UserOrClient => (await context.GetUserAccessTokenAsync(userAccessTokenParameters)) ??
-                (await context.GetClientAccessTokenAsync()),
+            TokenType.UserOrClient => await GetUserOrClientAccessTokenAsync(context, userAccessTokenParameters),
             _ => throw new ArgumentOutOfRangeException(nameof(tokenType), $"Unexpected TokenType: {tokenType}")
         };
 
         // Map the result onto the appropriate type of access token result (Bearer vs DPoP)
         return token switch
         {
-            null or { AccessToken: null } => 
-                optional ? 
-                    new NoAccessTokenResult() : 
+            null or { AccessToken: null } =>
+                optional ?
+                    new NoAccessTokenResult() :
                     new AccessTokenRetrievalError("Missing access token"),
-            { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } => 
+            { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } =>
                 new BearerTokenResult(token.AccessToken),
             { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: not null } =>
                  new DPoPTokenResult(token.AccessToken, token.DPoPJsonWebKey),
-            { AccessTokenType: string accessTokenType } => 
-                new AccessTokenRetrievalError($"Unexpected AccessTokenType: {accessTokenType}"),
+            { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: null } =>
+                 new AccessTokenRetrievalError("Missing DPoP Json Web Key for DPoP token"),
+            { AccessTokenType: string accessTokenType } =>
+                new AccessTokenRetrievalError($"Unexpected access token type: {accessTokenType} - should be one of 'DPoP' or 'Bearer'"),
             { AccessTokenType: null } =>
-                new AccessTokenRetrievalError($"Missing AccessTokenType")
+                new AccessTokenRetrievalError("Missing access token type - should be one of 'DPoP' or 'Bearer'")
         };
+
+        static async Task<ClientCredentialsToken> GetUserOrClientAccessTokenAsync(HttpContext context, UserTokenRequestParameters? userAccessTokenParameters)
+        {
+            ClientCredentialsToken token = await context.GetUserAccessTokenAsync(userAccessTokenParameters);
+            if (token == null)
+            {
+                token = await context.GetClientAccessTokenAsync();
+            }
+            return token;
+        }
     }
 
     public static bool IsAjaxRequest(this HttpContext context)

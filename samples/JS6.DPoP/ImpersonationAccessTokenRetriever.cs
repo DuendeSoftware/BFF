@@ -41,7 +41,7 @@ public class ImpersonationAccessTokenRetriever : DefaultAccessTokenRetriever
             }
             if(exchangeResponse.AccessToken is null)
             {
-                return new AccessTokenRetrievalError($"Token exchanged failed. Access token is null");
+                return new AccessTokenRetrievalError("Token exchanged failed. Access token is null");
             } else
             {
                 return new BearerTokenResult(exchangeResponse.AccessToken);

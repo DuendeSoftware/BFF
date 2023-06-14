@@ -11,9 +11,11 @@ namespace Duende.Bff;
 public interface IAccessTokenRetriever
 {
     /// <summary>
-    /// Gets the access token
+    /// Asynchronously gets the access token.
     /// </summary>
-    /// <param name="context">Context used to retrieve the token</param>
-    /// <returns></returns>
+    /// <param name="context">Context used to retrieve the token.</param>
+    /// <returns>A task that contains the access token result, which is an
+    /// object model that can represent various types of tokens (bearer, dpop),
+    /// the absence of an optional token, or an error. </returns>
     Task<AccessTokenResult> GetAccessToken(AccessTokenRetrievalContext context);
 }

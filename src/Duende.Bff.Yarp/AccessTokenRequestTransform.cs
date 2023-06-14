@@ -48,8 +48,6 @@ public class AccessTokenRequestTransform : RequestTransform
     /// <inheritdoc />
     public override async ValueTask ApplyAsync(RequestTransformContext context)
     {
-        // REVIEW - We now return 401 from here if we fail to find a token. Is
-        // that what we want?
         switch (_token)
         {
             case BearerTokenResult bearerToken:
@@ -62,7 +60,6 @@ public class AccessTokenRequestTransform : RequestTransform
                 ApplyError(context, tokenError, _routeId ?? "Unknown Route", _tokenType);
                 break;
             case NoAccessTokenResult noToken:
-                // TODO - what do we do here? Probably a no op, maybe need to log?
                 break;
             default:
                 break;
