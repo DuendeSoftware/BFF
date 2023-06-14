@@ -71,7 +71,7 @@ public class AccessTokenRequestTransform : RequestTransform
         // short circuit forwarder and return 401
         context.HttpContext.Response.StatusCode = 401;
 
-        _logger.AccessTokenMissing(routeId, tokenType?.ToString() ?? "Unknown token type", tokenError.Error);
+        _logger.AccessTokenMissing(tokenType?.ToString() ?? "Unknown token type", routeId, tokenError.Error);
     }
 
     private void ApplyBearerToken(RequestTransformContext context, BearerTokenResult token)
