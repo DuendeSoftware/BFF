@@ -66,7 +66,7 @@ internal static class HttpContextExtensions
         static async Task<ClientCredentialsToken> GetUserOrClientAccessTokenAsync(HttpContext context, UserTokenRequestParameters? userAccessTokenParameters)
         {
             ClientCredentialsToken token = await context.GetUserAccessTokenAsync(userAccessTokenParameters);
-            if (token == null)
+            if (token.AccessToken == null)
             {
                 token = await context.GetClientAccessTokenAsync();
             }
