@@ -33,7 +33,7 @@ public static class BffServiceCollectionExtensions
 
         services.AddDistributedMemoryCache();
         services.AddOpenIdConnectAccessTokenManagement();
-        services.AddSingleton<IConfigureOptions<UserTokenManagementOptions>, ConfigureUserTokenManagmentOptions>();
+        services.AddSingleton<IConfigureOptions<UserTokenManagementOptions>, ConfigureUserTokenManagementOptions>();
 
         services.AddTransient<IReturnUrlValidator, LocalUrlReturnUrlValidator>();
         services.TryAddSingleton<DefaultAccessTokenRetriever>();
