@@ -2,7 +2,6 @@
 // See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
@@ -70,6 +69,12 @@ public class Startup
                 options.Scope.Add("offline_access");
             });
         services.AddSingleton<ImpersonationAccessTokenRetriever>();
+
+        services.AddUserAccessTokenHttpClient("api",
+            configureClient: client => 
+            { 
+                client.BaseAddress = new Uri("https://localhost:5010/api"); 
+            });
     }
 
     public void Configure(IApplicationBuilder app)
