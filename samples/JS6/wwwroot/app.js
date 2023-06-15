@@ -115,6 +115,13 @@ async function callOptionalUserTokenApi() {
     await callRemoteApi("/optional-user-token");
 }
 
+async function callImpersonationApi() {
+    await callRemoteApi("/impersonation");
+}
+
+async function callAudienceConstrained() {
+    await callRemoteApi("/audience-constrained");
+}
 
 // User Management
 document.querySelector(".login").addEventListener("click", login, false);
@@ -130,7 +137,8 @@ document.querySelector(".call_user").addEventListener("click", callUserTokenApi,
 document.querySelector(".call_optional_user").addEventListener("click", callOptionalUserTokenApi, false);
 document.querySelector(".call_client").addEventListener("click", callClientTokenApi, false);
 document.querySelector(".call_user_or_client").addEventListener("click", callUserOrClientTokenApi, false);
-
+document.querySelector(".call_impersonation").addEventListener("click", callImpersonationApi, false);
+document.querySelector(".call_audience_constrained").addEventListener("click", callAudienceConstrained, false);
 
 function showApi() {
     document.getElementById('api-result').innerText = '';

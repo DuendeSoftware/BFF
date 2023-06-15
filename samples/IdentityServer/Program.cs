@@ -1,6 +1,8 @@
 ﻿using Serilog;
 using Serilog.Events;
 
+Console.Title = "IdentityServer";
+
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();

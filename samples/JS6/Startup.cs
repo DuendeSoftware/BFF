@@ -66,9 +66,13 @@ public class Startup
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("api");
+                options.Scope.Add("scope-for-isolated-api");
                 options.Scope.Add("offline_access");
+
+                options.Resource = "urn:isolated-api";
             });
         services.AddSingleton<ImpersonationAccessTokenRetriever>();
+        services.AddSingleton<AudienceConstrainedAccessTokenRetriever>();
 
         services.AddUserAccessTokenHttpClient("api",
             configureClient: client => 
@@ -126,6 +130,20 @@ public class Startup
             // On this path, we require the user token
             endpoints.MapRemoteBffApiEndpoint("/api/user-token", "https://localhost:5010")
                 .RequireAccessToken(TokenType.User);
+
+            
+            // On this path, we perform token exchange to impersonate a different user
+            // before making the api request
+            endpoints.MapRemoteBffApiEndpoint("/api/impersonation", "https://localhost:5010")
+                .RequireAccessToken(TokenType.UserOrClient)
+                .WithAccessTokenRetriever<ImpersonationAccessTokenRetriever>();
+
+
+            // On this path, we obtain an audience constrained token and invoke
+            // a different api that requires such a token
+            endpoints.MapRemoteBffApiEndpoint("/api/audience-constrained", "https://localhost:5012")
+                .RequireAccessToken(TokenType.User)
+                .WithAccessTokenRetriever<AudienceConstrainedAccessTokenRetriever>();
 
         });
     }

@@ -9,13 +9,13 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace Api
+namespace Api.Isolated
 {
     public class Program
     {
         public static int Main(string[] args)
         {
-            Console.Title = "Simple API";
+            Console.Title = "Isolated API";
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
             Log.Logger = new LoggerConfiguration()
