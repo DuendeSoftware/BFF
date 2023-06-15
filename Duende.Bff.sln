@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor6.Client", "samples\B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor6.Shared", "samples\Blazor6\Shared\Blazor6.Shared.csproj", "{E383523A-461D-4058-AF5A-BD67A9B723D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JS6.DPoP", "samples\js6.dpop\JS6.DPoP.csproj", "{D2C4B3D3-A802-4E5A-84F1-7C99E716FB41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JS6.DPoP", "samples\JS6.DPoP\JS6.DPoP.csproj", "{D2C4B3D3-A802-4E5A-84F1-7C99E716FB41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.DPoP", "samples\Api.DPoP\Api.DPoP.csproj", "{E1305546-C5C3-4D10-A0AD-F81DF057B2E2}"
 EndProject
