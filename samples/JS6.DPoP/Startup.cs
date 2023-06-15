@@ -2,7 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Duende.Bff;
@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Yarp.ReverseProxy.Configuration;
+
 
 namespace JS6.DPoP;
 
@@ -19,6 +21,66 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+         var builder = services.AddReverseProxy()
+                .AddBffExtensions();
+
+            builder.LoadFromMemory(
+                new[]
+                {
+                    new RouteConfig()
+                    {
+                        RouteId = "user-token",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/yarp/user-token/{**catch-all}"
+                        }
+                    }.WithAccessToken(TokenType.User).WithAntiforgeryCheck(),
+                    new RouteConfig()
+                    {
+                        RouteId = "client-token",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/yarp/client-token/{**catch-all}"
+                        }
+                    }.WithAccessToken(TokenType.Client).WithAntiforgeryCheck(),
+                    new RouteConfig()
+                    {
+                        RouteId = "user-or-client-token",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/yarp/user-or-client-token/{**catch-all}"
+                        }
+                    }.WithAccessToken(TokenType.UserOrClient).WithAntiforgeryCheck(),
+                    new RouteConfig()
+                    {
+                        RouteId = "anonymous",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/yarp/anonymous/{**catch-all}"
+                        }
+                    }.WithAntiforgeryCheck()
+                },
+                new[]
+                {
+                    new ClusterConfig
+                    {
+                        ClusterId = "cluster1",
+
+                        Destinations = new Dictionary<string, DestinationConfig>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "destination1", new() { Address = "https://localhost:5011" } },
+                        }
+                    }
+                });
+
         // Add BFF services to DI - also add server-side session management
         services.AddBff(options =>
         {
@@ -104,7 +166,11 @@ public class Startup
 
             // login, logout, user, backchannel logout...
             endpoints.MapBffManagementEndpoints();
-
+                
+            endpoints.MapReverseProxy(proxyApp =>
+            {
+                proxyApp.UseAntiforgeryCheck();
+            });
 
             //////////////////////////////////////
             // proxy endpoints for cross-site APIs

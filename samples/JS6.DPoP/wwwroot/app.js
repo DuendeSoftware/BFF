@@ -3,6 +3,7 @@ const silentLoginUrl = "/bff/silent-login";
 const userUrl = "/bff/user";
 const localApiUrl = "/local";
 const remoteApiUrl = "/api";
+const yarpApiUrl = "/yarp"
 let logoutUrl = "/bff/logout";
 
 async function onLoad() {
@@ -64,21 +65,19 @@ function logout() {
 }
 
 async function callLocalApi() {
-    var req = new Request(localApiUrl, {
-        headers: new Headers({
-            'X-CSRF': '1'
-        })
-    })
-    var resp = await fetch(req);
+    return await callApi(localApiUrl);
+}
 
-    log("API Result: " + resp.status);
-    if (resp.ok) {
-        showApi(await resp.json());
-    }
+async function callRemoteApi(path) {
+    return await callApi(remoteApiUrl + path);
+}
+
+async function callYarpApi(path) {
+    return await callApi(yarpApiUrl + path);
 }
 
 async function callApi(path) {
-    var req = new Request(remoteApiUrl + path, {
+    var req = new Request(path, {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -94,35 +93,61 @@ async function callApi(path) {
 }
 
 async function callUserTokenApi() {
-    await callApi("/user-token");
+    await callRemoteApi("/user-token");
 }
 
 async function callClientTokenApi() {
-    await callApi("/client-token");
+    await callRemoteApi("/client-token");
 }
 
 async function callUserOrClientTokenApi() {
-    await callApi("/user-or-client-token");
+    await callRemoteApi("/user-or-client-token");
 }
 
 async function callAnonymousApi() {
-    await callApi("/anonymous");
+    await callRemoteApi("/anonymous");
 }
 
 async function callOptionalUserTokenApi() {
-    await callApi("/optional-user-token");
+    await callRemoteApi("/optional-user-token");
+}
+
+async function callYarpAnonymousApi() {
+    await callYarpApi("/anonymous");
+}
+
+async function callYarpUserTokenApi() {
+    await callYarpApi("/user-token");
+}
+
+async function callYarpClientTokenApi() {
+    await callYarpApi("/client-token");
+}
+
+async function callYarpUserOrClientTokenApi() {
+    await callYarpApi("/user-or-client-token");
 }
 
 
+// User Management
 document.querySelector(".login").addEventListener("click", login, false);
-document.querySelector(".call_user").addEventListener("click", callUserTokenApi, false);
-document.querySelector(".call_client").addEventListener("click", callClientTokenApi, false);
-document.querySelector(".call_user_or_client").addEventListener("click", callUserOrClientTokenApi, false);
-document.querySelector(".call_optional_user").addEventListener("click", callOptionalUserTokenApi, false);
-document.querySelector(".call_anonymous").addEventListener("click", callAnonymousApi, false);
-document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
 
+// Local APIs
+document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
+
+// Remote APIs
+document.querySelector(".call_anonymous").addEventListener("click", callAnonymousApi, false);
+document.querySelector(".call_user").addEventListener("click", callUserTokenApi, false);
+document.querySelector(".call_optional_user").addEventListener("click", callOptionalUserTokenApi, false);
+document.querySelector(".call_client").addEventListener("click", callClientTokenApi, false);
+document.querySelector(".call_user_or_client").addEventListener("click", callUserOrClientTokenApi, false);
+
+// Yarp APIs
+document.querySelector(".call_yarp_anonymous").addEventListener("click", callYarpAnonymousApi, false);
+document.querySelector(".call_yarp_user").addEventListener("click", callYarpUserTokenApi, false);
+document.querySelector(".call_yarp_client").addEventListener("click", callYarpClientTokenApi, false);
+document.querySelector(".call_yarp_user_or_client").addEventListener("click", callYarpUserOrClientTokenApi, false);
 
 function showApi() {
     document.getElementById('api-result').innerText = '';
