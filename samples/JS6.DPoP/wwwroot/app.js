@@ -77,8 +77,8 @@ async function callLocalApi() {
     }
 }
 
-async function callCrossApi() {
-    var req = new Request(remoteApiUrl + "/foo", {
+async function callApi(path) {
+    var req = new Request(remoteApiUrl + path, {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -88,26 +88,38 @@ async function callCrossApi() {
     log("API Result: " + resp.status);
     if (resp.ok) {
         showApi(await resp.json());
+    } else {
+        showApi(resp.statusText)
     }
 }
 
-async function callClientCredentialsApi() {
-    var req = new Request(remoteApiUrl + "/client-credentials-token", {
-        headers: new Headers({
-            'X-CSRF': '1'
-        })
-    })
-    var resp = await fetch(req);
-
-    log("API Result: " + resp.status);
-    if (resp.ok) {
-        showApi(await resp.json());
-    }
+async function callUserTokenApi() {
+    await callApi("/user-token");
 }
+
+async function callClientTokenApi() {
+    await callApi("/client-token");
+}
+
+async function callUserOrClientTokenApi() {
+    await callApi("/user-or-client-token");
+}
+
+async function callAnonymousApi() {
+    await callApi("/anonymous");
+}
+
+async function callOptionalUserTokenApi() {
+    await callApi("/optional-user-token");
+}
+
 
 document.querySelector(".login").addEventListener("click", login, false);
-document.querySelector(".call_cross").addEventListener("click", callCrossApi, false);
-document.querySelector(".call_client_credentials").addEventListener("click", callClientCredentialsApi, false);
+document.querySelector(".call_user").addEventListener("click", callUserTokenApi, false);
+document.querySelector(".call_client").addEventListener("click", callClientTokenApi, false);
+document.querySelector(".call_user_or_client").addEventListener("click", callUserOrClientTokenApi, false);
+document.querySelector(".call_optional_user").addEventListener("click", callOptionalUserTokenApi, false);
+document.querySelector(".call_anonymous").addEventListener("click", callAnonymousApi, false);
 document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
 
