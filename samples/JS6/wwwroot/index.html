@@ -5,6 +5,8 @@
     <title></title>
     <link href="libs/bootstrap.min.css" rel="stylesheet" />
     <link href="StyleSheet.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="libs/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -16,10 +18,24 @@
             <ul class="list-unstyled list-inline">
                 <li><a class="btn btn-primary" href="index.html">Home</a></li>
                 <li><button class="btn btn-default login">Login</button></li>
-                <li><button class="btn btn-primary call_local">Call Service (local)</button></li>
-                <li><button class="btn btn-primary call_cross">Call Service (cross-site)</button></li>
-                <li><button class="btn btn-primary call_impersonation">Call Service (with impersonation)</button></li>
-                <li><button class="btn btn-primary call_client_credentials">Call Service (client credentials token)</button></li>
+                <li>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                            Call APIs
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-header">Local API Calls</li>
+                            <li><a href="#" class="call_local" type="button">Local</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-header">Remote API Calls</li>
+                            <li><a href="#" class="call_anonymous" type="button">Anonymous</a></li>
+                            <li><a href="#" class="call_user" type="button">Required User Token</a></li>
+                            <li><a href="#" class="call_optional_user" type="button">Optional User Token</a></li>
+                            <li><a href="#" class="call_client" type="button">Client Token</a></li>
+                            <li><a href="#" class="call_user_or_client" type="button">User or Client Token</a></li>
+                        </ul>
+                    </div>
+                </li>
                 <li><button class="btn btn-info logout">Logout</button></li>
             </ul>
         </div>

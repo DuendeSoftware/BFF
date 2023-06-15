@@ -99,22 +99,28 @@ public class Startup
             // login, logout, user, backchannel logout...
             endpoints.MapBffManagementEndpoints();
 
+            //////////////////////////////////////
+            // proxy endpoints for cross-site APIs
+            //////////////////////////////////////
+
             // On this path, we use a client credentials token
-            endpoints.MapRemoteBffApiEndpoint("/api/client-credentials-token", "https://localhost:5010")
+            endpoints.MapRemoteBffApiEndpoint("/api/client-token", "https://localhost:5010")
                 .RequireAccessToken(TokenType.Client);
 
-            // On this path, we perform token exchange to impersonate a different user
-            // before making the api request
-            endpoints.MapRemoteBffApiEndpoint("/api/impersonation", "https://localhost:5010")
-                .RequireAccessToken(TokenType.UserOrClient)
-                .WithAccessTokenRetriever<ImpersonationAccessTokenRetriever>();
-
-            // proxy endpoint for cross-site APIs
-            // all calls to /api/* will be forwarded to the remote API
-            // user or client access token will be attached in API call
-            // user access token will be managed automatically using the refresh token
-            endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
+            // On this path, we use a user token if logged in, and fall back to a client credentials token if not
+            endpoints.MapRemoteBffApiEndpoint("/api/user-or-client-token", "https://localhost:5010")
                 .RequireAccessToken(TokenType.UserOrClient);
+
+            // On this path, we make anonymous requests
+            endpoints.MapRemoteBffApiEndpoint("/api/anonymous", "https://localhost:5010");
+
+            // On this path, we use the client token only if the user is logged in
+            endpoints.MapRemoteBffApiEndpoint("/api/optional-user-token", "https://localhost:5010")
+                .WithOptionalUserAccessToken();
+
+            // On this path, we require the user token
+            endpoints.MapRemoteBffApiEndpoint("/api/user-token", "https://localhost:5010")
+                .RequireAccessToken(TokenType.User);
 
         });
     }
