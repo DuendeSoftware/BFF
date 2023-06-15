@@ -64,8 +64,8 @@ function logout() {
     window.location = logoutUrl;
 }
 
-async function callLocalApi() {
-    return await callApi(localApiUrl);
+async function callLocalApi(path) {
+    return await callApi(localApiUrl + path);
 }
 
 async function callRemoteApi(path) {
@@ -90,6 +90,14 @@ async function callApi(path) {
     } else {
         showApi(resp.statusText)
     }
+}
+
+async function callLocalSelfContainedApi() {
+    await callLocalApi("/self-contained")
+}
+
+async function callLocalApiThatInvokesExternalApi() {
+    await callLocalApi("/invokes-external-api")
 }
 
 async function callUserTokenApi() {
@@ -134,7 +142,8 @@ document.querySelector(".login").addEventListener("click", login, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
 
 // Local APIs
-document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
+document.querySelector(".call_local_self_contained").addEventListener("click", callLocalSelfContainedApi, false);
+document.querySelector(".call_local_external").addEventListener("click", callLocalApiThatInvokesExternalApi, false);
 
 // Remote APIs
 document.querySelector(".call_anonymous").addEventListener("click", callAnonymousApi, false);
