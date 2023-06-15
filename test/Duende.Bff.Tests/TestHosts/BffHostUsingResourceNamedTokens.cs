@@ -113,7 +113,8 @@ namespace Duende.Bff.Tests.TestHosts
         public static void StoreNamedTokens((string accessToken, string refreshToken) userTokens, AuthenticationProperties authenticationProperties, string identityToken = null)
         {
             var tokens = new List<AuthenticationToken>();
-            tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.AccessToken}::named_token_stored", Value = userTokens.accessToken });
+            tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.AccessToken}::named_token_stored", Value = userTokens.accessToken,  });
+            tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.TokenType}::named_token_stored", Value = "Bearer",  });
             authenticationProperties.StoreTokens(tokens);
         }
 

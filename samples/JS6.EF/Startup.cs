@@ -29,7 +29,11 @@ namespace Host5.EntityFramework
 
             // Add BFF services to DI - also add server-side session management
             var cn = _configuration.GetConnectionString("db");
-            services.AddBff()
+            services.AddBff(options =>
+            {
+                options.BackchannelLogoutAllUserSessions = true;
+                options.EnableSessionCleanup = true;    
+            })
                 .AddRemoteApis()
                 .AddEntityFrameworkServerSideSessions(options=> {
                     //options.UseSqlServer(cn);

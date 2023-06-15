@@ -1,4 +1,7 @@
 ﻿using Serilog;
+using Serilog.Events;
+
+Console.Title = "IdentityServer";
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -13,6 +16,11 @@ try
     builder.Host.UseSerilog((ctx, lc) => lc
         .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
         .Enrich.FromLogContext()
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+        .MinimumLevel.Override("System", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
         .ReadFrom.Configuration(ctx.Configuration));
 
     var app = builder

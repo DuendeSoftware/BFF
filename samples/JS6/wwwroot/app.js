@@ -63,8 +63,16 @@ function logout() {
     window.location = logoutUrl;
 }
 
-async function callLocalApi() {
-    var req = new Request(localApiUrl, {
+async function callLocalApi(path) {
+    return await callApi(localApiUrl + path);
+}
+
+async function callRemoteApi(path) {
+    return await callApi(remoteApiUrl + path);
+}
+
+async function callApi(path) {
+    var req = new Request(path, {
         headers: new Headers({
             'X-CSRF': '1'
         })
@@ -74,43 +82,63 @@ async function callLocalApi() {
     log("API Result: " + resp.status);
     if (resp.ok) {
         showApi(await resp.json());
+    } else {
+        showApi(resp.statusText)
     }
 }
 
-async function callCrossApi() {
-    var req = new Request(remoteApiUrl + "/foo", {
-        headers: new Headers({
-            'X-CSRF': '1'
-        })
-    })
-    var resp = await fetch(req);
+async function callLocalSelfContainedApi() {
+    await callLocalApi("/self-contained")
+}
 
-    log("API Result: " + resp.status);
-    if (resp.ok) {
-        showApi(await resp.json());
-    }
+async function callLocalApiThatInvokesExternalApi() {
+    await callLocalApi("/invokes-external-api")
+}
+
+async function callUserTokenApi() {
+    await callRemoteApi("/user-token");
+}
+
+async function callClientTokenApi() {
+    await callRemoteApi("/client-token");
+}
+
+async function callUserOrClientTokenApi() {
+    await callRemoteApi("/user-or-client-token");
+}
+
+async function callAnonymousApi() {
+    await callRemoteApi("/anonymous");
+}
+
+async function callOptionalUserTokenApi() {
+    await callRemoteApi("/optional-user-token");
 }
 
 async function callImpersonationApi() {
-    var req = new Request(remoteApiUrl + "/impersonation", {
-        headers: new Headers({
-            'X-CSRF': '1'
-        })
-    })
-    var resp = await fetch(req);
-
-    log("API Result: " + resp.status);
-    if (resp.ok) {
-        showApi(await resp.json());
-    }
+    await callRemoteApi("/impersonation");
 }
 
+async function callAudienceConstrained() {
+    await callRemoteApi("/audience-constrained");
+}
+
+// User Management
 document.querySelector(".login").addEventListener("click", login, false);
-document.querySelector(".call_cross").addEventListener("click", callCrossApi, false);
-document.querySelector(".call_impersonation").addEventListener("click", callImpersonationApi, false);
-document.querySelector(".call_local").addEventListener("click", callLocalApi, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
 
+// Local APIs
+document.querySelector(".call_local_self_contained").addEventListener("click", callLocalSelfContainedApi, false);
+document.querySelector(".call_local_external").addEventListener("click", callLocalApiThatInvokesExternalApi, false);
+
+// Remote APIs
+document.querySelector(".call_anonymous").addEventListener("click", callAnonymousApi, false);
+document.querySelector(".call_user").addEventListener("click", callUserTokenApi, false);
+document.querySelector(".call_optional_user").addEventListener("click", callOptionalUserTokenApi, false);
+document.querySelector(".call_client").addEventListener("click", callClientTokenApi, false);
+document.querySelector(".call_user_or_client").addEventListener("click", callUserOrClientTokenApi, false);
+document.querySelector(".call_impersonation").addEventListener("click", callImpersonationApi, false);
+document.querySelector(".call_audience_constrained").addEventListener("click", callAudienceConstrained, false);
 
 function showApi() {
     document.getElementById('api-result').innerText = '';

@@ -20,6 +20,17 @@ namespace IdentityServerHost
             new ApiScope[]
             {
                 new ApiScope("api", new[] { "name" }),
+                new ApiScope("scope-for-isolated-api", new[] { "name" }),
+            };
+
+        public static IEnumerable<ApiResource> ApiResources =>
+            new ApiResource[]
+            {
+                new ApiResource("urn:isolated-api", "isolated api")
+                {
+                    RequireResourceIndicator = true,
+                    Scopes = { "scope-for-isolated-api" }
+                }
             };
 
         public static IEnumerable<Client> Clients =>
@@ -45,7 +56,7 @@ namespace IdentityServerHost
                     PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "api" }
+                    AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
                 },
             };
     }

@@ -54,7 +54,7 @@ namespace Duende.Bff.Tests.Endpoints.Management
         }
         
         [Fact]
-        public async Task logout_endpoint_for_authenticated_when_require_otpion_is_false_should_not_require_sid()
+        public async Task logout_endpoint_for_authenticated_when_require_option_is_false_should_not_require_sid()
         {
             await BffHost.BffLoginAsync("alice", "sid123");
             

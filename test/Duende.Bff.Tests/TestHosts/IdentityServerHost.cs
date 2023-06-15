@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Duende.AccessTokenManagement;
 using Duende.Bff.Tests.TestFramework;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -115,9 +117,10 @@ public class IdentityServerHost : GenericHost
         await IssueSessionCookieAsync(props, new Claim("sub", sub));
     }
 
-    public async Task<string> CreateJwtAccessTokenAsync()
+    public async Task<BearerTokenResult> CreateJwtAccessTokenAsync()
     {
         var response = await BrowserClient.GetAsync(Url("__token"));
-        return await response.Content.ReadAsStringAsync();
+        var accessToken = await response.Content.ReadAsStringAsync();
+        return new BearerTokenResult(accessToken);
     }
 }

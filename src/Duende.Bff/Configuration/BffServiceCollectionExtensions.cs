@@ -6,11 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using System.Linq;
 using Microsoft.AspNetCore.Authentication;
+using Duende.AccessTokenManagement.OpenIdConnect;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -34,6 +33,7 @@ public static class BffServiceCollectionExtensions
 
         services.AddDistributedMemoryCache();
         services.AddOpenIdConnectAccessTokenManagement();
+        services.AddSingleton<IConfigureOptions<UserTokenManagementOptions>, ConfigureUserTokenManagmentOptions>();
 
         services.AddTransient<IReturnUrlValidator, LocalUrlReturnUrlValidator>();
         services.TryAddSingleton<DefaultAccessTokenRetriever>();

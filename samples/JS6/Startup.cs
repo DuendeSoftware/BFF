@@ -2,7 +2,6 @@
 // See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Builder;
@@ -43,7 +42,7 @@ public class Startup
                 options.SlidingExpiration = false;
 
                 // host prefixed cookie name
-                options.Cookie.Name = "__Host-spa5";
+                options.Cookie.Name = "__Host-spa6";
 
                 // strict SameSite handling
                 options.Cookie.SameSite = SameSiteMode.Strict;
@@ -67,9 +66,19 @@ public class Startup
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("api");
+                options.Scope.Add("scope-for-isolated-api");
                 options.Scope.Add("offline_access");
+
+                options.Resource = "urn:isolated-api";
             });
         services.AddSingleton<ImpersonationAccessTokenRetriever>();
+        services.AddSingleton<AudienceConstrainedAccessTokenRetriever>();
+
+        services.AddUserAccessTokenHttpClient("api",
+            configureClient: client => 
+            { 
+                client.BaseAddress = new Uri("https://localhost:5010/api"); 
+            });
     }
 
     public void Configure(IApplicationBuilder app)
@@ -99,18 +108,42 @@ public class Startup
             // login, logout, user, backchannel logout...
             endpoints.MapBffManagementEndpoints();
 
+            //////////////////////////////////////
+            // proxy endpoints for cross-site APIs
+            //////////////////////////////////////
+
+            // On this path, we use a client credentials token
+            endpoints.MapRemoteBffApiEndpoint("/api/client-token", "https://localhost:5010")
+                .RequireAccessToken(TokenType.Client);
+
+            // On this path, we use a user token if logged in, and fall back to a client credentials token if not
+            endpoints.MapRemoteBffApiEndpoint("/api/user-or-client-token", "https://localhost:5010")
+                .RequireAccessToken(TokenType.UserOrClient);
+
+            // On this path, we make anonymous requests
+            endpoints.MapRemoteBffApiEndpoint("/api/anonymous", "https://localhost:5010");
+
+            // On this path, we use the client token only if the user is logged in
+            endpoints.MapRemoteBffApiEndpoint("/api/optional-user-token", "https://localhost:5010")
+                .WithOptionalUserAccessToken();
+
+            // On this path, we require the user token
+            endpoints.MapRemoteBffApiEndpoint("/api/user-token", "https://localhost:5010")
+                .RequireAccessToken(TokenType.User);
+
+            
             // On this path, we perform token exchange to impersonate a different user
             // before making the api request
             endpoints.MapRemoteBffApiEndpoint("/api/impersonation", "https://localhost:5010")
                 .RequireAccessToken(TokenType.UserOrClient)
                 .WithAccessTokenRetriever<ImpersonationAccessTokenRetriever>();
 
-            // proxy endpoint for cross-site APIs
-            // all calls to /api/* will be forwarded to the remote API
-            // user or client access token will be attached in API call
-            // user access token will be managed automatically using the refresh token
-            endpoints.MapRemoteBffApiEndpoint("/api", "https://localhost:5010")
-                .RequireAccessToken(TokenType.UserOrClient);
+
+            // On this path, we obtain an audience constrained token and invoke
+            // a different api that requires such a token
+            endpoints.MapRemoteBffApiEndpoint("/api/audience-constrained", "https://localhost:5012")
+                .RequireAccessToken(TokenType.User)
+                .WithAccessTokenRetriever<AudienceConstrainedAccessTokenRetriever>();
 
         });
     }

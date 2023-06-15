@@ -31,7 +31,7 @@ namespace Blazor.Server
                 })
                 .AddCookie("cookie", options =>
                 {
-                    options.Cookie.Name = "__Host-blazor";
+                    options.Cookie.Name = "__Host-blazor5";
                     options.Cookie.SameSite = SameSiteMode.Strict;
                 })
                 .AddOpenIdConnect("oidc", options =>

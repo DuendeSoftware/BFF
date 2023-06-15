@@ -20,7 +20,7 @@ public class ImpersonationAccessTokenRetriever : DefaultAccessTokenRetriever
     {
         var result = await base.GetAccessToken(context);
 
-        if(result.Token != null)
+        if(result is BearerTokenResult bearerToken)
         {
             var client = new HttpClient();
             var exchangeResponse = await client.RequestTokenExchangeTokenAsync(new TokenExchangeTokenRequest
@@ -31,21 +31,20 @@ public class ImpersonationAccessTokenRetriever : DefaultAccessTokenRetriever
                 ClientId = "spa",
                 ClientSecret = "secret",
 
-                SubjectToken = result.Token,
+                SubjectToken = bearerToken.AccessToken,
                 SubjectTokenType = OidcConstants.TokenTypeIdentifiers.AccessToken
             });
             if(exchangeResponse.IsError)
             {
-                return new AccessTokenResult
-                {
-                    IsError = true
-                };
-            } 
-            return new AccessTokenResult
+                return new AccessTokenRetrievalError($"Token exchanged failed: {exchangeResponse.ErrorDescription}");
+            }
+            if(exchangeResponse.AccessToken is null)
             {
-                IsError = false,
-                Token = exchangeResponse.AccessToken
-            };
+                return new AccessTokenRetrievalError("Token exchanged failed. Access token is null");
+            } else
+            {
+                return new BearerTokenResult(exchangeResponse.AccessToken);
+            }
         }
 
         return result;

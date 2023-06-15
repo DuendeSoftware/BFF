@@ -5,8 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
+using IdentityModel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
@@ -20,17 +23,20 @@ namespace Duende.Bff.Yarp;
 public class AccessTokenTransformProvider : ITransformProvider
 {
     private readonly BffOptions _options;
-    private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IDPoPProofService _dPoPProofService;
 
     /// <summary>
     /// ctor
     /// </summary>
     /// <param name="options"></param>
-    /// <param name="logger"></param>
-    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger)
+    /// <param name="loggerFactory"></param>
+    /// <param name="dPoPProofService"></param>
+    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILoggerFactory loggerFactory, IDPoPProofService dPoPProofService)
     {
         _options = options.Value;
-        _logger = logger;
+        _loggerFactory = loggerFactory;
+        _dPoPProofService = dPoPProofService;
     }
 
     /// <inheritdoc />
@@ -77,18 +83,13 @@ public class AccessTokenTransformProvider : ITransformProvider
 
             var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
 
-            if (!string.IsNullOrEmpty(token))
-            {
-                transformContext.ProxyRequest.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
-            }
-            else
-            {
-                // short circuit forwarder and return 401
-                transformContext.HttpContext.Response.StatusCode = 401;
-                
-                _logger.AccessTokenMissing(transformBuildContext?.Route?.RouteId ?? "unknown route", tokenType);
-            }
+            var accessTokenTransform = new AccessTokenRequestTransform(
+                _dPoPProofService,
+                _loggerFactory.CreateLogger<AccessTokenRequestTransform>(),
+                token,
+                transformBuildContext?.Route?.RouteId, tokenType);
+
+            await accessTokenTransform.ApplyAsync(transformContext);
         });
     }
 }

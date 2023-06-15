@@ -4,7 +4,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Duende.AccessTokenManagement;
 using Duende.AccessTokenManagement.OpenIdConnect;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -31,29 +33,45 @@ internal static class HttpContextExtensions
         return antiForgeryHeader != null && antiForgeryHeader == options.AntiForgeryHeaderValue;
     }
 
-    public static async Task<string?> GetManagedAccessToken(this HttpContext context, TokenType tokenType, UserTokenRequestParameters? userAccessTokenParameters = null)
+    public static async Task<AccessTokenResult> GetManagedAccessToken(this HttpContext context, TokenType tokenType, bool optional = false, UserTokenRequestParameters? userAccessTokenParameters = null)
     {
-        string? token;
+        // Retrieve the appropriate type of access token (user vs client)
+        var token = tokenType switch
+        {
+            TokenType.User => await context.GetUserAccessTokenAsync(userAccessTokenParameters),
+            TokenType.Client => await context.GetClientAccessTokenAsync(),
+            TokenType.UserOrClient => await GetUserOrClientAccessTokenAsync(context, userAccessTokenParameters),
+            _ => throw new ArgumentOutOfRangeException(nameof(tokenType), $"Unexpected TokenType: {tokenType}")
+        };
 
-        if (tokenType == TokenType.User)
+        // Map the result onto the appropriate type of access token result (Bearer vs DPoP)
+        return token switch
         {
-            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).AccessToken;
-        }
-        else if (tokenType == TokenType.Client)
-        {
-            token = (await context.GetClientAccessTokenAsync()).AccessToken;
-        }
-        else
-        {
-            token = (await context.GetUserAccessTokenAsync(userAccessTokenParameters)).AccessToken;
+            null or { AccessToken: null } =>
+                optional ?
+                    new NoAccessTokenResult() :
+                    new AccessTokenRetrievalError("Missing access token"),
+            { AccessTokenType: OidcConstants.TokenResponse.BearerTokenType } =>
+                new BearerTokenResult(token.AccessToken),
+            { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: not null } =>
+                 new DPoPTokenResult(token.AccessToken, token.DPoPJsonWebKey),
+            { AccessTokenType: OidcConstants.TokenResponse.DPoPTokenType, DPoPJsonWebKey: null } =>
+                 new AccessTokenRetrievalError("Missing DPoP Json Web Key for DPoP token"),
+            { AccessTokenType: string accessTokenType } =>
+                new AccessTokenRetrievalError($"Unexpected access token type: {accessTokenType} - should be one of 'DPoP' or 'Bearer'"),
+            { AccessTokenType: null } =>
+                new AccessTokenRetrievalError("Missing access token type - should be one of 'DPoP' or 'Bearer'")
+        };
 
-            if (string.IsNullOrEmpty(token))
+        static async Task<ClientCredentialsToken> GetUserOrClientAccessTokenAsync(HttpContext context, UserTokenRequestParameters? userAccessTokenParameters)
+        {
+            ClientCredentialsToken token = await context.GetUserAccessTokenAsync(userAccessTokenParameters);
+            if (token.AccessToken == null)
             {
-                token = (await context.GetClientAccessTokenAsync()).AccessToken;
+                token = await context.GetClientAccessTokenAsync();
             }
+            return token;
         }
-
-        return token;
     }
 
     public static bool IsAjaxRequest(this HttpContext context)

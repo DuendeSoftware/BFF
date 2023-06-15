@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Duende.Bff.Logging;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
@@ -14,7 +15,6 @@ namespace Duende.Bff;
 /// </summary>
 public class DefaultAccessTokenRetriever : IAccessTokenRetriever
 {
-
     /// <summary>
     /// The logger.
     /// </summary>
@@ -32,33 +32,23 @@ public class DefaultAccessTokenRetriever : IAccessTokenRetriever
     /// <inheritdoc />
     public virtual async Task<AccessTokenResult> GetAccessToken(AccessTokenRetrievalContext context)
     {
-        string? token = null;
         if (context.Metadata.RequiredTokenType.HasValue)
         {
-            var tokenType = context.Metadata.RequiredTokenType.Value;
-            token = await context.HttpContext.GetManagedAccessToken(tokenType, context.UserTokenRequestParameters);
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                Logger.AccessTokenMissing(context.LocalPath, tokenType);
-                return new AccessTokenResult
-                {
-                    IsError = true
-                };
-            }
+            return await context.HttpContext.GetManagedAccessToken(
+                tokenType: context.Metadata.RequiredTokenType.Value,
+                optional: false,
+                context.UserTokenRequestParameters);
         }
-
-        if (token == null)
+        else if (context.Metadata.OptionalUserToken)
         {
-            if (context.Metadata.OptionalUserToken)
-            {
-                token = (await context.HttpContext.GetUserAccessTokenAsync(context.UserTokenRequestParameters)).AccessToken;
-            }
-
+            return await context.HttpContext.GetManagedAccessToken(
+                tokenType: TokenType.User,
+                optional: true,
+                context.UserTokenRequestParameters);
         }
-        return new AccessTokenResult
+        else
         {
-            Token = token,
-            IsError = false
-        };
+            return new NoAccessTokenResult();
+        }
     }
 }

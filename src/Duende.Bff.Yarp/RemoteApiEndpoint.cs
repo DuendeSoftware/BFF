@@ -5,7 +5,6 @@ using System;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Duende.Bff.Logging;
 using Duende.Bff.Yarp.Logging;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -64,34 +63,26 @@ public static class RemoteApiEndpoint
                 UserTokenRequestParameters = userAccessTokenParameters,
                 ApiAddress = apiAddress,
                 LocalPath = localPath,
-
             };
             var result = await accessTokenRetriever.GetAccessToken(accessTokenContext);
 
-            if (result.IsError)
+            
+            var forwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
+            var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
+            var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
+
+            var httpClient = clientFactory.CreateClient(localPath);
+            var transformer = transformerFactory.CreateTransformer(localPath, result);
+
+            await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
+
+            var errorFeature = context.Features.Get<IForwarderErrorFeature>();
+            if (errorFeature != null)
             {
-                context.Response.StatusCode = 401;
-                return;
-            } 
-            else
-            {
-                var forwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
-                var clientFactory = context.RequestServices.GetRequiredService<IHttpMessageInvokerFactory>();
-                var transformerFactory = context.RequestServices.GetRequiredService<IHttpTransformerFactory>();
+                var error = errorFeature.Error;
+                var exception = errorFeature.Exception;
 
-                var httpClient = clientFactory.CreateClient(localPath);
-                var transformer = transformerFactory.CreateTransformer(localPath, result.Token);
-
-                await forwarder.SendAsync(context, apiAddress, httpClient, ForwarderRequestConfig.Empty, transformer);
-
-                var errorFeature = context.Features.Get<IForwarderErrorFeature>();
-                if (errorFeature != null)
-                {
-                    var error = errorFeature.Error;
-                    var exception = errorFeature.Exception;
-
-                    logger.ProxyResponseError(localPath, exception?.ToString() ?? error.ToString());
-                }
+                logger.ProxyResponseError(localPath, exception?.ToString() ?? error.ToString());
             }
         };
     }
