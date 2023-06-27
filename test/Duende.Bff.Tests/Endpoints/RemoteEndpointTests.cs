@@ -4,10 +4,13 @@
 using Duende.Bff.Tests.TestFramework;
 using Duende.Bff.Tests.TestHosts;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -373,6 +376,35 @@ namespace Duende.Bff.Tests.Endpoints
 
             Func<Task> f = () => BffHost.BrowserClient.SendAsync(req);
             await f.Should().ThrowAsync<Exception>();
+        }
+
+        [Fact]
+        public async Task test_dpop()
+        {
+            var rsaKey = new RsaSecurityKey(RSA.Create(2048));
+            var jsonWebKey = JsonWebKeyConverter.ConvertFromRSASecurityKey(rsaKey);
+            jsonWebKey.Alg = "PS256";
+            var jwk = JsonSerializer.Serialize(jsonWebKey);
+
+            BffHost.OnConfigureServices += svcs =>
+            {
+                svcs.PostConfigure<BffOptions>(opts =>
+                {
+                    opts.DPoPJsonWebKey = jwk;
+                });
+            };
+            BffHost.InitializeAsync().Wait();
+
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_client/test"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+            apiResult.RequestHeaders["DPoP"].First().Should().NotBeNullOrEmpty();
+            apiResult.RequestHeaders["Authorization"].First().StartsWith("DPoP ").Should().BeTrue();
         }
     }
 }

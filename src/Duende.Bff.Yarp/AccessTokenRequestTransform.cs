@@ -98,7 +98,8 @@ public class AccessTokenRequestTransform : RequestTransform
             context.ProxyRequest.Headers.Add(OidcConstants.HttpHeaders.DPoP, proofToken.ProofToken);
             context.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue(OidcConstants.AuthenticationSchemes.AuthorizationHeaderDPoP, token.AccessToken);
-        } else
+        } 
+        else
         {
             // The proof service can opt out of DPoP by returning null. If so,
             // we just use the access token as a bearer token.
