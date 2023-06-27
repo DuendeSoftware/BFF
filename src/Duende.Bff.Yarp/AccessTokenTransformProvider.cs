@@ -4,12 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
-using Duende.Bff.Logging;
-using Duende.Bff.Yarp.Logging;
-using IdentityModel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
