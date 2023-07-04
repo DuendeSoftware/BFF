@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Duende.AccessTokenManagement;
 using Microsoft.Extensions.Logging;
@@ -44,17 +45,17 @@ public class AccessTokenTransformProvider : ITransformProvider
     {
     }
 
-    /// <inheritdoc />
-    public void Apply(TransformBuilderContext transformBuildContext)
+    public bool GetMetadataValue(TransformBuilderContext transformBuildContext, string metadataName, [NotNullWhen(true)] out string? metadata)
     {
-        var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+        var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(metadataName);
         var clusterValue =
-            transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+            transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(metadataName);
 
         // no metadata
         if (string.IsNullOrEmpty(routeValue) && string.IsNullOrEmpty(clusterValue))
         {
-            return;
+            metadata = default;
+            return false;
         }
 
         var values = new HashSet<string>();
@@ -64,19 +65,42 @@ public class AccessTokenTransformProvider : ITransformProvider
         if (values.Count > 1)
         {
             throw new ArgumentException(
-                "Mismatching Duende.Bff.Yarp.TokenType route or cluster metadata values found");
+                $"Mismatching {metadataName} route and cluster metadata values found");
         }
-            
-        if (!TokenType.TryParse(values.First(), true, out TokenType tokenType))
+        metadata = values.First();
+        return true;
+    }
+
+    /// <inheritdoc />
+    public void Apply(TransformBuilderContext transformBuildContext)
+    {
+        TokenType tokenType;
+        bool optional;
+        if(GetMetadataValue(transformBuildContext, Constants.Yarp.OptionalUserTokenMetadata, out var optionalTokenMetadata))
         {
-            throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
+            optional = true;
+            tokenType = TokenType.User;
+            // TODO - is it an error to set both OptionalUserToken and a token type? I think yes, because setting a token type means
+            // setting a *required* token type.
+        } 
+        else if (GetMetadataValue(transformBuildContext, Constants.Yarp.TokenTypeMetadata, out var tokenTypeMetadata))
+        {
+            optional = false;
+            if (!TokenType.TryParse(tokenTypeMetadata, true, out tokenType))
+            {
+                throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
+            }
+        }
+        else
+        {
+            return;
         }
 
         transformBuildContext.AddRequestTransform(async transformContext =>
         {
             transformContext.HttpContext.CheckForBffMiddleware(_options);
 
-            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType, optional);
 
             var accessTokenTransform = new AccessTokenRequestTransform(
                 _dPoPProofService,

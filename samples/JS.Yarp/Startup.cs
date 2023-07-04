@@ -52,7 +52,17 @@ namespace YarpHost
                         {
                             Path = "/anon_api/{**catch-all}"
                         }
-                    }.WithAntiforgeryCheck()
+                    }.WithAntiforgeryCheck(),
+                    new RouteConfig()
+                    {
+                        RouteId = "api_optional_user",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/optional_user_api/{**catch-all}"
+                        }
+                    }.WithOptionalUserAccessToken().WithAntiforgeryCheck()
                 },
                 new[]
                 {

@@ -54,6 +54,20 @@ async function callUserToken() {
     }
 }
 
+async function callOptionalUserToken() {
+    var req = new Request("/optional_user_api", {
+        headers: new Headers({
+            'X-CSRF': '1'
+        })
+    })
+    var resp = await fetch(req);
+
+    log("API Result: " + resp.status);
+    if (resp.ok) {
+        showApi(await resp.json());
+    }
+}
+
 async function callClientToken() {
     var req = new Request("/client_api", {
         headers: new Headers({
@@ -88,6 +102,7 @@ document.querySelector(".login").addEventListener("click", login, false);
 document.querySelector(".logout").addEventListener("click", logout, false);
 
 document.querySelector(".call_user").addEventListener("click", callUserToken, false);
+document.querySelector(".call_optional_user").addEventListener("click", callOptionalUserToken, false);
 document.querySelector(".call_client").addEventListener("click", callClientToken, false);
 document.querySelector(".call_anon").addEventListener("click", callNoToken, false);
 

@@ -21,6 +21,11 @@ public static class ProxyConfigExtensions
     {
         return config.WithMetadata(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
     }
+
+    public static RouteConfig WithOptionalUserAccessToken(this RouteConfig config)
+    {
+        return config.WithMetadata(Constants.Yarp.OptionalUserTokenMetadata, "true");
+    }
         
     /// <summary>
     /// Adds anti-forgery metadata to a route configuration

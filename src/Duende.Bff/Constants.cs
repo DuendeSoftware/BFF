@@ -21,6 +21,8 @@ public static class Constants
         /// Name of toke type metadata
         /// </summary>
         public const string AntiforgeryCheckMetadata = "Duende.Bff.Yarp.AntiforgeryCheck";
+
+        public const string OptionalUserTokenMetadata = "Duende.Bff.Yarp.OptionalUserToken";
     }
         
     /// <summary>
