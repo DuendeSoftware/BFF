@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
+using Duende.Bff.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
@@ -19,6 +21,7 @@ namespace Duende.Bff.Yarp;
 public class AccessTokenTransformProvider : ITransformProvider
 {
     private readonly BffOptions _options;
+    private readonly ILogger<AccessTokenTransformProvider> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly IDPoPProofService _dPoPProofService;
 
@@ -26,11 +29,13 @@ public class AccessTokenTransformProvider : ITransformProvider
     /// ctor
     /// </summary>
     /// <param name="options"></param>
+    /// <param name="logger"></param>
     /// <param name="loggerFactory"></param>
     /// <param name="dPoPProofService"></param>
-    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILoggerFactory loggerFactory, IDPoPProofService dPoPProofService)
+    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger, ILoggerFactory loggerFactory, IDPoPProofService dPoPProofService)
     {
         _options = options.Value;
+        _logger = logger;
         _loggerFactory = loggerFactory;
         _dPoPProofService = dPoPProofService;
     }
@@ -78,10 +83,19 @@ public class AccessTokenTransformProvider : ITransformProvider
         bool optional;
         if(GetMetadataValue(transformBuildContext, Constants.Yarp.OptionalUserTokenMetadata, out var optionalTokenMetadata))
         {
+            if (GetMetadataValue(transformBuildContext, Constants.Yarp.TokenTypeMetadata, out var tokenTypeMetadata))
+            {
+                transformBuildContext.AddRequestTransform(ctx =>
+                {
+                    ctx.HttpContext.Response.StatusCode = 500;
+                    _logger.InvalidRouteConfiguration(transformBuildContext.Route.ClusterId, transformBuildContext.Route.RouteId);
+
+                    return ValueTask.CompletedTask;
+                });
+                return;
+            }
             optional = true;
             tokenType = TokenType.User;
-            // TODO - is it an error to set both OptionalUserToken and a token type? I think yes, because setting a token type means
-            // setting a *required* token type.
         } 
         else if (GetMetadataValue(transformBuildContext, Constants.Yarp.TokenTypeMetadata, out var tokenTypeMetadata))
         {
