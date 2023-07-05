@@ -45,7 +45,7 @@ public class AccessTokenTransformProvider : ITransformProvider
     {
     }
 
-    public bool GetMetadataValue(TransformBuilderContext transformBuildContext, string metadataName, [NotNullWhen(true)] out string? metadata)
+    private static bool GetMetadataValue(TransformBuilderContext transformBuildContext, string metadataName, [NotNullWhen(true)] out string? metadata)
     {
         var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(metadataName);
         var clusterValue =
@@ -54,7 +54,7 @@ public class AccessTokenTransformProvider : ITransformProvider
         // no metadata
         if (string.IsNullOrEmpty(routeValue) && string.IsNullOrEmpty(clusterValue))
         {
-            metadata = default;
+            metadata = null;
             return false;
         }
 

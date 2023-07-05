@@ -22,6 +22,13 @@ public static class ProxyConfigExtensions
         return config.WithMetadata(Constants.Yarp.TokenTypeMetadata, tokenType.ToString());
     }
 
+    /// <summary>
+    /// Adds BFF access token metadata to a route configuration, indicating that 
+    /// the route should use the user access token if the user is authenticated,
+    /// but fall back to an anonymous request if not.
+    /// </summary>
+    /// <param name="config"></param>
+    /// <returns></returns>
     public static RouteConfig WithOptionalUserAccessToken(this RouteConfig config)
     {
         return config.WithMetadata(Constants.Yarp.OptionalUserTokenMetadata, "true");
