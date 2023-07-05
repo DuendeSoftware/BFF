@@ -212,5 +212,14 @@ namespace Duende.Bff.Tests.Endpoints
         
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
+
+        [Fact]
+        public async Task invalid_configuration_of_routes_should_return_500()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_invalid/test"));
+            var response = await BffHost.BrowserClient.SendAsync(req);
+        
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        }
     }
 }
