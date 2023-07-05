@@ -53,11 +53,30 @@ namespace Duende.Bff.Tests.Endpoints
         }
 
         [Fact]
-        public async Task authenticated_GET_should_forward_user_to_api()
+        public async Task anonymous_call_to_optional_user_token_route_should_succeed()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_optional_user/test"));
+            req.Headers.Add("x-csrf", "1");
+            var response = await BffHost.BrowserClient.SendAsync(req);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
+            apiResult.Method.Should().Be("GET");
+            apiResult.Path.Should().Be("/api_optional_user/test");
+            apiResult.Sub.Should().BeNull();
+            apiResult.ClientId.Should().BeNull();
+        }
+
+        [Theory]
+        [InlineData("/api_user/test")]
+        [InlineData("/api_optional_user/test")]
+        public async Task authenticated_GET_should_forward_user_to_api(string route)
         {
             await BffHost.BffLoginAsync("alice");
         
-            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_user/test"));
+            var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url(route));
             req.Headers.Add("x-csrf", "1");
             var response = await BffHost.BrowserClient.SendAsync(req);
         
@@ -66,17 +85,19 @@ namespace Duende.Bff.Tests.Endpoints
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
             apiResult.Method.Should().Be("GET");
-            apiResult.Path.Should().Be("/api_user/test");
+            apiResult.Path.Should().Be(route);
             apiResult.Sub.Should().Be("alice");
             apiResult.ClientId.Should().Be("spa");
         }
         
-        [Fact]
-        public async Task authenticated_PUT_should_forward_user_to_api()
+        [Theory]
+        [InlineData("/api_user/test")]
+        [InlineData("/api_optional_user/test")]
+        public async Task authenticated_PUT_should_forward_user_to_api(string route)
         {
             await BffHost.BffLoginAsync("alice");
         
-            var req = new HttpRequestMessage(HttpMethod.Put, BffHost.Url("/api_user/test"));
+            var req = new HttpRequestMessage(HttpMethod.Put, BffHost.Url(route));
             req.Headers.Add("x-csrf", "1");
             var response = await BffHost.BrowserClient.SendAsync(req);
         
@@ -85,17 +106,19 @@ namespace Duende.Bff.Tests.Endpoints
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
             apiResult.Method.Should().Be("PUT");
-            apiResult.Path.Should().Be("/api_user/test");
+            apiResult.Path.Should().Be(route);
             apiResult.Sub.Should().Be("alice");
             apiResult.ClientId.Should().Be("spa");
         }
-        
-        [Fact]
-        public async Task authenticated_POST_should_forward_user_to_api()
+
+        [Theory]
+        [InlineData("/api_user/test")]
+        [InlineData("/api_optional_user/test")]
+        public async Task authenticated_POST_should_forward_user_to_api(string route)
         {
             await BffHost.BffLoginAsync("alice");
         
-            var req = new HttpRequestMessage(HttpMethod.Post, BffHost.Url("/api_user/test"));
+            var req = new HttpRequestMessage(HttpMethod.Post, BffHost.Url(route));
             req.Headers.Add("x-csrf", "1");
             var response = await BffHost.BrowserClient.SendAsync(req);
         
@@ -104,7 +127,7 @@ namespace Duende.Bff.Tests.Endpoints
             var json = await response.Content.ReadAsStringAsync();
             var apiResult = JsonSerializer.Deserialize<ApiResponse>(json);
             apiResult.Method.Should().Be("POST");
-            apiResult.Path.Should().Be("/api_user/test");
+            apiResult.Path.Should().Be(route);
             apiResult.Sub.Should().Be("alice");
             apiResult.ClientId.Should().Be("spa");
         }

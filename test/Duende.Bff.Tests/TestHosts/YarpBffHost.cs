@@ -102,6 +102,18 @@ namespace Duende.Bff.Tests.TestHosts
                      .WithAccessToken(TokenType.User),
                     
                     new RouteConfig()
+                    {
+                        RouteId = "api_optional_user",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/api_optional_user/{**catch-all}"
+                        }
+                    }.WithAntiforgeryCheck()
+                     .WithOptionalUserAccessToken(),
+                    
+                    new RouteConfig()
                         {
                             RouteId = "api_client",
                             ClusterId = "cluster1",
