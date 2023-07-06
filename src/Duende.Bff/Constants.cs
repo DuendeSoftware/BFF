@@ -13,14 +13,19 @@ public static class Constants
     public static class Yarp
     {
         /// <summary>
-        /// Name of toke type metadata
+        /// Name of token type (User, Client, UserOrClient) metadata
         /// </summary>
         public const string TokenTypeMetadata = "Duende.Bff.Yarp.TokenType";
             
         /// <summary>
-        /// Name of toke type metadata
+        /// Name of Anti-forgery check metadata
         /// </summary>
         public const string AntiforgeryCheckMetadata = "Duende.Bff.Yarp.AntiforgeryCheck";
+
+        /// <summary>
+        /// Name of optional user token metadata
+        /// </summary>
+        public const string OptionalUserTokenMetadata = "Duende.Bff.Yarp.OptionalUserToken";
     }
         
     /// <summary>

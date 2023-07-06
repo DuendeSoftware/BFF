@@ -102,6 +102,18 @@ namespace Duende.Bff.Tests.TestHosts
                      .WithAccessToken(TokenType.User),
                     
                     new RouteConfig()
+                    {
+                        RouteId = "api_optional_user",
+                        ClusterId = "cluster1",
+
+                        Match = new()
+                        {
+                            Path = "/api_optional_user/{**catch-all}"
+                        }
+                    }.WithAntiforgeryCheck()
+                     .WithOptionalUserAccessToken(),
+                    
+                    new RouteConfig()
                         {
                             RouteId = "api_client",
                             ClusterId = "cluster1",
@@ -123,7 +135,23 @@ namespace Duende.Bff.Tests.TestHosts
                                 Path = "/api_user_or_client/{**catch-all}"
                             }
                         }.WithAntiforgeryCheck()
-                         .WithAccessToken(TokenType.UserOrClient)
+                         .WithAccessToken(TokenType.UserOrClient),
+                    
+                    // This route configuration is invalid. WithAccessToken says
+                    // that the access token is required, while
+                    // WithOptionalUserAccessToken says that it is optional.
+                    // Calling this endpoint results in a run time error.
+                    new RouteConfig()
+                        {
+                            RouteId = "api_invalid",
+                            ClusterId = "cluster1",
+
+                            Match = new()
+                            {
+                                Path = "/api_invalid/{**catch-all}"
+                            }
+                        }.WithOptionalUserAccessToken()
+                         .WithAccessToken(TokenType.User),
                 },
                 
                 new[]

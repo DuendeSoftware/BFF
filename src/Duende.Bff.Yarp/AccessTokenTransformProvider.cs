@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
+using Duende.Bff.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
@@ -18,6 +21,7 @@ namespace Duende.Bff.Yarp;
 public class AccessTokenTransformProvider : ITransformProvider
 {
     private readonly BffOptions _options;
+    private readonly ILogger<AccessTokenTransformProvider> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly IDPoPProofService _dPoPProofService;
 
@@ -25,11 +29,13 @@ public class AccessTokenTransformProvider : ITransformProvider
     /// ctor
     /// </summary>
     /// <param name="options"></param>
+    /// <param name="logger"></param>
     /// <param name="loggerFactory"></param>
     /// <param name="dPoPProofService"></param>
-    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILoggerFactory loggerFactory, IDPoPProofService dPoPProofService)
+    public AccessTokenTransformProvider(IOptions<BffOptions> options, ILogger<AccessTokenTransformProvider> logger, ILoggerFactory loggerFactory, IDPoPProofService dPoPProofService)
     {
         _options = options.Value;
+        _logger = logger;
         _loggerFactory = loggerFactory;
         _dPoPProofService = dPoPProofService;
     }
@@ -44,17 +50,17 @@ public class AccessTokenTransformProvider : ITransformProvider
     {
     }
 
-    /// <inheritdoc />
-    public void Apply(TransformBuilderContext transformBuildContext)
+    private static bool GetMetadataValue(TransformBuilderContext transformBuildContext, string metadataName, [NotNullWhen(true)] out string? metadata)
     {
-        var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+        var routeValue = transformBuildContext.Route.Metadata?.GetValueOrDefault(metadataName);
         var clusterValue =
-            transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(Constants.Yarp.TokenTypeMetadata);
+            transformBuildContext.Cluster?.Metadata?.GetValueOrDefault(metadataName);
 
         // no metadata
         if (string.IsNullOrEmpty(routeValue) && string.IsNullOrEmpty(clusterValue))
         {
-            return;
+            metadata = null;
+            return false;
         }
 
         var values = new HashSet<string>();
@@ -64,19 +70,51 @@ public class AccessTokenTransformProvider : ITransformProvider
         if (values.Count > 1)
         {
             throw new ArgumentException(
-                "Mismatching Duende.Bff.Yarp.TokenType route or cluster metadata values found");
+                $"Mismatching {metadataName} route and cluster metadata values found");
         }
-            
-        if (!TokenType.TryParse(values.First(), true, out TokenType tokenType))
+        metadata = values.First();
+        return true;
+    }
+
+    /// <inheritdoc />
+    public void Apply(TransformBuilderContext transformBuildContext)
+    {
+        TokenType tokenType;
+        bool optional;
+        if(GetMetadataValue(transformBuildContext, Constants.Yarp.OptionalUserTokenMetadata, out var optionalTokenMetadata))
         {
-            throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
+            if (GetMetadataValue(transformBuildContext, Constants.Yarp.TokenTypeMetadata, out var tokenTypeMetadata))
+            {
+                transformBuildContext.AddRequestTransform(ctx =>
+                {
+                    ctx.HttpContext.Response.StatusCode = 500;
+                    _logger.InvalidRouteConfiguration(transformBuildContext.Route.ClusterId, transformBuildContext.Route.RouteId);
+
+                    return ValueTask.CompletedTask;
+                });
+                return;
+            }
+            optional = true;
+            tokenType = TokenType.User;
+        } 
+        else if (GetMetadataValue(transformBuildContext, Constants.Yarp.TokenTypeMetadata, out var tokenTypeMetadata))
+        {
+            optional = false;
+            if (!TokenType.TryParse(tokenTypeMetadata, true, out tokenType))
+            {
+                throw new ArgumentException("Invalid value for Duende.Bff.Yarp.TokenType metadata");
+            }
+        }
+        else
+        {
+            return;
         }
 
         transformBuildContext.AddRequestTransform(async transformContext =>
         {
             transformContext.HttpContext.CheckForBffMiddleware(_options);
 
-            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType);
+            var token = await transformContext.HttpContext.GetManagedAccessToken(tokenType, optional);
 
             var accessTokenTransform = new AccessTokenRequestTransform(
                 _dPoPProofService,
