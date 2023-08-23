@@ -59,8 +59,11 @@ internal static class HttpContextExtensions
                  new AccessTokenRetrievalError("Missing DPoP Json Web Key for DPoP token"),
             { AccessTokenType: string accessTokenType } =>
                 new AccessTokenRetrievalError($"Unexpected access token type: {accessTokenType} - should be one of 'DPoP' or 'Bearer'"),
-            { AccessTokenType: null } =>
-                new AccessTokenRetrievalError("Missing access token type - should be one of 'DPoP' or 'Bearer'")
+            { AccessTokenType: null } => 
+                // Fall back to bearer tokens when the access token type is absent.
+                // In some edge cases, we've seen bearer tokens not have their type specified.
+                // But that wouldn't be the case if you had a DPoP token.
+                new BearerTokenResult(token.AccessToken)
         };
 
         static async Task<ClientCredentialsToken> GetUserOrClientAccessTokenAsync(HttpContext context, UserTokenRequestParameters? userAccessTokenParameters)
