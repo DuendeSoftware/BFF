@@ -157,6 +157,18 @@
         ],
         "problemMatcher": "$msCompile"
       },
+      {
+        "label": "build-js8ef",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS8.EF/JS8.EF.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
     ]
 
 }
