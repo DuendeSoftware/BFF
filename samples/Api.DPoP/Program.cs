@@ -15,6 +15,7 @@ namespace Api.DPoP
     {
         public static int Main(string[] args)
         {
+            Console.Title = "DPoP API";
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
             Log.Logger = new LoggerConfiguration()

@@ -1,0 +1,150 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/src/Duende.Bff/Duende.Bff.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-identityserver",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/IdentityServer/IdentityServer.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-api",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/Api/Api.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-api.dpop",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/Api.DPoP/Api.DPoP.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-api.isolated",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/Api.Isolated/Api.Isolated.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js6",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS6/JS6.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js6ef",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS6.EF/JS6.EF.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-jsyarp",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS.Yarp/JS.Yarp.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js6dpop",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS6.DPoP/JS6.DPoP.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js8",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS8/JS8.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js8dpop",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS8.DPoP/JS8.DPoP.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js8ef",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS8.EF/JS8.EF.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+    ]
+
+}

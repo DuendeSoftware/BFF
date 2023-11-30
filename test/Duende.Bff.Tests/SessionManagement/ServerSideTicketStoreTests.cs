@@ -15,7 +15,6 @@ namespace Duende.Bff.Tests.SessionManagement
     public class ServerSideTicketStoreTests : BffIntegrationTestBase
     {
         InMemoryUserSessionStore _sessionStore = new InMemoryUserSessionStore();
-        MockClock _clock = new MockClock() { UtcNow = DateTime.UtcNow };
 
         public ServerSideTicketStoreTests()
         {

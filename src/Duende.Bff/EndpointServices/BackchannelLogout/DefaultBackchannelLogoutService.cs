@@ -68,8 +68,8 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
     {
         Logger.LogDebug("Processing back-channel logout request");
         
-        context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-        context.Response.Headers.Add("Pragma", "no-cache");
+        context.Response.Headers.Append("Cache-Control", "no-cache, no-store");
+        context.Response.Headers.Append("Pragma", "no-cache");
 
         try
         {
@@ -178,7 +178,11 @@ public class DefaultBackchannelLogoutService : IBackchannelLogoutService
         var handler = new JsonWebTokenHandler();
         var parameters = await GetTokenValidationParameters();
 
+#if NET8_0
+        var result = await handler.ValidateTokenAsync(jwt, parameters);
+#else
         var result = handler.ValidateToken(jwt, parameters);
+#endif
         if (result.IsValid)
         {
             Logger.LogDebug("Back-channel JWT validation successful");

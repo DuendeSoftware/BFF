@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authentication;
 using System;
 
+#if !NET8_0
 namespace Duende.Bff.Tests.TestFramework
 {
     public class MockClock : ISystemClock
@@ -11,3 +12,4 @@ namespace Duende.Bff.Tests.TestFramework
         public DateTimeOffset UtcNow { get; set; }
     }
 }
+#endif

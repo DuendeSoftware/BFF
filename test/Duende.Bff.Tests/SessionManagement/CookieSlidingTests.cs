@@ -12,13 +12,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
+#if NET8_0
+using Microsoft.Extensions.Time.Testing;
+#endif
+
 namespace Duende.Bff.Tests.SessionManagement
 {
     public class CookieSlidingTests : BffIntegrationTestBase
     {
         InMemoryUserSessionStore _sessionStore = new InMemoryUserSessionStore();
+#if NET8_0
+        FakeTimeProvider _clock = new(DateTime.UtcNow);
+#else
         MockClock _clock = new MockClock() { UtcNow = DateTime.UtcNow };
-
+#endif
         public CookieSlidingTests()
         {
             BffHost.OnConfigureServices += services => 
@@ -29,9 +36,22 @@ namespace Duende.Bff.Tests.SessionManagement
                     options.SlidingExpiration = true;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
                 });
+#if NET8_0
+                services.AddSingleton<TimeProvider>(_clock);
+#else
                 services.AddSingleton<ISystemClock>(_clock);
+#endif           
             };
             BffHost.InitializeAsync().Wait();
+        }
+
+        private void SetClock(TimeSpan t)
+        {
+#if NET8_0
+            _clock.SetUtcNow(_clock.GetUtcNow().Add(t));
+#else
+            _clock.UtcNow = _clock.UtcNow.Add(t);
+#endif  
         }
 
         [Fact]
@@ -48,7 +68,7 @@ namespace Duende.Bff.Tests.SessionManagement
             var firstTicket = await ticketStore.RetrieveAsync(session.Key);
             firstTicket.Should().NotBeNull();
 
-            _clock.UtcNow = _clock.UtcNow.AddMinutes(8);
+            SetClock(TimeSpan.FromMinutes(8));
             (await BffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
 
             var secondTicket = await ticketStore.RetrieveAsync(session.Key);
@@ -72,7 +92,7 @@ namespace Duende.Bff.Tests.SessionManagement
             var firstTicket = await ticketStore.RetrieveAsync(session.Key);
             firstTicket.Should().NotBeNull();
 
-            _clock.UtcNow = _clock.UtcNow.AddMinutes(8);
+            SetClock(TimeSpan.FromMinutes(8));
             (await BffHost.GetIsUserLoggedInAsync("slide=false")).Should().BeTrue();
 
             var secondTicket = await ticketStore.RetrieveAsync(session.Key);
@@ -112,7 +132,7 @@ namespace Duende.Bff.Tests.SessionManagement
             firstTicket.Should().NotBeNull();
 
             shouldRenew = true;
-            _clock.UtcNow = _clock.UtcNow.AddSeconds(1);
+            SetClock(TimeSpan.FromSeconds(1));
             (await BffHost.GetIsUserLoggedInAsync()).Should().BeTrue();
 
             var secondTicket = await ticketStore.RetrieveAsync(session.Key);
@@ -153,7 +173,7 @@ namespace Duende.Bff.Tests.SessionManagement
             firstTicket.Should().NotBeNull();
 
             shouldRenew = true;
-            _clock.UtcNow = _clock.UtcNow.AddSeconds(1);
+            SetClock(TimeSpan.FromSeconds(1));
             (await BffHost.GetIsUserLoggedInAsync("slide=false")).Should().BeTrue();
 
             var secondTicket = await ticketStore.RetrieveAsync(session.Key);
