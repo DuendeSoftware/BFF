@@ -132,7 +132,19 @@
             "/consoleloggerparameters:NoSummary"
         ],
         "problemMatcher": "$msCompile"
-      }
+      },
+      {
+        "label": "build-js8",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS8/JS8.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
     ]
 
 }

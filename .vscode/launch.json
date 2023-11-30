@@ -26,7 +26,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-identityserver",
-            "program": "${workspaceFolder}/samples/IdentityServer/bin/Debug/net6.0/IdentityServer.dll",
+            "program": "${workspaceFolder}/samples/IdentityServer/bin/Debug/net8.0/IdentityServer.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/IdentityServer",
             "env": {
@@ -205,6 +205,27 @@
             "program": "${workspaceFolder}/samples/JS6.DPoP/bin/Debug/net6.0/JS6.DPoP.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/JS6.DPoP",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "integratedTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 10
+            }
+        },
+        {
+            "name": "JS8",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-js8",
+            "program": "${workspaceFolder}/samples/JS8/bin/Debug/net8.0/JS8.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/JS8",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
