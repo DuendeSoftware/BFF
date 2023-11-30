@@ -63,7 +63,7 @@ namespace Host5.EntityFramework
                     options.Authority = "https://localhost:5001";
 
                     // confidential client using code flow + PKCE
-                    options.ClientId = "spa";
+                    options.ClientId = "backchannel-spa";
                     options.ClientSecret = "secret";
                     options.ResponseType = "code";
                     options.ResponseMode = "query";

@@ -94,47 +94,6 @@
             }
         },
         {
-            "name": "JS3",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-js3",
-            "program": "${workspaceFolder}/samples/JS3/bin/Debug/net6.0/JS3.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/samples/JS3",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "presentation": {
-              "hidden": false,
-              "order": 10
-            }
-        },
-
-        {
-            "name": "JS5",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-js5",
-            "program": "${workspaceFolder}/samples/JS5/bin/Debug/net6.0/JS5.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/samples/JS5",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "presentation": {
-              "hidden": false,
-              "order": 10
-            }
-        },
-        {
             "name": "JS6",
             "type": "coreclr",
             "request": "launch",

@@ -2,7 +2,7 @@
   "profiles": {
     "Host5.EntityFramework": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "https://localhost:5002",
       "environmentVariables": {

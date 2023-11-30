@@ -62,30 +62,6 @@
         "problemMatcher": "$msCompile"
       },
       {
-        "label": "build-js3",
-        "type": "process",
-        "command": "dotnet",
-        "args": [
-            "build",
-            "${workspaceFolder}/samples/JS3/JS3.csproj",
-            "/property:GenerateFullPaths=true",
-            "/consoleloggerparameters:NoSummary"
-        ],
-        "problemMatcher": "$msCompile"
-      },
-      {
-        "label": "build-js5",
-        "type": "process",
-        "command": "dotnet",
-        "args": [
-            "build",
-            "${workspaceFolder}/samples/JS5/JS5.csproj",
-            "/property:GenerateFullPaths=true",
-            "/consoleloggerparameters:NoSummary"
-        ],
-        "problemMatcher": "$msCompile"
-      },
-      {
         "label": "build-js6",
         "type": "process",
         "command": "dotnet",
