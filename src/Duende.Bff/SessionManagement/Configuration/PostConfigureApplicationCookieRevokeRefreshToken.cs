@@ -34,7 +34,7 @@ public class PostConfigureApplicationCookieRevokeRefreshToken : IPostConfigureOp
     }
 
     /// <inheritdoc />
-    public void PostConfigure(string name, CookieAuthenticationOptions options)
+    public void PostConfigure(string? name, CookieAuthenticationOptions options)
     {
         if (_options.RevokeRefreshTokenOnLogout && name == _scheme)
         {

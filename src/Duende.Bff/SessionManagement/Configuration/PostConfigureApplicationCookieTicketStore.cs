@@ -28,7 +28,7 @@ public class PostConfigureApplicationCookieTicketStore : IPostConfigureOptions<C
     }
 
     /// <inheritdoc />
-    public void PostConfigure(string name, CookieAuthenticationOptions options)
+    public void PostConfigure(string? name, CookieAuthenticationOptions options)
     {
         if (name == _scheme)
         {

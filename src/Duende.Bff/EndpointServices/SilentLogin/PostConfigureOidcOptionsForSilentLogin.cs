@@ -28,7 +28,7 @@ public class PostConfigureOidcOptionsForSilentLogin : IPostConfigureOptions<Open
     }
 
     /// <inheritdoc />
-    public void PostConfigure(string name, OpenIdConnectOptions options)
+    public void PostConfigure(string? name, OpenIdConnectOptions options)
     {
         if (_scheme == name)
         {

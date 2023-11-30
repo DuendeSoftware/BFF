@@ -33,7 +33,7 @@ namespace Duende.Bff
         }
 
         /// <inheritdoc />
-        public void PostConfigure(string name, CookieAuthenticationOptions options)
+        public void PostConfigure(string? name, CookieAuthenticationOptions options)
         {
             if (name == _scheme)
             {

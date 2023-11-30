@@ -4,12 +4,21 @@
         <FrameworkVersionRuntime>6.0.0</FrameworkVersionRuntime>
         <FrameworkVersionTesting>6.0.11</FrameworkVersionTesting>
         <YarpVersion>2.0.1</YarpVersion>
+        <IdentityServerVersion>6.3.6</IdentityServerVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
         <FrameworkVersionRuntime>7.0.0</FrameworkVersionRuntime>
         <FrameworkVersionTesting>7.0.0</FrameworkVersionTesting>
         <YarpVersion>2.0.1</YarpVersion>
+        <IdentityServerVersion>6.3.6</IdentityServerVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
+        <FrameworkVersionRuntime>8.0.0</FrameworkVersionRuntime>
+        <FrameworkVersionTesting>8.0.0</FrameworkVersionTesting>
+        <YarpVersion>2.1.0</YarpVersion>
+        <IdentityServerVersion>7.0.0-preview.2</IdentityServerVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,7 +28,7 @@
 
         <!-- runtime -->
         <PackageReference Update="IdentityModel" Version="6.1.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="2.0.2" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.0-preview.1" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
 
@@ -27,8 +36,9 @@
         <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(FrameworkVersionTesting)" />
+        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="$(FrameworkVersionTesting)" />
         
-        <PackageReference Update="Duende.IdentityServer" Version="6.3.2" />
+        <PackageReference Update="Duende.IdentityServer" Version="$(IdentityServerVersion)" />
         
         <PackageReference Update="CsQuery.NETStandard" Version="1.3.6.1" />
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.1" />
