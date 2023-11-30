@@ -44,7 +44,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api",
-            "program": "${workspaceFolder}/samples/Api/bin/Debug/net6.0/Api.dll",
+            "program": "${workspaceFolder}/samples/Api/bin/Debug/net8.0/Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/Api",
             "env": {
@@ -62,7 +62,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api.dpop",
-            "program": "${workspaceFolder}/samples/Api.DPoP/bin/Debug/net6.0/Api.DPoP.dll",
+            "program": "${workspaceFolder}/samples/Api.DPoP/bin/Debug/net8.0/Api.DPoP.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/Api.DPoP",
             "env": {
@@ -80,7 +80,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api.isolated",
-            "program": "${workspaceFolder}/samples/Api.Isolated/bin/Debug/net6.0/Api.Isolated.dll",
+            "program": "${workspaceFolder}/samples/Api.Isolated/bin/Debug/net8.0/Api.Isolated.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/Api.Isolated",
             "env": {
