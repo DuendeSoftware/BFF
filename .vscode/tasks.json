@@ -122,7 +122,7 @@
         "problemMatcher": "$msCompile"
       },
       {
-        "label": "build-jsdpop",
+        "label": "build-js6dpop",
         "type": "process",
         "command": "dotnet",
         "args": [
@@ -140,6 +140,18 @@
         "args": [
             "build",
             "${workspaceFolder}/samples/JS8/JS8.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "build-js8dpop",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/JS8.DPoP/JS8.DPoP.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],

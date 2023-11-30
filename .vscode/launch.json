@@ -201,7 +201,7 @@
             "name": "JS6.DPoP",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-jsdpop",
+            "preLaunchTask": "build-js6dpop",
             "program": "${workspaceFolder}/samples/JS6.DPoP/bin/Debug/net6.0/JS6.DPoP.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/JS6.DPoP",
@@ -226,6 +226,27 @@
             "program": "${workspaceFolder}/samples/JS8/bin/Debug/net8.0/JS8.dll",
             "args": [],
             "cwd": "${workspaceFolder}/samples/JS8",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "integratedTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 10
+            }
+        },
+        {
+            "name": "JS8.DPoP",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-js8dpop",
+            "program": "${workspaceFolder}/samples/JS8.DPoP/bin/Debug/net8.0/JS8.DPoP.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/JS8.DPoP",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
