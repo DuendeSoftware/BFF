@@ -193,7 +193,8 @@ function log() {
         } else if (typeof msg !== 'string') {
             msg = JSON.stringify(msg, null, 2);
         }
-        document.getElementById('response').innerText += msg + '\r\n';
+        var msgWithTimestamp = `${(new Date()).toLocaleTimeString()} - ${msg}`;
+        document.getElementById('response').innerText += msgWithTimestamp;
     });
 }
 
