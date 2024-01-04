@@ -28,7 +28,7 @@
 
         <!-- runtime -->
         <PackageReference Update="IdentityModel" Version="6.1.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.0-preview.1" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.0" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
 
