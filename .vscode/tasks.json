@@ -110,6 +110,19 @@
         "problemMatcher": "$msCompile"
       },
       {
+        "label": "build-blazor",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/Blazor/Blazor/Blazor.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      
+      {
         "label": "build-blazor.wasm",
         "type": "process",
         "command": "dotnet",

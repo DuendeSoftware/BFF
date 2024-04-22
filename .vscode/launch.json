@@ -157,6 +157,27 @@
             }
         },
         {
+            "name": "Blazor",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-blazor",
+            "program": "${workspaceFolder}/samples/Blazor/Blazor/bin/Debug/net8.0/Blazor.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/Blazor/Blazor",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "externalTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 10
+            }
+        },
+        {
             "name": "Blazor Wasm",
             "type": "coreclr",
             "request": "launch",
