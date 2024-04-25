@@ -1,0 +1,16 @@
+﻿<AuthorizeView>
+    <Authorized>
+        <h3>Authenticated</h3>
+        <dl>
+            @foreach (var claim in context.User.Claims)
+            {
+                <dt>@claim.Type</dt>
+                <dd>@claim.Value</dd>
+            }
+        </dl>
+    </Authorized>
+    <Authorizing><h3>Loading...</h3></Authorizing>
+    <NotAuthorized>
+        <h3>No session</h3>
+    </NotAuthorized>
+</AuthorizeView>

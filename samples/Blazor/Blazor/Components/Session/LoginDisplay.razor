@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<AuthorizeView>
+    <Authorized>
+        <strong>Hello, @context.User.Identity?.Name</strong>
+    </Authorized>
+    <NotAuthorized>
+        <a href="bff/login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>

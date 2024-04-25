@@ -11,4 +11,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.1" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Duende.Bff\Duende.Bff.csproj" />
+    <ProjectReference Include="..\..\..\src\Duende.Bff.Yarp\Duende.Bff.Yarp.csproj" />
+  </ItemGroup>
+
 </Project>
