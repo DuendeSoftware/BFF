@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Api
 {
@@ -30,11 +31,13 @@ namespace Api
                 var client = User.FindFirst("client_id");
                 message = $"Hello client, {client.Value}";
             }
-            
+            var jti = User.FindFirstValue("jti");
+
             var response = new
             {
+                jti,
                 path = Request.Path.Value,
-                message = message,
+                message,
                 time = DateTime.UtcNow.ToString(),
                 headers = Request.Headers
             };
