@@ -1,21 +1,18 @@
 using Blazor;
 using Blazor.Client;
 using Blazor.Components;
-using Duende.AccessTokenManagement.OpenIdConnect;
 using Duende.Bff;
+using Duende.Bff.Blazor;
 using Duende.Bff.Yarp;
-using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddBff()
+    .AddServerSideSessions()
     .AddRemoteApis();
 
-builder.Services.AddSingleton<IUserTokenStore, ServerSideTokenStore>();
-
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, MyAuthState>();
 
 // adds access token management
 builder.Services.AddOpenIdConnectAccessTokenManagement()
