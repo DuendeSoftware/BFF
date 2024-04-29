@@ -1,9 +1,10 @@
 using Blazor;
+using Blazor.Client;
 using Blazor.Components;
 using Duende.AccessTokenManagement.OpenIdConnect;
+using Duende.Bff;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,13 @@ builder.Services.AddSingleton<IUserTokenStore, ServerSideTokenStore>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, MyAuthState>();
+
+// adds access token management
+builder.Services.AddOpenIdConnectAccessTokenManagement()
+    .AddBlazorServerAccessTokenManagement<ServerSideTokenStore>();
+
+builder.Services.AddScoped<IRenderModeContext, ServerRenderModeContext>();
+builder.Services.AddUserAccessTokenHttpClient("callApi", configureClient: client => client.BaseAddress = new Uri("https://localhost:5010/"));
 
 
 builder.Services.AddRazorComponents()
@@ -30,15 +38,14 @@ builder.Services.AddAuthentication(options =>
     .AddCookie("cookie", options =>
     {
         options.Cookie.Name = "__Host-blazor";
-        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SameSite = SameSiteMode.Strict;
         options.EventsType = typeof(CookieEvents);
     })
     .AddOpenIdConnect("oidc", options =>
     {
-        // TODO - Switch to localhost, and use samesite strict
-        options.Authority = "https://demo.duendesoftware.com";
+        options.Authority = "https://localhost:5001";
 
-        options.ClientId = "interactive.confidential";
+        options.ClientId = "blazor";
         options.ClientSecret = "secret";
         options.ResponseType = "code";
         options.ResponseMode = "query";
@@ -90,6 +97,9 @@ app.UseBff();
 app.UseAuthorization();
 
 app.MapBffManagementEndpoints();
+
+app.MapRemoteBffApiEndpoint("/remote-apis/user-token", "https://localhost:5010")
+    .RequireAccessToken(TokenType.User);
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

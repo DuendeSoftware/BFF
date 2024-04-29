@@ -75,6 +75,28 @@ namespace IdentityServerHost
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
                 },
+
+                new Client
+                {
+                    ClientId = "blazor",
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    AllowedGrantTypes =
+                    {
+                        GrantType.AuthorizationCode,
+                        GrantType.ClientCredentials,
+                        OidcConstants.GrantTypes.TokenExchange
+                    },
+
+                    RedirectUris = { "https://localhost:5002/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:5002/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
+
+                    AccessTokenLifetime = 75
+                },
             };
     }
 }
