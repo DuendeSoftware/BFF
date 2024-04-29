@@ -59,13 +59,11 @@ builder.Services.AddAuthentication(options =>
 
         options.GetClaimsFromUserInfoEndpoint = true;
         options.SaveTokens = true;
-        options.EventsType = typeof(OidcEvents);
     });
 
 // register events to customize authentication handlers
 // TODO - Register events in a new helper in Duende.Bff.Blazor
 builder.Services.AddTransient<CookieEvents>();
-builder.Services.AddTransient<OidcEvents>();
 
 
 var app = builder.Build();
