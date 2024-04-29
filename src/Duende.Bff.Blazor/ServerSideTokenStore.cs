@@ -5,7 +5,7 @@ using System.Security.Claims;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging; // TODO - Add useful logging to this class
 
 namespace Duende.Bff.Blazor;
 

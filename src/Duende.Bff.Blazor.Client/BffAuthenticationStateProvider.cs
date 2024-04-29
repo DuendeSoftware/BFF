@@ -2,6 +2,9 @@
 using System.Net.Http.Json;
 using System.Net;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
+
+namespace Duende.Bff.Blazor.Wasm;
 
 public class BffAuthenticationStateProvider : AuthenticationStateProvider
 {
@@ -14,10 +17,10 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
     public BffAuthenticationStateProvider(
-        HttpClient client,
+        IHttpClientFactory clientFactory,
         ILogger<BffAuthenticationStateProvider> logger)
     {
-        _client = client;
+        _client = clientFactory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
     }
 
@@ -29,6 +32,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         // checks periodically for a session state change and fires event
         // this causes a round trip to the server
         // adjust the period accordingly if that feature is needed
+        // TODO - Add configuration for this
         if (user.Identity.IsAuthenticated)
         {
             _logger.LogInformation("starting background check..");
@@ -73,23 +77,21 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         {
             _logger.LogInformation("Fetching user information.");
             var response = await _client.GetAsync("bff/user?slide=false");
+            response.EnsureSuccessStatusCode();
+            var claims = await response.Content.ReadFromJsonAsync<List<ClaimRecord>>();
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            var identity = new ClaimsIdentity(
+                nameof(BffAuthenticationStateProvider),
+                "name",
+                "role");
+
+            foreach (var claim in claims)
             {
-                var claims = await response.Content.ReadFromJsonAsync<List<ClaimRecord>>();
-
-                var identity = new ClaimsIdentity(
-                    nameof(BffAuthenticationStateProvider),
-                    "name",
-                    "role");
-
-                foreach (var claim in claims)
-                {
-                    identity.AddClaim(new Claim(claim.Type, claim.Value.ToString()));
-                }
-
-                return new ClaimsPrincipal(identity);
+                identity.AddClaim(new Claim(claim.Type, claim.Value.ToString()));
             }
+
+            return new ClaimsPrincipal(identity);
+           
         }
         catch (Exception ex)
         {

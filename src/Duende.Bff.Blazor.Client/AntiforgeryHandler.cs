@@ -1,5 +1,5 @@
-﻿
-// TODO - Move into Duende.Bff.Blazor
+﻿namespace Duende.Bff.Blazor.Wasm;
+
 public class AntiforgeryHandler : DelegatingHandler
 {
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
