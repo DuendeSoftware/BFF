@@ -20,6 +20,8 @@ namespace Duende.Bff;
 /// </summary>
 public class ServerSideTicketStore : IServerTicketStore
 {
+    public static string DataProtectorPurpose = "Duende.Bff.ServerSideTicketStore";
+
     private readonly IUserSessionStore _store;
     private readonly IDataProtector _protector;
     private readonly ILogger<ServerSideTicketStore> _logger;
@@ -36,7 +38,7 @@ public class ServerSideTicketStore : IServerTicketStore
         ILogger<ServerSideTicketStore> logger)
     {
         _store = store;
-        _protector = dataProtectionProvider.CreateProtector("Duende.Bff.ServerSideTicketStore");
+        _protector = dataProtectionProvider.CreateProtector(DataProtectorPurpose);
         _logger = logger;
     }
 

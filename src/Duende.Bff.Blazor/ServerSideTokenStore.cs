@@ -20,7 +20,7 @@ public class ServerSideTokenStore(
     IDataProtectionProvider dataProtectionProvider,
     ILogger<ServerSideTokenStore> logger) : IUserTokenStore
 {
-    private readonly IDataProtector protector = dataProtectionProvider.CreateProtector("Duende.Bff.ServerSideTicketStore"); // TODO - Replace with constant
+    private readonly IDataProtector protector = dataProtectionProvider.CreateProtector(ServerSideTicketStore.DataProtectorPurpose);
     public async Task<UserToken> GetTokenAsync(ClaimsPrincipal user, UserTokenRequestParameters? parameters = null)
     {
         var session = await GetSession(user);
