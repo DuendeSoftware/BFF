@@ -1,24 +1,9 @@
 <Project>
-
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0'">
-        <FrameworkVersionRuntime>6.0.0</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>6.0.11</FrameworkVersionTesting>
-        <YarpVersion>2.0.1</YarpVersion>
-        <IdentityServerVersion>6.3.6</IdentityServerVersion>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
-        <FrameworkVersionRuntime>7.0.0</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>7.0.0</FrameworkVersionTesting>
-        <YarpVersion>2.0.1</YarpVersion>
-        <IdentityServerVersion>6.3.6</IdentityServerVersion>
-    </PropertyGroup>
-
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
         <FrameworkVersionRuntime>8.0.0</FrameworkVersionRuntime>
         <FrameworkVersionTesting>8.0.0</FrameworkVersionTesting>
         <YarpVersion>2.1.0</YarpVersion>
-        <IdentityServerVersion>7.0.0-preview.2</IdentityServerVersion>
+        <IdentityServerVersion>7.0.4</IdentityServerVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,8 +12,8 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 
         <!-- runtime -->
-        <PackageReference Update="IdentityModel" Version="6.1.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.0" />
+        <PackageReference Update="IdentityModel" Version="7.0.0" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0-preview.1" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
 

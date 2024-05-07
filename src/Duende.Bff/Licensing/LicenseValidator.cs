@@ -150,11 +150,7 @@ internal partial class LicenseValidator
                 IssuerSigningKey = key,
                 ValidateLifetime = false
             };
-#if NET8_0
             var validateResult = handler.ValidateTokenAsync(licenseKey, parms).Result;
-#else
-            var validateResult = handler.ValidateToken(licenseKey, parms);
-#endif
             if (validateResult.IsValid)
             {
                 return new License(new ClaimsPrincipal(validateResult.ClaimsIdentity));

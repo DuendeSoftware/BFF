@@ -94,90 +94,6 @@
             }
         },
         {
-            "name": "JS6",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-js6",
-            "program": "${workspaceFolder}/samples/JS6/bin/Debug/net6.0/JS6.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/samples/JS6",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "console": "integratedTerminal",
-            "presentation": {
-              "hidden": false,
-              "order": 10
-            }
-        },
-        {
-            "name": "JS6 EF",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-js6ef",
-            "program": "${workspaceFolder}/samples/JS6.EF/bin/Debug/net6.0/JS6.EF.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/samples/JS6.EF",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "console": "integratedTerminal",
-            "presentation": {
-              "hidden": false,
-              "order": 10
-            }
-        },
-        {
-            "name": "JS Yarp",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-jsyarp",
-            "program": "${workspaceFolder}/samples/JS.Yarp/bin/Debug/net6.0/JS.Yarp.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/samples/JS.Yarp",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "console": "externalTerminal",
-            "presentation": {
-              "hidden": false,
-              "order": 10
-            }
-        },
-        {
-            "name": "JS6 DPoP",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-js6dpop",
-            "program": "${workspaceFolder}/samples/JS6.DPoP/bin/Debug/net6.0/JS6.DPoP.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/samples/JS6.DPoP",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "console": "integratedTerminal",
-            "presentation": {
-              "hidden": false,
-              "order": 10
-            }
-        },
-        {
             "name": "JS8",
             "type": "coreclr",
             "request": "launch",
@@ -192,7 +108,7 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "integratedTerminal",
+            "console": "externalTerminal",
             "presentation": {
               "hidden": false,
               "order": 10
@@ -213,7 +129,7 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "integratedTerminal",
+            "console": "externalTerminal",
             "presentation": {
               "hidden": false,
               "order": 10
@@ -234,11 +150,32 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "integratedTerminal",
+            "console": "externalTerminal",
             "presentation": {
               "hidden": false,
               "order": 10
             }
         },
+        {
+            "name": "Blazor Wasm",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-blazor.wasm",
+            "program": "${workspaceFolder}/samples/Blazor.Wasm/Blazor.Wasm.Bff/bin/Debug/net8.0/Blazor.Wasm.Bff.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/Blazor.Wasm/Blazor.Wasm.Bff",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "externalTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 10
+            }
+        }
     ]
 }

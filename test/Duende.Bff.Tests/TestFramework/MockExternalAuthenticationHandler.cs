@@ -13,7 +13,6 @@ namespace Duende.Bff.Tests.TestFramework
 {
     public class MockExternalAuthenticationHandler : RemoteAuthenticationHandler<MockExternalAuthenticationOptions>, IAuthenticationSignOutHandler
     {
-#if NET8_0
         public MockExternalAuthenticationHandler(
             IOptionsMonitor<MockExternalAuthenticationOptions> options, 
             ILoggerFactory logger, 
@@ -21,16 +20,6 @@ namespace Duende.Bff.Tests.TestFramework
             : base(options, logger, encoder)
         {
         }
-#else
-        public MockExternalAuthenticationHandler(
-            IOptionsMonitor<MockExternalAuthenticationOptions> options, 
-            ILoggerFactory logger, 
-            UrlEncoder encoder, 
-            ISystemClock clock) 
-            : base(options, logger, encoder, clock)
-        {
-        }
-#endif
 
         public bool ChallengeWasCalled { get; set; }
         public AuthenticationProperties ChallengeAuthenticationProperties { get; set; }
