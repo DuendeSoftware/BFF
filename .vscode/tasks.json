@@ -62,48 +62,12 @@
         "problemMatcher": "$msCompile"
       },
       {
-        "label": "build-js6",
-        "type": "process",
-        "command": "dotnet",
-        "args": [
-            "build",
-            "${workspaceFolder}/samples/JS6/JS6.csproj",
-            "/property:GenerateFullPaths=true",
-            "/consoleloggerparameters:NoSummary"
-        ],
-        "problemMatcher": "$msCompile"
-      },
-      {
-        "label": "build-js6ef",
-        "type": "process",
-        "command": "dotnet",
-        "args": [
-            "build",
-            "${workspaceFolder}/samples/JS6.EF/JS6.EF.csproj",
-            "/property:GenerateFullPaths=true",
-            "/consoleloggerparameters:NoSummary"
-        ],
-        "problemMatcher": "$msCompile"
-      },
-      {
         "label": "build-jsyarp",
         "type": "process",
         "command": "dotnet",
         "args": [
             "build",
             "${workspaceFolder}/samples/JS.Yarp/JS.Yarp.csproj",
-            "/property:GenerateFullPaths=true",
-            "/consoleloggerparameters:NoSummary"
-        ],
-        "problemMatcher": "$msCompile"
-      },
-      {
-        "label": "build-js6dpop",
-        "type": "process",
-        "command": "dotnet",
-        "args": [
-            "build",
-            "${workspaceFolder}/samples/JS6.DPoP/JS6.DPoP.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],
@@ -145,6 +109,19 @@
         ],
         "problemMatcher": "$msCompile"
       },
+      {
+        "label": "build-blazor.wasm",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/Blazor.Wasm/Blazor.Wasm.Bff/Blazor.Wasm.Bff.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      
     ]
 
 }
