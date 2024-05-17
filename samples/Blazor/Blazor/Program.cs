@@ -1,9 +1,11 @@
 using Blazor;
 using Blazor.Client;
 using Blazor.Components;
+using Duende.AccessTokenManagement.OpenIdConnect;
 using Duende.Bff;
 using Duende.Bff.Blazor;
 using Duende.Bff.Yarp;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +38,6 @@ builder.Services.AddAuthentication(options =>
     {
         options.Cookie.Name = "__Host-blazor";
         options.Cookie.SameSite = SameSiteMode.Strict;
-        options.EventsType = typeof(CookieEvents);
     })
     .AddOpenIdConnect("oidc", options =>
     {
@@ -59,12 +60,9 @@ builder.Services.AddAuthentication(options =>
 
         options.GetClaimsFromUserInfoEndpoint = true;
         options.SaveTokens = true;
+
+        options.SignOutScheme = "cookie";
     });
-
-// register events to customize authentication handlers
-// TODO - Register events in a new helper in Duende.Bff.Blazor
-builder.Services.AddTransient<CookieEvents>();
-
 
 var app = builder.Build();
 
@@ -83,15 +81,36 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-app.UseAntiforgery();
 
 app.UseRouting();
-app.UseAntiforgery();
 app.UseAuthentication();
 app.UseBff();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapBffManagementEndpoints();
+
+// We don't use the BFF endpoint for logout because it might not be convenient
+// to use, depending on the render mode. In wasm, we retrieve the bff management
+// claims so we would know where to logout. But in SSR or blazor server, we
+// won't have bff management claims easily. We can always just render a link to
+// an endpoint with an antiforgery token though. And this works even in
+// InteractiveWasm mode, because there is an initial SSR. If using wasm globally
+// without InteractiveWasm (so no initial SSR), then use the BFF management
+// claim instead.
+//
+// TODO - maybe we can't assume that the logout button will be rendered via SSR.
+// What if some complex user interaction causes it to be displayed?
+app.MapPost("/logout", async (HttpContext context, IUserTokenStore tokenStore, IUserSessionStore sessionStore) =>
+{
+    // We have to revoke the refresh token before we call SignOutAsync instead of
+    // in the SigningOut cookie handler event. That event is called after the
+    // ticket store has already deleted the ticket. So, in the cookie event we won't
+    // be able to authenticate again in order to get at the authentication properties
+    // and get at the refresh token.
+    await context.RevokeRefreshTokenAsync();
+    await context.SignOutAsync();
+});
 
 app.MapRemoteBffApiEndpoint("/remote-apis/user-token", "https://localhost:5010")
     .RequireAccessToken(TokenType.User);

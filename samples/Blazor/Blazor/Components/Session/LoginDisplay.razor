@@ -3,6 +3,12 @@
 <AuthorizeView>
     <Authorized>
         <strong>Hello, @context.User.Identity?.Name</strong>
+        <form action="/logout" method="post" @formname="logoutForm">
+            <AntiforgeryToken />
+            <button type="submit" class="nav-link btn btn-link">
+                Log Out
+            </button>
+        </form>
     </Authorized>
     <NotAuthorized>
         <a href="bff/login">Log in</a>
