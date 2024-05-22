@@ -38,7 +38,7 @@ namespace Api
                 jti,
                 path = Request.Path.Value,
                 message,
-                time = DateTime.UtcNow.ToString(),
+                time = DateTime.Now.ToString("h:mm:ss.f tt"),
                 headers = Request.Headers
             };
 
