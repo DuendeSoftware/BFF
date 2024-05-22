@@ -37,14 +37,7 @@
 
     protected async Task CallApiAsync()
     {
-        try
-        {
-            apiResult = await Http.GetFromJsonAsync<ApiResult>("");
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
+        apiResult = await Http.GetFromJsonAsync<ApiResult>("user-token");
     }
 
     // TODO - Add comments to explain this

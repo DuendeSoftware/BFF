@@ -19,7 +19,7 @@ builder.Services.AddHttpClient("BffAuthenticationStateProvider", client => clien
     .AddHttpMessageHandler<AntiforgeryHandler>();
 
 // TODO - Is it possible to use the typed style and not need an http client factory in the components?
-builder.Services.AddHttpClient("callApi", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "remote-apis/user-token/"))
+builder.Services.AddHttpClient("callApi", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "remote-apis/"))
     .AddHttpMessageHandler<AntiforgeryHandler>();
 
 await builder.Build().RunAsync();
