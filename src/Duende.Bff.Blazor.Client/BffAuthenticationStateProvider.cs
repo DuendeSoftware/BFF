@@ -17,10 +17,10 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
     public BffAuthenticationStateProvider(
-        IHttpClientFactory clientFactory,
+        HttpClient client,
         ILogger<BffAuthenticationStateProvider> logger)
     {
-        _client = clientFactory.CreateClient("BffAuthenticationStateProvider");
+        _client = client;
         _logger = logger;
     }
 
