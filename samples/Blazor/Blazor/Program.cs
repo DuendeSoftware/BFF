@@ -101,7 +101,7 @@ app.MapBffManagementEndpoints();
 //
 // TODO - maybe we can't assume that the logout button will be rendered via SSR.
 // What if some complex user interaction causes it to be displayed?
-app.MapPost("/logout", async (HttpContext context, IUserTokenStore tokenStore, IUserSessionStore sessionStore) =>
+app.MapPost("/logout", async (HttpContext context) =>
 {
     // We have to revoke the refresh token before we call SignOutAsync instead of
     // in the SigningOut cookie handler event. That event is called after the

@@ -10,10 +10,8 @@ using Microsoft.Extensions.Logging; // TODO - Add useful logging to this class
 namespace Duende.Bff.Blazor;
 
 /// <summary>
-/// Simplified implementation of a server-side token store.
-/// Probably want something more robust IRL
+/// A token store that retrieves tokens from server side sessions.
 /// </summary>
-
 public class ServerSideTokenStore(
     IStoreTokensInAuthenticationProperties tokensInAuthProperties,
     IUserSessionStore sessionStore, 
@@ -50,7 +48,7 @@ public class ServerSideTokenStore(
     {
         await UpdateTicket(user, ticket =>
         {
-            tokensInAuthProperties.SetUserToken(token, ticket.Properties, "", parameters);
+            tokensInAuthProperties.SetUserToken(token, ticket.Properties, parameters);
         });
     }
 
@@ -62,7 +60,7 @@ public class ServerSideTokenStore(
         });
     }
 
-    public async Task UpdateTicket(ClaimsPrincipal user, Action<AuthenticationTicket> updateAction)
+    protected async Task UpdateTicket(ClaimsPrincipal user, Action<AuthenticationTicket> updateAction)
     {
         var session = await GetSession(user);
         var ticket = session.Deserialize(protector, logger) ?? throw new InvalidOperationException("Failed to deserialize authentication ticket from session");
