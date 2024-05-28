@@ -1,58 +1,125 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff.Blazor.Wasm;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddBff(this IServiceCollection services)
+    public static IServiceCollection AddBff(this IServiceCollection services,  Action<BffBlazorOptions>? configureAction = null)
     {
-        return services
-            .AddAuthorizationCore()
-            .AddCascadingAuthenticationState()
-            .AddBffAuthenticationStateProvider();
-    }
-
-    public static IServiceCollection AddBffAuthenticationStateProvider(this IServiceCollection services)
-    {
-        services.AddScoped<AuthenticationStateProvider, BffAuthenticationStateProvider>();
-
-        services.AddSingleton<AntiforgeryHandler>();
-
-        services.AddRemoteApiHttpClient<BffAuthenticationStateProvider>((sp, client) =>
+        if(configureAction != null)
         {
-            // TODO - Is this hosting model always used? I think so...
-            var host = sp.GetRequiredService<IWebAssemblyHostEnvironment>();
-            client.BaseAddress = new Uri(host.BaseAddress);
-        });
+            services.Configure(configureAction);
+        }
 
+        services
+            .AddAuthorizationCore()
+            .AddScoped<AuthenticationStateProvider, BffAuthenticationStateProvider>()
+            .AddCascadingAuthenticationState()
+            .AddTransient<AntiforgeryHandler>()
+            .AddHttpClient("BffAuthenticationStateProvider", (sp, client) =>
+            {
+                var baseAddress = GetBaseAddress(sp);
+                client.BaseAddress = new Uri(baseAddress);
+            }).AddHttpMessageHandler<AntiforgeryHandler>();
+        
         return services;
     }
 
-    public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName, Action<IServiceProvider, HttpClient> configureClient)
+    private static string GetBaseAddress(IServiceProvider sp)
     {
-        return services.AddHttpClient(clientName, configureClient)
-             .AddHttpMessageHandler<AntiforgeryHandler>();
+        var opt = sp.GetRequiredService<IOptions<BffBlazorOptions>>();
+        if(opt.Value.RemoteApiBaseAddress != null)
+        {
+            return opt.Value.RemoteApiBaseAddress;
+        }
+        else
+        {
+            var hostEnv = sp.GetRequiredService<IWebAssemblyHostEnvironment>();
+            return hostEnv.BaseAddress;
+        }
+    }
+
+    private static string GetRemoteApiPath(IServiceProvider sp)
+    {
+        var opt = sp.GetRequiredService<IOptions<BffBlazorOptions>>();
+        return opt.Value.RemoteApiPath;
+    }
+
+    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(Action<IServiceProvider, HttpClient>? configureClient)
+    {
+        return (sp, client) =>
+        {
+            SetBaseAddress(sp, client);
+            configureClient?.Invoke(sp, client);
+        };
+    }
+
+    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(Action<HttpClient>? configureClient)
+    {
+        return (sp, client) =>
+        {
+            SetBaseAddress(sp, client);
+            configureClient?.Invoke(client);
+        };
+    }
+
+    private static void SetBaseAddress(IServiceProvider sp, HttpClient client)
+    {
+        var baseAddress = GetBaseAddress(sp);
+        if (!baseAddress.EndsWith("/"))
+        {
+            baseAddress += "/";
+        }
+
+        var remoteApiPath = GetRemoteApiPath(sp);
+        if (!string.IsNullOrEmpty(remoteApiPath))
+        {
+            if (remoteApiPath.StartsWith("/"))
+            {
+                remoteApiPath = remoteApiPath.Substring(1);
+            }
+            if (!remoteApiPath.EndsWith("/"))
+            {
+                remoteApiPath += "/";
+            }
+        }
+        client.BaseAddress = new Uri(new Uri(baseAddress), remoteApiPath);
     }
 
     public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName, Action<HttpClient> configureClient)
     {
-       return services.AddHttpClient(clientName, configureClient)
+       return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 
-    public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services, Action<IServiceProvider, HttpClient> configureClient)
-        where T : class
+    public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName, Action<IServiceProvider, HttpClient>? configureClient = null)
     {
-        return services.AddHttpClient<T>(configureClient)
+        return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
              .AddHttpMessageHandler<AntiforgeryHandler>();
     }
-
+    
     public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services, Action<HttpClient> configureClient)
         where T : class
     {
-        return services.AddHttpClient<T>(configureClient)
+        return services.AddHttpClient<T>(SetBaseAddressInConfigureClient(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
+
+    public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services, Action<IServiceProvider, HttpClient>? configureClient = null)
+        where T : class
+    {
+        return services.AddHttpClient<T>(SetBaseAddressInConfigureClient(configureClient))
+             .AddHttpMessageHandler<AntiforgeryHandler>();
+    }
+}
+
+
+public class BffBlazorOptions
+{
+    // TODO - Consider using PathString here (would require more dependencies?)
+    public string RemoteApiPath { get; set; } = "remote-apis/";
+    public string? RemoteApiBaseAddress { get; set; } = null;
 }

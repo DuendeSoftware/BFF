@@ -14,4 +14,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Duende.Bff.Blazor.Client\Duende.Bff.Blazor.Client.csproj" />
+  </ItemGroup>
+
 </Project>

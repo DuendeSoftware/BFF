@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
-using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
@@ -17,10 +16,10 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
     public BffAuthenticationStateProvider(
-        HttpClient client,
+        IHttpClientFactory factory,
         ILogger<BffAuthenticationStateProvider> logger)
     {
-        _client = client;
+        _client = factory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
     }
 
@@ -33,7 +32,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         // this causes a round trip to the server
         // adjust the period accordingly if that feature is needed
         // TODO - Add configuration for this
-        if (user.Identity.IsAuthenticated)
+        if (user!.Identity!.IsAuthenticated)
         {
             _logger.LogInformation("starting background check..");
             Timer? timer = null;
@@ -41,7 +40,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
             timer = new Timer(async _ =>
             {
                 var currentUser = await GetUser(false);
-                if (currentUser.Identity.IsAuthenticated == false)
+                if (currentUser!.Identity!.IsAuthenticated == false)
                 {
                     _logger.LogInformation("user logged out");
                     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
@@ -85,13 +84,15 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                 "name",
                 "role");
 
-            foreach (var claim in claims)
+            if (claims != null)
             {
-                identity.AddClaim(new Claim(claim.Type, claim.Value.ToString()));
+                foreach (var claim in claims)
+                {
+                    identity.AddClaim(new Claim(claim.Type, claim.Value.ToString() ?? "no value"));
+                }    
             }
 
             return new ClaimsPrincipal(identity);
-           
         }
         catch (Exception ex)
         {

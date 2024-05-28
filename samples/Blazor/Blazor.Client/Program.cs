@@ -8,6 +8,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddScoped<IRenderModeContext, ClientRenderModeContext>();
 
 builder.Services.AddBff();
-builder.Services.AddRemoteApiHttpClient("callApi", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "remote-apis/"));
+builder.Services.AddRemoteApiHttpClient("callApi");
 
 await builder.Build().RunAsync();
