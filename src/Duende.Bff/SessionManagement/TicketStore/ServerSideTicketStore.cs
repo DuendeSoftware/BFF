@@ -18,6 +18,10 @@ namespace Duende.Bff;
 /// </summary>
 public class ServerSideTicketStore : IServerTicketStore
 {
+    /// <summary>
+    /// The "purpose" string to use when protecting and unprotecting server side
+    /// tickets.
+    /// </summary>
     public static string DataProtectorPurpose = "Duende.Bff.ServerSideTicketStore";
 
     private readonly IUserSessionStore _store;

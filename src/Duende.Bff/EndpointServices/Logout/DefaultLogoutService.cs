@@ -46,10 +46,6 @@ public class DefaultLogoutService : ILogoutService
     /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="options"></param>
-    /// <param name="authenticationAuthenticationSchemeProviderProvider"></param>
-    /// <param name="returnUrlValidator"></param>
-    /// <param name="logger"></param>
     public DefaultLogoutService(IOptions<BffOptions> options, 
         IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider, 
         IReturnUrlValidator returnUrlValidator,

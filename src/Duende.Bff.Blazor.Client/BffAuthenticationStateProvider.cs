@@ -44,7 +44,10 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                 {
                     _logger.LogInformation("user logged out");
                     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
-                    await timer.DisposeAsync();
+                    if (timer != null)
+                    {
+                        await timer.DisposeAsync();
+                    }
                 }
             }, null, 1000, 5000);
         }
