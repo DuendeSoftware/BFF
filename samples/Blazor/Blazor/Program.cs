@@ -6,6 +6,7 @@ using Duende.Bff;
 using Duende.Bff.Blazor;
 using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,11 @@ builder.Services.AddBff()
 
 builder.Services.AddCascadingAuthenticationState();
 
+// TODO - Consider a helper method to set up ATM + StateProvider
 // adds access token management
 builder.Services.AddOpenIdConnectAccessTokenManagement()
     .AddBlazorServerAccessTokenManagement<ServerSideTokenStore>();
+builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
 
 builder.Services.AddScoped<IRenderModeContext, ServerRenderModeContext>();
 builder.Services.AddUserAccessTokenHttpClient("callApi", configureClient: client => client.BaseAddress = new Uri("https://localhost:5010/"));

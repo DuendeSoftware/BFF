@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components;
 
 namespace Duende.Bff.Blazor.Wasm;
 
@@ -12,15 +13,17 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     private readonly HttpClient _client;
     private readonly ILogger<BffAuthenticationStateProvider> _logger;
 
-    private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
+    private DateTimeOffset _userLastCheck = DateTimeOffset.Now;
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
     public BffAuthenticationStateProvider(
+        PersistentComponentState state,
         IHttpClientFactory factory,
         ILogger<BffAuthenticationStateProvider> logger)
     {
         _client = factory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
+        _cachedUser = GetPersistedUser(state);
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -103,5 +106,18 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         }
 
         return new ClaimsPrincipal(new ClaimsIdentity());
+    }
+
+    private ClaimsPrincipal GetPersistedUser(PersistentComponentState state)
+    {
+        if (!state.TryTakeFromJson<ClaimsPrincipalLite>(nameof(ClaimsPrincipalLite), out var lite) || lite is null)
+        {
+            _logger.LogDebug("Failed to load persisted user.");
+            return new ClaimsPrincipal(new ClaimsIdentity());
+        }
+
+        _logger.LogDebug("Persisted user loaded.");
+
+        return lite.ToClaimsPrincipal();
     }
 }
