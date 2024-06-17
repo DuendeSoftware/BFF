@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace Duende.Bff.Blazor.Wasm;
 
@@ -12,6 +13,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
 
     private readonly HttpClient _client;
     private readonly ILogger<BffAuthenticationStateProvider> _logger;
+    private readonly BffBlazorOptions _options;
 
     private DateTimeOffset _userLastCheck = DateTimeOffset.Now;
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
@@ -19,11 +21,13 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     public BffAuthenticationStateProvider(
         PersistentComponentState state,
         IHttpClientFactory factory,
+        IOptions<BffBlazorOptions> options,
         ILogger<BffAuthenticationStateProvider> logger)
     {
         _client = factory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
         _cachedUser = GetPersistedUser(state);
+        _options = options.Value;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -52,7 +56,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                         await timer.DisposeAsync();
                     }
                 }
-            }, null, 1000, 5000);
+            }, null, _options.StateProviderPollingDelay, _options.StateProviderPollingInterval);
         }
 
         return state;
