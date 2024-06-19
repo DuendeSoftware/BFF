@@ -1,4 +1,4 @@
-﻿using Blazor.Client;
+﻿using PerComponent.Client;
 
 public class ClientRenderModeContext : IRenderModeContext
 {

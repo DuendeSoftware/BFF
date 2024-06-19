@@ -7,15 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.Client\Blazor.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.1" />
   </ItemGroup>
 
-
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Duende.Bff\Duende.Bff.csproj" />
-    <ProjectReference Include="..\..\..\src\Duende.Bff.Yarp\Duende.Bff.Yarp.csproj" />
-    <ProjectReference Include="..\..\..\src\Duende.Bff.Blazor\Duende.Bff.Blazor.csproj" />
+    <ProjectReference Include="..\PerComponent.Client\PerComponent.Client.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Duende.Bff\Duende.Bff.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Duende.Bff.Yarp\Duende.Bff.Yarp.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Duende.Bff.Blazor\Duende.Bff.Blazor.csproj" />
   </ItemGroup>
 
 </Project>

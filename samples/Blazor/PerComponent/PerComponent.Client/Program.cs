@@ -1,4 +1,4 @@
-using Blazor.Client;
+using PerComponent.Client;
 using Duende.Bff.Blazor.Client;
 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

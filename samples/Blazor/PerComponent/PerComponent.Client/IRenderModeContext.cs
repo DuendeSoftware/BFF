@@ -1,4 +1,4 @@
-﻿namespace Blazor.Client;
+﻿namespace PerComponent.Client;
 
 public interface IRenderModeContext
 {

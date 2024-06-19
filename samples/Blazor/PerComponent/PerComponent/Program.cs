@@ -1,6 +1,6 @@
-using Blazor;
-using Blazor.Client;
-using Blazor.Components;
+using PerComponent;
+using PerComponent.Client;
+using PerComponent.Components;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Duende.Bff;
 using Duende.Bff.Blazor;
@@ -122,6 +122,6 @@ app.MapRemoteBffApiEndpoint("/remote-apis/user-token", "https://localhost:5010")
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Blazor.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(PerComponent.Client._Imports).Assembly);
 
 app.Run();

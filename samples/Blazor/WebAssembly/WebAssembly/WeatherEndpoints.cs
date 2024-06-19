@@ -1,4 +1,4 @@
-﻿namespace Blazor.Wasm.Bff;
+﻿namespace WebAssembly;
 
 public static class WeatherEndpoints
 {
