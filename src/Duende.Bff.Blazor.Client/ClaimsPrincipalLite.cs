@@ -1,4 +1,4 @@
-namespace Duende.Bff.Blazor.Wasm;
+namespace Duende.Bff.Blazor.Client;
 
 /// <summary>
 /// Serialization friendly ClaimsPrincipal

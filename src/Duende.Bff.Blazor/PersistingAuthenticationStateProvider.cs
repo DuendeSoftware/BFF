@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Duende.Bff.Blazor.Wasm;
+using Duende.Bff.Blazor.Client;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;

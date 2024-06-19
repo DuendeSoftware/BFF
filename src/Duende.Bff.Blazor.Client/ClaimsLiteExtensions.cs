@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Duende.Bff.Blazor.Wasm;
+namespace Duende.Bff.Blazor.Client;
 
 public static class ClaimsLiteExtensions
 {

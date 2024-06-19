@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 
-namespace Duende.Bff.Blazor.Wasm;
+namespace Duende.Bff.Blazor.Client;
 
 
 // TODO - Think about this name (because we added the persistent state provider, so now there are 2 BFF providers)

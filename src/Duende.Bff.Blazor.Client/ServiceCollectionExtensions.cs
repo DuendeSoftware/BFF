@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Duende.Bff.Blazor.Wasm;
+namespace Duende.Bff.Blazor.Client;
 
 public static class ServiceCollectionExtensions
 {

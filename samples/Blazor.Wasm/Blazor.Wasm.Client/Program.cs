@@ -1,4 +1,4 @@
-using Duende.Bff.Blazor.Wasm;
+using Duende.Bff.Blazor.Client;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
