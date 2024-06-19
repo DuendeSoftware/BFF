@@ -47,6 +47,9 @@ public static class BffServiceCollectionExtensions
         services.AddTransient<IBackchannelLogoutService, DefaultBackchannelLogoutService>();
         services.AddTransient<IDiagnosticsService, DefaultDiagnosticsService>();
 
+        // Claims for user endpoint
+        services.AddTransient<IClaimsService, DefaultClaimsService>();
+
         // session management
         services.TryAddTransient<ISessionRevocationService, NopSessionRevocationService>();
 

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 
 namespace Duende.Bff.Blazor.Wasm;
 
+
+// TODO - Think about this name (because we added the persistent state provider, so now there are 2 BFF providers)
 public class BffAuthenticationStateProvider : AuthenticationStateProvider
 {
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
@@ -38,7 +40,6 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         // checks periodically for a session state change and fires event
         // this causes a round trip to the server
         // adjust the period accordingly if that feature is needed
-        // TODO - Add configuration for this
         if (user!.Identity!.IsAuthenticated)
         {
             _logger.LogInformation("starting background check..");
@@ -47,10 +48,12 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
             timer = new Timer(async _ =>
             {
                 var currentUser = await GetUser(false);
+                // Always notify that auth state has changed, because the user management claims change over time
+                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
+
                 if (currentUser!.Identity!.IsAuthenticated == false)
                 {
                     _logger.LogInformation("user logged out");
-                    NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
                     if (timer != null)
                     {
                         await timer.DisposeAsync();

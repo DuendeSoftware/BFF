@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Http;
 
 public class AuthenticationPropertiesProvider : IAuthenticationPropertiesProvider 
@@ -9,6 +8,12 @@ public class AuthenticationPropertiesProvider : IAuthenticationPropertiesProvide
     public AuthenticationPropertiesProvider(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
+        
+        // Invoke the properties getter to ensure that we have the properties
+        // captured as soon as this provider is added to the DI scope This
+        // relies on the AuthenticationPropertiesProvider being added as a
+        // Scoped dependency.
+        _ = Properties;
     }
 
     private AuthenticationProperties? _properties;
@@ -35,22 +40,4 @@ public class AuthenticationPropertiesProvider : IAuthenticationPropertiesProvide
 public interface IAuthenticationPropertiesProvider
 {
     AuthenticationProperties? Properties { get; set; }
-}
-
-public class AuthenticationPropertiesCircuitHandler : CircuitHandler
-{
-    private readonly ICircuitAuthenticationProperties _circuitAuthenticationProperties;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AuthenticationPropertiesCircuitHandler(ICircuitAuthenticationProperties circuitAuthenticationProperties, IHttpContextAccessor httpContextAccessor)
-    {
-        _circuitAuthenticationProperties = circuitAuthenticationProperties;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
-    public override async Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
-    {
-        var authResult = await _httpContextAccessor.HttpContext?.AuthenticateAsync();
-        _circuitAuthenticationProperties.Properties = authResult?.Properties;
-    }
 }

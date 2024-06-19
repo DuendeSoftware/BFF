@@ -5,20 +5,7 @@
 <AuthorizeView>
     <Authorized>
         <strong>Hello, @context.User.Identity?.Name</strong>
-        
-        @if(UseBffLogout(context))
-        {
-            <button class="nav-link btn btn-link" @onclick="e => LogoutUsingBffManagementEndpoint(context)">Log Out</button>
-        }
-        else
-        {
-            <form action="/logout" method="post" @formname="logoutForm">
-                <AntiforgeryToken />
-                <button type="submit" class="nav-link btn btn-link">
-                    Log Out
-                </button>
-            </form>
-        }
+        <button class="nav-link btn btn-link" @onclick="e => LogoutUsingBffManagementEndpoint(context)">Log Out</button>
     </Authorized>
     <NotAuthorized>
         <a href="bff/login">Log in</a>
@@ -27,9 +14,6 @@
 
 
 @code {
-        bool UseBffLogout(AuthenticationState context) => 
-            BffLogoutUrl(context) != null;
-
         string? BffLogoutUrl(AuthenticationState context) =>
                 context.User.FindFirst("bff:logout_url")?.Value;
 

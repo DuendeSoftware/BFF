@@ -20,16 +20,27 @@ namespace Duende.Bff.Blazor;
 // WASM application. 
 public sealed class PersistingServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
 {
+    private readonly IClaimsService claimsService;
+    private readonly IAuthenticationPropertiesProvider authenticationProperties;
     private readonly PersistentComponentState state;
+    private readonly NavigationManager navigation;
     private readonly ILogger<PersistingServerAuthenticationStateProvider> logger;
 
     private readonly PersistingComponentStateSubscription subscription;
 
     private Task<AuthenticationState>? authenticationStateTask;
 
-    public PersistingServerAuthenticationStateProvider(PersistentComponentState persistentComponentState, ILogger<PersistingServerAuthenticationStateProvider> logger)
+    public PersistingServerAuthenticationStateProvider(
+        IClaimsService claimsService,
+        IAuthenticationPropertiesProvider authenticationProperties,
+        PersistentComponentState persistentComponentState,
+        NavigationManager navigation,
+        ILogger<PersistingServerAuthenticationStateProvider> logger)
     {
+        this.claimsService = claimsService;
+        this.authenticationProperties = authenticationProperties;
         state = persistentComponentState;
+        this.navigation = navigation;
         this.logger = logger;
 
         AuthenticationStateChanged += OnAuthenticationStateChanged;
@@ -49,17 +60,30 @@ public sealed class PersistingServerAuthenticationStateProvider : ServerAuthenti
         }
 
         var authenticationState = await authenticationStateTask;
-        var principal = authenticationState.User;
 
-        if (principal.Identity?.IsAuthenticated == true)
+        var userClaims = await claimsService.GetUserClaimsAsync(authenticationState.User, authenticationProperties.Properties);
+        var managementClaims = await claimsService.GetManagementClaimsAsync(new Uri(navigation.BaseUri).AbsolutePath, authenticationState.User, authenticationProperties.Properties);
+
+        var claims = userClaims.Concat(managementClaims).Select(c => new ClaimLite
         {
-            logger.LogInformation("Persisting Authentication State");
-            
-            state.PersistAsJson(nameof(ClaimsPrincipalLite), principal.ToClaimsPrincipalLite());
-        } else
+            Type = c.type,
+            Value = c.value?.ToString(),
+            // TODO - Revisit ValueType. Consider consolidation of ClaimLite and ClaimRecord
+            ValueType = null // c.ValueType = c.ValueType == ClaimValueTypes.String ? null : c.ValueType
+        }).ToArray();
+
+        var principal = new ClaimsPrincipalLite
         {
-            logger.LogInformation("NOT Persisting Authentication State");
-        }
+            AuthenticationType = authenticationState.User.Identity!.AuthenticationType,
+            NameClaimType = authenticationState.User.Identities.First().NameClaimType,
+            RoleClaimType = authenticationState.User.Identities.First().RoleClaimType,
+            Claims = claims
+        };
+
+        logger.LogDebug("Persisting Authentication State");
+        
+        state.PersistAsJson(nameof(ClaimsPrincipalLite), principal);
+    
     }
 
     public void Dispose()
