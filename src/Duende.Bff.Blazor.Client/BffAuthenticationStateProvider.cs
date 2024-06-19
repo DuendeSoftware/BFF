@@ -17,7 +17,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
     private readonly ILogger<BffAuthenticationStateProvider> _logger;
     private readonly BffBlazorOptions _options;
 
-    private DateTimeOffset _userLastCheck = DateTimeOffset.Now;
+    private DateTimeOffset _userLastCheck = DateTimeOffset.MinValue;
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
     public BffAuthenticationStateProvider(
@@ -29,6 +29,10 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
         _client = factory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
         _cachedUser = GetPersistedUser(state);
+        if (_cachedUser.Identity?.IsAuthenticated == true) 
+        {
+            _userLastCheck = DateTimeOffset.Now;
+        }
         _options = options.Value;
     }
 
@@ -54,6 +58,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
                 if (currentUser!.Identity!.IsAuthenticated == false)
                 {
                     _logger.LogInformation("user logged out");
+
                     if (timer != null)
                     {
                         await timer.DisposeAsync();
