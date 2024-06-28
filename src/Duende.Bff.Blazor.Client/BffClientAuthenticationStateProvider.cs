@@ -7,24 +7,22 @@ using Microsoft.Extensions.Options;
 
 namespace Duende.Bff.Blazor.Client;
 
-
-// TODO - Think about this name (because we added the persistent state provider, so now there are 2 BFF providers)
-public class BffAuthenticationStateProvider : AuthenticationStateProvider
+public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
 {
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
     private readonly HttpClient _client;
-    private readonly ILogger<BffAuthenticationStateProvider> _logger;
+    private readonly ILogger<BffClientAuthenticationStateProvider> _logger;
     private readonly BffBlazorOptions _options;
 
     private DateTimeOffset _userLastCheck = DateTimeOffset.MinValue;
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
-    public BffAuthenticationStateProvider(
+    public BffClientAuthenticationStateProvider(
         PersistentComponentState state,
         IHttpClientFactory factory,
         IOptions<BffBlazorOptions> options,
-        ILogger<BffAuthenticationStateProvider> logger)
+        ILogger<BffClientAuthenticationStateProvider> logger)
     {
         _client = factory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
@@ -98,7 +96,7 @@ public class BffAuthenticationStateProvider : AuthenticationStateProvider
             var claims = await response.Content.ReadFromJsonAsync<List<ClaimRecord>>();
 
             var identity = new ClaimsIdentity(
-                nameof(BffAuthenticationStateProvider),
+                nameof(BffClientAuthenticationStateProvider),
                 "name",
                 "role");
 

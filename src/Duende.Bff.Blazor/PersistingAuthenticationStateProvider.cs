@@ -18,24 +18,24 @@ namespace Duende.Bff.Blazor;
 // This is a server-side AuthenticationStateProvider that uses PersistentComponentState to flow the
 // authentication state to the client which is then used to initialize the authentication state in the 
 // WASM application. 
-public sealed class PersistingServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
+public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
 {
     private readonly IClaimsService claimsService;
     private readonly IAuthenticationPropertiesProvider authenticationProperties;
     private readonly PersistentComponentState state;
     private readonly NavigationManager navigation;
-    private readonly ILogger<PersistingServerAuthenticationStateProvider> logger;
+    private readonly ILogger<BffServerAuthenticationStateProvider> logger;
 
     private readonly PersistingComponentStateSubscription subscription;
 
     private Task<AuthenticationState>? authenticationStateTask;
 
-    public PersistingServerAuthenticationStateProvider(
+    public BffServerAuthenticationStateProvider(
         IClaimsService claimsService,
         IAuthenticationPropertiesProvider authenticationProperties,
         PersistentComponentState persistentComponentState,
         NavigationManager navigation,
-        ILogger<PersistingServerAuthenticationStateProvider> logger)
+        ILogger<BffServerAuthenticationStateProvider> logger)
     {
         this.claimsService = claimsService;
         this.authenticationProperties = authenticationProperties;

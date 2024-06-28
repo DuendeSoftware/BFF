@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddAuthorizationCore()
-            .AddScoped<AuthenticationStateProvider, BffAuthenticationStateProvider>()
+            .AddScoped<AuthenticationStateProvider, BffClientAuthenticationStateProvider>()
             .AddCascadingAuthenticationState()
             .AddTransient<AntiforgeryHandler>()
             .AddHttpClient("BffAuthenticationStateProvider", (sp, client) =>

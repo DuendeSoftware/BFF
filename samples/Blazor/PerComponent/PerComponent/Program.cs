@@ -21,7 +21,7 @@ builder.Services.AddCascadingAuthenticationState();
 // adds access token management
 builder.Services.AddOpenIdConnectAccessTokenManagement()
     .AddBlazorServerAccessTokenManagement<ServerSideTokenStore>();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, BffServerAuthenticationStateProvider>();
 builder.Services.AddScoped<IAuthenticationPropertiesProvider, AuthenticationPropertiesProvider>();
 
 builder.Services.AddScoped<IRenderModeContext, ServerRenderModeContext>();
