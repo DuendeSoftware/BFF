@@ -3,7 +3,7 @@
         <FrameworkVersionRuntime>8.0.0</FrameworkVersionRuntime>
         <FrameworkVersionTesting>8.0.0</FrameworkVersionTesting>
         <YarpVersion>2.1.0</YarpVersion>
-        <IdentityServerVersion>7.0.4</IdentityServerVersion>
+        <IdentityServerVersion>7.0.6</IdentityServerVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,8 +13,11 @@
 
         <!-- runtime -->
         <PackageReference Update="IdentityModel" Version="7.0.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0-preview.3" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+        <PackageReference Update="Microsoft.AspNetCore.Components.Authorization" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
 
         <!-- testing -->
