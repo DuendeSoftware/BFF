@@ -8,36 +8,39 @@ public class AuthenticationPropertiesProvider : IAuthenticationPropertiesProvide
     public AuthenticationPropertiesProvider(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
-        
-        // Invoke the properties getter to ensure that we have the properties
-        // captured as soon as this provider is added to the DI scope This
-        // relies on the AuthenticationPropertiesProvider being added as a
-        // Scoped dependency.
-        _ = Properties;
+    }
+
+    public async Task Initialize()
+    {
+        if (_httpContextAccessor.HttpContext != null)
+        {
+            var authResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
+            _properties = authResult?.Properties;
+        }
+        else
+        {
+            throw new InvalidOperationException("Attempt to capture authentication properties when no HTTP context is available");
+        }
     }
 
     private AuthenticationProperties? _properties;
 
-    public AuthenticationProperties? Properties 
+    public AuthenticationProperties Properties 
     { 
         get 
         {
             if (_properties == null)
             {
-                if (_httpContextAccessor.HttpContext != null)
-                {
-                    var authResult = _httpContextAccessor.HttpContext?.AuthenticateAsync().Result;
-                    _properties = authResult?.Properties;
-                }
-                // TODO - handle this error
+                throw new InvalidOperationException("Attempt to retrieve AuthenticationProperties from an uninitialized AuthenticationPropertiesProvider.");
             }
             return _properties;
         }
-        set => _properties = value; 
+        private set => _properties = value; 
     }
 }
 
 public interface IAuthenticationPropertiesProvider
 {
-    AuthenticationProperties? Properties { get; set; }
+    AuthenticationProperties Properties { get; }
+    Task Initialize();
 }

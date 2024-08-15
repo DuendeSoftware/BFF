@@ -15,9 +15,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff.Blazor;
 
-// This is a server-side AuthenticationStateProvider that uses PersistentComponentState to flow the
-// authentication state to the client which is then used to initialize the authentication state in the 
-// WASM application. 
+// This is a server-side AuthenticationStateProvider that uses
+// PersistentComponentState to flow the authentication state to the client which
+// is then used to initialize the authentication state in the WASM application. 
 public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
 {
     private readonly IClaimsService claimsService;
@@ -39,7 +39,7 @@ public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationS
     {
         this.claimsService = claimsService;
         this.authenticationProperties = authenticationProperties;
-        state = persistentComponentState;
+        this.state = persistentComponentState;
         this.navigation = navigation;
         this.logger = logger;
 
