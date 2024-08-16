@@ -74,9 +74,17 @@ public class DefaultUserService : IUserService
         }
         else
         {
-            var claims = new List<ClaimRecord>();
-            claims.AddRange(await GetUserClaimsAsync(result));
-            claims.AddRange(await GetManagementClaimsAsync(context, result));
+            // In blazor, it is sometimes necessary to copy management claims into the session.
+            // So, we don't want duplicate mgmt claims. Instead, they should overwrite the existing mgmt claims
+            // (in case they changed when the session slide, etc)
+            var claims = (await GetUserClaimsAsync(result)).ToList();
+            var mgmtClaims = await GetManagementClaimsAsync(context, result);
+
+            foreach (var claim in mgmtClaims)
+            {
+                claims.RemoveAll(c => c.type == claim.type);
+                claims.Add(claim);
+            }
 
             var json = JsonSerializer.Serialize(claims);
 

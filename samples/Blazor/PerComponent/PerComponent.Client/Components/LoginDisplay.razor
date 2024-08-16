@@ -7,8 +7,11 @@
         <strong>Hello, @context.User.Identity?.Name</strong>
         <button class="nav-link btn btn-link" @onclick="e => LogoutUsingBffManagementEndpoint(context)">Log Out</button>
     </Authorized>
+    <Authorizing>
+        <a class="nav-link btn btn-link disabled">Log in</a>
+    </Authorizing>
     <NotAuthorized>
-        <a href="bff/login">Log in</a>
+        <a class="nav-link btn btn-link" href="bff/login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 

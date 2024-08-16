@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using Duende.Bff.Blazor.Client;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 // This is based on the PersistingServerAuthenticationStateProvider from ASP.NET
@@ -20,57 +22,52 @@ namespace Duende.Bff.Blazor;
 // is then used to initialize the authentication state in the WASM application. 
 public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
 {
-    private readonly IClaimsService claimsService;
-    private readonly IAuthenticationPropertiesProvider authenticationProperties;
-    private readonly PersistentComponentState state;
-    private readonly NavigationManager navigation;
-    private readonly ILogger<BffServerAuthenticationStateProvider> logger;
+    private readonly IClaimsService _claimsService;
+    private readonly PersistentComponentState _state;
+    private readonly NavigationManager _navigation;
+    private readonly ILogger<BffServerAuthenticationStateProvider> _logger;
 
-    private readonly PersistingComponentStateSubscription subscription;
+    private readonly PersistingComponentStateSubscription _subscription;
 
-    private Task<AuthenticationState>? authenticationStateTask;
+    private Task<AuthenticationState>? _authenticationStateTask;
 
     public BffServerAuthenticationStateProvider(
         IClaimsService claimsService,
-        IAuthenticationPropertiesProvider authenticationProperties,
         PersistentComponentState persistentComponentState,
         NavigationManager navigation,
         ILogger<BffServerAuthenticationStateProvider> logger)
     {
-        this.claimsService = claimsService;
-        this.authenticationProperties = authenticationProperties;
-        this.state = persistentComponentState;
-        this.navigation = navigation;
-        this.logger = logger;
+        _claimsService = claimsService;
+        _state = persistentComponentState;
+        _navigation = navigation;
+        _logger = logger;
 
         AuthenticationStateChanged += OnAuthenticationStateChanged;
-        subscription = state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
+        _subscription = _state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
     }
 
     private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
     {
-        authenticationStateTask = task;
+        _authenticationStateTask = task;
     }
 
     private async Task OnPersistingAsync()
     {
-        if (authenticationStateTask is null)
+        if (_authenticationStateTask is null)
         {
             throw new UnreachableException($"Authentication state not set in {nameof(OnPersistingAsync)}().");
         }
 
-        var authenticationState = await authenticationStateTask;
+        var authenticationState = await _authenticationStateTask;
 
-        var userClaims = await claimsService.GetUserClaimsAsync(authenticationState.User, authenticationProperties.Properties);
-        var managementClaims = await claimsService.GetManagementClaimsAsync(new Uri(navigation.BaseUri).AbsolutePath, authenticationState.User, authenticationProperties.Properties);
-
-        var claims = userClaims.Concat(managementClaims).Select(c => new ClaimLite
-        {
-            Type = c.type,
-            Value = c.value?.ToString(),
-            // TODO - Revisit ValueType. Consider consolidation of ClaimLite and ClaimRecord
-            ValueType = null // c.ValueType = c.ValueType == ClaimValueTypes.String ? null : c.ValueType
-        }).ToArray();
+        var claims = authenticationState.User.Claims
+            .Select(c => new ClaimLite
+            {
+                Type = c.Type,
+                Value = c.Value?.ToString(),
+                // TODO - Revisit ValueType. Consider consolidation of ClaimLite and ClaimRecord
+                ValueType = c.ValueType == ClaimValueTypes.String ? null : c.ValueType
+            }).ToArray();
 
         var principal = new ClaimsPrincipalLite
         {
@@ -80,15 +77,15 @@ public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationS
             Claims = claims
         };
 
-        logger.LogDebug("Persisting Authentication State");
+        _logger.LogDebug("Persisting Authentication State");
         
-        state.PersistAsJson(nameof(ClaimsPrincipalLite), principal);
-    
+        _state.PersistAsJson(nameof(ClaimsPrincipalLite), principal);
     }
 
+    
     public void Dispose()
     {
-        subscription.Dispose();
+        _subscription.Dispose();
         AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }

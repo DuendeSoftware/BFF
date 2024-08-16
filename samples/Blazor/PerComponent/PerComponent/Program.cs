@@ -22,8 +22,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddOpenIdConnectAccessTokenManagement()
     .AddBlazorServerAccessTokenManagement<ServerSideTokenStore>();
 builder.Services.AddScoped<AuthenticationStateProvider, BffServerAuthenticationStateProvider>();
-builder.Services.AddScoped<IAuthenticationPropertiesProvider, AuthenticationPropertiesProvider>();
-builder.Services.AddScoped<CaptureAuthPropertiesEvent>();
+builder.Services.AddScoped<CaptureManagementClaimsCookieEvents>();
 
 builder.Services.AddScoped<IRenderModeContext, ServerRenderModeContext>();
 builder.Services.AddUserAccessTokenHttpClient("callApi", configureClient: client => client.BaseAddress = new Uri("https://localhost:5010/"));
@@ -43,7 +42,7 @@ builder.Services.AddAuthentication(options =>
         options.Cookie.Name = "__Host-blazor";
         options.Cookie.SameSite = SameSiteMode.Strict;
 
-        options.EventsType = typeof(CaptureAuthPropertiesEvent);
+        options.EventsType = typeof(CaptureManagementClaimsCookieEvents);
     })
     .AddOpenIdConnect("oidc", options =>
     {
