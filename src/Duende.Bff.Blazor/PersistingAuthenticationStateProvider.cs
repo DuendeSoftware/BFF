@@ -65,7 +65,6 @@ public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationS
             {
                 Type = c.Type,
                 Value = c.Value?.ToString() ?? string.Empty,
-                // TODO - Revisit ValueType. Consider consolidation of ClaimLite and ClaimRecord
                 ValueType = c.ValueType == ClaimValueTypes.String ? null : c.ValueType
             }).ToArray();
 

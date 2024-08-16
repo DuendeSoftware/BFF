@@ -13,16 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddBff()
     .AddServerSideSessions()
+    .AddBlazorServer()
     .AddRemoteApis();
 
 builder.Services.AddCascadingAuthenticationState();
-
-// TODO - Consider a helper method to set up ATM + StateProvider
-// adds access token management
-builder.Services.AddOpenIdConnectAccessTokenManagement()
-    .AddBlazorServerAccessTokenManagement<ServerSideTokenStore>();
-builder.Services.AddScoped<AuthenticationStateProvider, BffServerAuthenticationStateProvider>();
-builder.Services.AddScoped<CaptureManagementClaimsCookieEvents>();
 
 builder.Services.AddScoped<IRenderModeContext, ServerRenderModeContext>();
 builder.Services.AddUserAccessTokenHttpClient("callApi", configureClient: client => client.BaseAddress = new Uri("https://localhost:5010/"));

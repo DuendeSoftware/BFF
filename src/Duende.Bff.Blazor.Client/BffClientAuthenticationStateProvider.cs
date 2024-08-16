@@ -84,6 +84,7 @@ public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
         return _cachedUser;
     }
 
+    // TODO - Consider using ClaimLite instead here
     record ClaimRecord(string Type, object Value);
 
     private async Task<ClaimsPrincipal> FetchUser()
