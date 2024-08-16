@@ -30,7 +30,7 @@
         <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(FrameworkVersionTesting)" />
-        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="$(FrameworkVersionTesting)" />
+        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />
         
         <PackageReference Update="Duende.IdentityServer" Version="$(IdentityServerVersion)" />
         
