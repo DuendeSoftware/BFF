@@ -5,8 +5,7 @@ using System.Security.Claims;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Logging; // TODO - Add useful logging to this class
-
+using Microsoft.Extensions.Logging;
 namespace Duende.Bff.Blazor;
 
 /// <summary>
@@ -21,6 +20,7 @@ public class ServerSideTokenStore(
     private readonly IDataProtector protector = dataProtectionProvider.CreateProtector(ServerSideTicketStore.DataProtectorPurpose);
     public async Task<UserToken> GetTokenAsync(ClaimsPrincipal user, UserTokenRequestParameters? parameters = null)
     {
+        logger.LogDebug("Retrieving token for user {user}", user.Identity?.Name);
         var session = await GetSession(user);
         var ticket = session.Deserialize(protector, logger) ?? throw new InvalidOperationException("Failed to deserialize authentication ticket from session");
 
@@ -31,6 +31,8 @@ public class ServerSideTokenStore(
     {
         var sub = user.FindFirst("sub")?.Value ?? throw new InvalidOperationException("no sub claim");
         var sid = user.FindFirst("sid")?.Value ?? throw new InvalidOperationException("no sid claim");
+
+        logger.LogDebug("Retrieving session {sid} for sub {sub}", sid, sub);
 
         var sessions = await sessionStore.GetUserSessionsAsync(new UserSessionsFilter
         {
@@ -46,6 +48,7 @@ public class ServerSideTokenStore(
 
     public async Task StoreTokenAsync(ClaimsPrincipal user, UserToken token, UserTokenRequestParameters? parameters = null)
     {
+        logger.LogDebug("Storing token for user {user}", user.Identity?.Name);
         await UpdateTicket(user, ticket =>
         {
             tokensInAuthProperties.SetUserToken(token, ticket.Properties, parameters);
@@ -54,6 +57,7 @@ public class ServerSideTokenStore(
 
     public async Task ClearTokenAsync(ClaimsPrincipal user, UserTokenRequestParameters? parameters = null)
     {
+        logger.LogDebug("Removing token for user {user}", user.Identity?.Name);
         await UpdateTicket(user, ticket =>
         {
             tokensInAuthProperties.RemoveUserToken(ticket.Properties, parameters);
