@@ -1,12 +1,9 @@
 using PerComponent;
 using PerComponent.Client;
 using PerComponent.Components;
-using Duende.AccessTokenManagement.OpenIdConnect;
 using Duende.Bff;
 using Duende.Bff.Blazor;
 using Duende.Bff.Yarp;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 // This is based on the PersistingServerAuthenticationStateProvider from ASP.NET

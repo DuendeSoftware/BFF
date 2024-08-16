@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
