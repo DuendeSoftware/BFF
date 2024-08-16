@@ -1,3 +1,6 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -20,7 +23,6 @@ public class CaptureManagementClaimsCookieEvents : CookieAuthenticationEvents
 
         if (context.Principal?.Identity is ClaimsIdentity id)
         {
-
             foreach (var claim in managementClaims)
             {
                 if (context.Principal.Claims.Any(c => c.Type == claim.type) != true)

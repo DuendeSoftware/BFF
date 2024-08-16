@@ -1,4 +1,7 @@
-﻿using System.Net.Http.Json;
+﻿// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
+using System.Net.Http.Json;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components;
@@ -27,10 +30,11 @@ public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
         _client = factory.CreateClient("BffAuthenticationStateProvider");
         _logger = logger;
         _cachedUser = GetPersistedUser(state);
-        if (_cachedUser.Identity?.IsAuthenticated == true) 
+        if (_cachedUser.Identity?.IsAuthenticated == true)
         {
             _userLastCheck = DateTimeOffset.Now;
         }
+
         _options = options.Value;
     }
 
@@ -106,7 +110,7 @@ public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
                 foreach (var claim in claims)
                 {
                     identity.AddClaim(new Claim(claim.Type, claim.Value.ToString() ?? "no value"));
-                }    
+                }
             }
 
             return new ClaimsPrincipal(identity);

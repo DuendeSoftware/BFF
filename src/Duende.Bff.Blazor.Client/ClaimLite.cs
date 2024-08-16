@@ -1,24 +1,27 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 namespace Duende.Bff.Blazor.Client;
 
 // TODO - Consider consolidating this and Duende.Bff.ClaimLite
 
 /// <summary>
-/// Serialization friendly claim
+///     Serialization friendly claim
 /// </summary>
 public class ClaimLite
 {
     /// <summary>
-    /// The type
+    ///     The type
     /// </summary>
     public string Type { get; init; } = default!;
-        
+
     /// <summary>
-    /// The value
+    ///     The value
     /// </summary>
     public string Value { get; init; } = default!;
 
     /// <summary>
-    /// The value type
+    ///     The value type
     /// </summary>
     public string? ValueType { get; init; }
 }

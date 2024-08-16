@@ -1,3 +1,6 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,9 +10,10 @@ namespace Duende.Bff.Blazor.Client;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddBff(this IServiceCollection services,  Action<BffBlazorOptions>? configureAction = null)
+    public static IServiceCollection AddBff(this IServiceCollection services,
+        Action<BffBlazorOptions>? configureAction = null)
     {
-        if(configureAction != null)
+        if (configureAction != null)
         {
             services.Configure(configureAction);
         }
@@ -24,14 +28,14 @@ public static class ServiceCollectionExtensions
                 var baseAddress = GetBaseAddress(sp);
                 client.BaseAddress = new Uri(baseAddress);
             }).AddHttpMessageHandler<AntiforgeryHandler>();
-        
+
         return services;
     }
 
     private static string GetBaseAddress(IServiceProvider sp)
     {
         var opt = sp.GetRequiredService<IOptions<BffBlazorOptions>>();
-        if(opt.Value.RemoteApiBaseAddress != null)
+        if (opt.Value.RemoteApiBaseAddress != null)
         {
             return opt.Value.RemoteApiBaseAddress;
         }
@@ -48,7 +52,8 @@ public static class ServiceCollectionExtensions
         return opt.Value.RemoteApiPath;
     }
 
-    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(Action<IServiceProvider, HttpClient>? configureClient)
+    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(
+        Action<IServiceProvider, HttpClient>? configureClient)
     {
         return (sp, client) =>
         {
@@ -57,7 +62,8 @@ public static class ServiceCollectionExtensions
         };
     }
 
-    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(Action<HttpClient>? configureClient)
+    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(
+        Action<HttpClient>? configureClient)
     {
         return (sp, client) =>
         {
@@ -81,37 +87,43 @@ public static class ServiceCollectionExtensions
             {
                 remoteApiPath = remoteApiPath.Substring(1);
             }
+
             if (!remoteApiPath.EndsWith("/"))
             {
                 remoteApiPath += "/";
             }
         }
+
         client.BaseAddress = new Uri(new Uri(baseAddress), remoteApiPath);
     }
 
-    public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName, Action<HttpClient> configureClient)
-    {
-       return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
-            .AddHttpMessageHandler<AntiforgeryHandler>();
-    }
-
-    public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName, Action<IServiceProvider, HttpClient>? configureClient = null)
+    public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName,
+        Action<HttpClient> configureClient)
     {
         return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
-             .AddHttpMessageHandler<AntiforgeryHandler>();
+            .AddHttpMessageHandler<AntiforgeryHandler>();
     }
-    
-    public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services, Action<HttpClient> configureClient)
+
+    public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName,
+        Action<IServiceProvider, HttpClient>? configureClient = null)
+    {
+        return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
+            .AddHttpMessageHandler<AntiforgeryHandler>();
+    }
+
+    public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services,
+        Action<HttpClient> configureClient)
         where T : class
     {
         return services.AddHttpClient<T>(SetBaseAddressInConfigureClient(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 
-    public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services, Action<IServiceProvider, HttpClient>? configureClient = null)
+    public static IHttpClientBuilder AddRemoteApiHttpClient<T>(this IServiceCollection services,
+        Action<IServiceProvider, HttpClient>? configureClient = null)
         where T : class
     {
         return services.AddHttpClient<T>(SetBaseAddressInConfigureClient(configureClient))
-             .AddHttpMessageHandler<AntiforgeryHandler>();
+            .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 }

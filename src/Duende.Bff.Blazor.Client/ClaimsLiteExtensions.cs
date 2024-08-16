@@ -1,3 +1,6 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 using System.Security.Claims;
 
 namespace Duende.Bff.Blazor.Client;
@@ -5,18 +8,20 @@ namespace Duende.Bff.Blazor.Client;
 public static class ClaimsLiteExtensions
 {
     /// <summary>
-    /// Converts a ClaimsPrincipalLite to ClaimsPrincipal
+    ///     Converts a ClaimsPrincipalLite to ClaimsPrincipal
     /// </summary>
     public static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
     {
-        var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
-        var id = new ClaimsIdentity(claims, principal.AuthenticationType, principal.NameClaimType, principal.RoleClaimType);
+        var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String))
+            .ToArray();
+        var id = new ClaimsIdentity(claims, principal.AuthenticationType, principal.NameClaimType,
+            principal.RoleClaimType);
 
         return new ClaimsPrincipal(id);
     }
 
     /// <summary>
-    /// Converts a ClaimsPrincipal to ClaimsPrincipalLite
+    ///     Converts a ClaimsPrincipal to ClaimsPrincipalLite
     /// </summary>
     public static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
     {

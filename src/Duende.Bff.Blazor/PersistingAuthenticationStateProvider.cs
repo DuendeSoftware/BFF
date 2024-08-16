@@ -1,3 +1,6 @@
+// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
+
 using System.Diagnostics;
 using System.Security.Claims;
 using Duende.Bff.Blazor.Client;
@@ -77,11 +80,11 @@ public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationS
         };
 
         _logger.LogDebug("Persisting Authentication State");
-        
+
         _state.PersistAsJson(nameof(ClaimsPrincipalLite), principal);
     }
 
-    
+
     public void Dispose()
     {
         _subscription.Dispose();
