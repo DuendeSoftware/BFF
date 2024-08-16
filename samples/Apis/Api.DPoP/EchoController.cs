@@ -3,6 +3,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Globalization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Api.DPoP
@@ -16,19 +18,19 @@ namespace Api.DPoP
             string message;
             var sub = User.FindFirst("sub");
             
-            if (!User.Identity.IsAuthenticated)
+            if (User.Identity is { IsAuthenticated: false })
             {
                 message = "Hello, anonymous caller";
             }
             else if (sub != null)
             {
-                var userName = User.FindFirst("name");
-                message = $"Hello user, {userName.Value}";
+                var userName = User.FindFirstValue("name");
+                message = $"Hello user, {userName}";
             }
             else
             {
-                var client = User.FindFirst("client_id");
-                message = $"Hello client, {client.Value}";
+                var client = User.FindFirstValue("client_id");
+                message = $"Hello client, {client}";
             }
             
             var response = new

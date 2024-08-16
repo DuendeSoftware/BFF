@@ -24,6 +24,9 @@ namespace Duende.Bff;
 /// </summary>
 public class DefaultUserService : IUserService
 {
+    /// <summary>
+    /// The claims service
+    /// </summary>
     protected readonly IClaimsService Claims;
     
     /// <summary>
@@ -39,6 +42,7 @@ public class DefaultUserService : IUserService
     /// <summary>
     /// Ctor
     /// </summary>
+    /// <param name="claims"></param>
     /// <param name="options"></param>
     /// <param name="loggerFactory"></param>
     public DefaultUserService(IClaimsService claims, IOptions<BffOptions> options, ILoggerFactory loggerFactory)
@@ -116,21 +120,44 @@ public class DefaultUserService : IUserService
     }
 }
 
+/// <summary>
+/// Interface for a service that retrieves user and management claims.
+/// </summary>
 public interface IClaimsService
 {
+    /// <summary>
+    /// Gets claims associated with the user's session.
+    /// </summary>
+    /// <param name="principal"></param>
+    /// <param name="properties"></param>
+    /// <returns></returns>
     Task<IEnumerable<ClaimRecord>> GetUserClaimsAsync(ClaimsPrincipal? principal, AuthenticationProperties? properties);
+    
+    /// <summary>
+    /// Gets claims that facilitate session and token management.
+    /// </summary>
+    /// <param name="pathBase"></param>
+    /// <param name="principal"></param>
+    /// <param name="properties"></param>
+    /// <returns></returns>
     Task<IEnumerable<ClaimRecord>> GetManagementClaimsAsync(PathString pathBase, ClaimsPrincipal? principal, AuthenticationProperties? properties);
 }
 
+/// <inheritdoc />
 public class DefaultClaimsService : IClaimsService
 {
     private readonly BffOptions Options;
-
+    
+    /// <summary>
+    /// Ctor.
+    /// </summary>
+    /// <param name="options"></param>
     public DefaultClaimsService(IOptions<BffOptions> options)
     {
         Options = options.Value;
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<ClaimRecord>> GetManagementClaimsAsync(PathString pathBase, ClaimsPrincipal? principal, AuthenticationProperties? properties)
     {
         var claims = new List<ClaimRecord>();
@@ -163,6 +190,7 @@ public class DefaultClaimsService : IClaimsService
         return Task.FromResult<IEnumerable<ClaimRecord>>(claims);
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<ClaimRecord>> GetUserClaimsAsync(ClaimsPrincipal? principal, AuthenticationProperties? properties) => 
         Task.FromResult(principal?.Claims.Select(x => new ClaimRecord(x.Type, x.Value)) ?? Enumerable.Empty<ClaimRecord>());
 }

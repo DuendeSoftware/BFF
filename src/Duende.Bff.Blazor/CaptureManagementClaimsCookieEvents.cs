@@ -17,14 +17,16 @@ public class CaptureManagementClaimsCookieEvents : CookieAuthenticationEvents
         var managementClaims = await _claimsService.GetManagementClaimsAsync(
             context.Request.PathBase,
             context.Principal, context.Properties);
-    
-        var id = (ClaimsIdentity)context.Principal?.Identity;
-    
-        foreach (var claim in managementClaims)
+
+        if (context.Principal?.Identity is ClaimsIdentity id)
         {
-            if (context.Principal?.Claims.Any(c => c.Type == claim.type) != true)
+
+            foreach (var claim in managementClaims)
             {
-                id.AddClaim(new Claim(claim.type, claim.value.ToString()));
+                if (context.Principal.Claims.Any(c => c.Type == claim.type) != true)
+                {
+                    id.AddClaim(new Claim(claim.type, claim.value?.ToString() ?? string.Empty));
+                }
             }
         }
     }

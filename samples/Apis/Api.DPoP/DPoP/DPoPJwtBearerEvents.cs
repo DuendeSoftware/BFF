@@ -76,7 +76,7 @@ public class DPoPJwtBearerEvents : JwtBearerEvents
             // if the scheme used was not DPoP, then it was Bearer
             // and if a access token was presented with a cnf, then the 
             // client should have sent it as DPoP, so we fail the request
-            if (context.Principal.HasClaim(x => x.Type == JwtClaimTypes.Confirmation))
+            if (context.Principal?.HasClaim(x => x.Type == JwtClaimTypes.Confirmation) == true)
             {
                 context.HttpContext.Items["Bearer-ErrorDescription"] = "Must use DPoP when using an access token with a 'cnf' claim";
                 context.Fail("Must use DPoP when using an access token with a 'cnf' claim");

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Duende.Bff.Tests.TestFramework
 {
-    public record ApiResponse(string Method, string Path, string Sub, string ClientId, IEnumerable<ClaimRecord> Claims)
+    public record ApiResponse(string Method, string Path, string Sub, string ClientId, Bff.ClaimRecord[] Claims)
     {
         public string Body { get; init; }
 
