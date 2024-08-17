@@ -48,7 +48,7 @@ namespace Duende.Bff.Tests.TestFramework
 
         public string Url(string path = null)
         {
-            path = path ?? string.Empty;
+            path = path ?? String.Empty;
             if (!path.StartsWith("/")) path = "/" + path;
             return _baseAddress + path;
         }
