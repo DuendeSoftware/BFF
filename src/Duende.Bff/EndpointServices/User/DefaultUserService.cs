@@ -80,7 +80,7 @@ public class DefaultUserService : IUserService
         {
             // In blazor, it is sometimes necessary to copy management claims into the session.
             // So, we don't want duplicate mgmt claims. Instead, they should overwrite the existing mgmt claims
-            // (in case they changed when the session slide, etc)
+            // (in case they changed when the session slid, etc)
             var claims = (await GetUserClaimsAsync(result)).ToList();
             var mgmtClaims = await GetManagementClaimsAsync(context, result);
 

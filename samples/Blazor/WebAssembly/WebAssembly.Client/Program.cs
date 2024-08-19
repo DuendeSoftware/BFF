@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// authentication state and authorization
-builder.Services.AddBff();
+builder.Services
+    .AddBffBlazorClient() // Provides auth state provider that polls the /bff/user endpoint
+    .AddCascadingAuthenticationState();
 
 await builder.Build().RunAsync();

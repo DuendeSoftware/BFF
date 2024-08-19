@@ -1,12 +1,3 @@
 ﻿@rendermode InteractiveWebAssembly
 
 <CallApi Header="InteractiveWebAssembly"></CallApi>
-
-@* TODO - This cascading auth state gets the auth state provider running. But
-actually, we don't need the auth state provider to be running. I thought it was
-weird that it wasn't, so this forces it to do so, but actually we're not doing
-anything with the state changes. *@
-@code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-}

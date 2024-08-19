@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Duende.Bff.Blazor;
 
+/// <summary>
+/// This <see cref="CookieAuthenticationEvents"/> subclass invokes the BFF <see
+/// cref="IClaimsService"/> to retrieve management claims and add them to the
+/// session. This is useful in interactive render modes where components are
+/// initialled rendered server side. 
+/// </summary>
 public class CaptureManagementClaimsCookieEvents : CookieAuthenticationEvents
 {
     private readonly IClaimsService _claimsService;

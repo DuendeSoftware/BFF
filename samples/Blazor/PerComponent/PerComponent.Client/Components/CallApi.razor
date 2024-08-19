@@ -37,7 +37,9 @@
 
     protected async Task CallApiAsync()
     {
+        DisableUi = true;
         apiResult = await Http.GetFromJsonAsync<ApiResult>("user-token");
+        DisableUi = false;
     }
 
     protected override void OnAfterRender(bool firstRender)

@@ -21,6 +21,11 @@ public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
     private DateTimeOffset _userLastCheck = DateTimeOffset.MinValue;
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
+    /// <summary>
+    ///     An <see cref="AuthenticationStateProvider"/> intended for use in
+    ///     Blazor WASM. It polls the /bff/user endpoint to monitor session
+    ///     state.
+    /// </summary>
     public BffClientAuthenticationStateProvider(
         PersistentComponentState state,
         IHttpClientFactory factory,
@@ -43,10 +48,8 @@ public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
         var user = await GetUser();
         var state = new AuthenticationState(user);
 
-        // checks periodically for a session state change and fires event
-        // this causes a round trip to the server
-        // adjust the period accordingly if that feature is needed
-        if (user!.Identity!.IsAuthenticated)
+        // Periodically 
+        if (user.Identity is  { IsAuthenticated: true })
         {
             _logger.LogInformation("starting background check..");
             Timer? timer = null;
@@ -54,7 +57,13 @@ public class BffClientAuthenticationStateProvider : AuthenticationStateProvider
             timer = new Timer(async _ =>
             {
                 var currentUser = await GetUser(false);
-                // Always notify that auth state has changed, because the user management claims change over time
+                // Always notify that auth state has changed, because the user
+                // management claims (usually) change over time. 
+                //
+                // Future TODO - Someday we may want an extensibility point. If the
+                // user management claims have been customized, then auth state
+                // wouldn't always change. In that case, we'd want to only fire
+                // if the user actually had changed.
                 NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
 
                 if (currentUser!.Identity!.IsAuthenticated == false)

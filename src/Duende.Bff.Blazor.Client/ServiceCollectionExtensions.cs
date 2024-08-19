@@ -10,7 +10,7 @@ namespace Duende.Bff.Blazor.Client;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddBff(this IServiceCollection services,
+    public static IServiceCollection AddBffBlazorClient(this IServiceCollection services,
         Action<BffBlazorOptions>? configureAction = null)
     {
         if (configureAction != null)
@@ -21,7 +21,6 @@ public static class ServiceCollectionExtensions
         services
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, BffClientAuthenticationStateProvider>()
-            .AddCascadingAuthenticationState()
             .AddTransient<AntiforgeryHandler>()
             .AddHttpClient("BffAuthenticationStateProvider", (sp, client) =>
             {
@@ -52,7 +51,7 @@ public static class ServiceCollectionExtensions
         return opt.Value.RemoteApiPath;
     }
 
-    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(
+    private static Action<IServiceProvider, HttpClient> SetBaseAddress(
         Action<IServiceProvider, HttpClient>? configureClient)
     {
         return (sp, client) =>
@@ -62,7 +61,7 @@ public static class ServiceCollectionExtensions
         };
     }
 
-    private static Action<IServiceProvider, HttpClient> SetBaseAddressInConfigureClient(
+    private static Action<IServiceProvider, HttpClient> SetBaseAddress(
         Action<HttpClient>? configureClient)
     {
         return (sp, client) =>
@@ -100,14 +99,14 @@ public static class ServiceCollectionExtensions
     public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName,
         Action<HttpClient> configureClient)
     {
-        return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
+        return services.AddHttpClient(clientName, SetBaseAddress(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 
     public static IHttpClientBuilder AddRemoteApiHttpClient(this IServiceCollection services, string clientName,
         Action<IServiceProvider, HttpClient>? configureClient = null)
     {
-        return services.AddHttpClient(clientName, SetBaseAddressInConfigureClient(configureClient))
+        return services.AddHttpClient(clientName, SetBaseAddress(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 
@@ -115,7 +114,7 @@ public static class ServiceCollectionExtensions
         Action<HttpClient> configureClient)
         where T : class
     {
-        return services.AddHttpClient<T>(SetBaseAddressInConfigureClient(configureClient))
+        return services.AddHttpClient<T>(SetBaseAddress(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 
@@ -123,7 +122,7 @@ public static class ServiceCollectionExtensions
         Action<IServiceProvider, HttpClient>? configureClient = null)
         where T : class
     {
-        return services.AddHttpClient<T>(SetBaseAddressInConfigureClient(configureClient))
+        return services.AddHttpClient<T>(SetBaseAddress(configureClient))
             .AddHttpMessageHandler<AntiforgeryHandler>();
     }
 }

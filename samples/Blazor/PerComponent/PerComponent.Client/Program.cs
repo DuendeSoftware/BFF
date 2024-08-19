@@ -7,7 +7,9 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddScoped<IRenderModeContext, ClientRenderModeContext>();
 
-builder.Services.AddBff();
-builder.Services.AddRemoteApiHttpClient("callApi");
+builder.Services
+    .AddBffBlazorClient()
+    .AddCascadingAuthenticationState()
+    .AddRemoteApiHttpClient("callApi");
 
 await builder.Build().RunAsync();

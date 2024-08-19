@@ -10,7 +10,8 @@ public class ServerRenderModeContext(IHttpContextAccessor accessor) : IRenderMod
         if(prerendering)
         {
             return RenderMode.Prerender;
-        } else
+        } 
+        else
         {
             return RenderMode.Server;
         }
