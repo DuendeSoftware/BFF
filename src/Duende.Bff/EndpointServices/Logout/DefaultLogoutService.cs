@@ -101,6 +101,10 @@ public class DefaultLogoutService : ILogoutService
 
                 Logger.LogDebug("Refresh token revoked for sub {sub} and sid {sid}", result.Ticket.GetSubjectId(), result.Ticket.GetSessionId());
             }
+            else
+            {
+                Logger.LogTrace("Refresh token not found for sub {sub} and sid {sid}", result.Ticket.GetSubjectId(), result.Ticket.GetSessionId());
+            }
         }
 
         // get rid of local cookie first
