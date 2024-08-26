@@ -16,4 +16,9 @@
     <ProjectReference Include="../Duende.Bff.Shared/Duende.Bff.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Duende.Bff.Blazor.Client.UnitTests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+  
 </Project>

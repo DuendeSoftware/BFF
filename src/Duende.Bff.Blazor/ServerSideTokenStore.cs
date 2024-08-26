@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace Duende.Bff.Blazor;
 
 /// <summary>
-///     A token store that retrieves tokens from server side sessions.
+/// A token store that retrieves tokens from server side sessions.
 /// </summary>
 public class ServerSideTokenStore(
     IStoreTokensInAuthenticationProperties tokensInAuthProperties,

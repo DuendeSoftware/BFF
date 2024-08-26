@@ -8,7 +8,7 @@ namespace Duende.Bff;
 public static class ClaimsLiteExtensions
 {
     /// <summary>
-    ///     Converts a ClaimsPrincipalLite to ClaimsPrincipal
+    /// Converts a ClaimsPrincipalLite to ClaimsPrincipal
     /// </summary>
     public static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
     {
@@ -21,7 +21,7 @@ public static class ClaimsLiteExtensions
     }
 
     /// <summary>
-    ///     Converts a ClaimsPrincipal to ClaimsPrincipalLite
+    /// Converts a ClaimsPrincipal to ClaimsPrincipalLite
     /// </summary>
     public static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
     {

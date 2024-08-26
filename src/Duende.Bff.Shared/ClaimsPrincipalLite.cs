@@ -4,27 +4,27 @@
 namespace Duende.Bff;
 
 /// <summary>
-///     Serialization friendly ClaimsPrincipal
+/// Serialization friendly ClaimsPrincipal
 /// </summary>
 public class ClaimsPrincipalLite
 {
     /// <summary>
-    ///     The authentication type
+    /// The authentication type
     /// </summary>
     public string? AuthenticationType { get; init; }
 
     /// <summary>
-    ///     The name claim type
+    /// The name claim type
     /// </summary>
     public string? NameClaimType { get; init; }
 
     /// <summary>
-    ///     The role claim type
+    /// The role claim type
     /// </summary>
     public string? RoleClaimType { get; init; }
 
     /// <summary>
-    ///     The claims
+    /// The claims
     /// </summary>
     public ClaimLite[] Claims { get; init; } = default!;
 }

@@ -4,22 +4,22 @@
 namespace Duende.Bff;
 
 /// <summary>
-///     Serialization friendly claim
+/// Serialization friendly claim
 /// </summary>
 public class ClaimLite
 {
     /// <summary>
-    ///     The type
+    /// The type
     /// </summary>
     public string Type { get; init; } = default!;
 
     /// <summary>
-    ///     The value
+    /// The value
     /// </summary>
     public string Value { get; init; } = default!;
 
     /// <summary>
-    ///     The value type
+    /// The value type
     /// </summary>
     public string? ValueType { get; init; }
 }
