@@ -4,6 +4,7 @@
 using System.Security.Claims;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 
@@ -16,22 +17,33 @@ public class ServerSideTokenStore(
     IStoreTokensInAuthenticationProperties tokensInAuthProperties,
     IUserSessionStore sessionStore,
     IDataProtectionProvider dataProtectionProvider,
-    ILogger<ServerSideTokenStore> logger) : IUserTokenStore
+    ILogger<ServerSideTokenStore> logger,
+    AuthenticationStateProvider authenticationStateProvider) : IUserTokenStore
 {
     private readonly IDataProtector protector =
         dataProtectionProvider.CreateProtector(ServerSideTicketStore.DataProtectorPurpose);
+
+    private readonly IHostEnvironmentAuthenticationStateProvider _authenticationStateProvider = authenticationStateProvider as IHostEnvironmentAuthenticationStateProvider
+        ?? throw new ArgumentException("AuthenticationStateProvider must implement IHostEnvironmentAuthenticationStateProvider");
 
     public async Task<UserToken> GetTokenAsync(ClaimsPrincipal user, UserTokenRequestParameters? parameters = null)
     {
         logger.LogDebug("Retrieving token for user {user}", user.Identity?.Name);
         var session = await GetSession(user);
+        if (session == null)
+        {
+            var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+            var loggedOutTask = Task.FromResult(new AuthenticationState(user: anonymous));
+            _authenticationStateProvider.SetAuthenticationState(loggedOutTask);
+            return new UserToken();   
+        }
         var ticket = session.Deserialize(protector, logger) ??
                      throw new InvalidOperationException("Failed to deserialize authentication ticket from session");
 
         return tokensInAuthProperties.GetUserToken(ticket.Properties, parameters);
     }
 
-    private async Task<UserSession> GetSession(ClaimsPrincipal user)
+    private async Task<UserSession?> GetSession(ClaimsPrincipal user)
     {
         var sub = user.FindFirst("sub")?.Value ?? throw new InvalidOperationException("no sub claim");
         var sid = user.FindFirst("sid")?.Value ?? throw new InvalidOperationException("no sid claim");
@@ -44,7 +56,10 @@ public class ServerSideTokenStore(
             SessionId = sid
         });
 
-        if (sessions.Count == 0) throw new InvalidOperationException("No ticket found");
+        if (sessions.Count == 0)
+        {
+            return null;
+        }
         if (sessions.Count > 1) throw new InvalidOperationException("Multiple tickets found");
 
         return sessions.First();
@@ -67,6 +82,11 @@ public class ServerSideTokenStore(
     protected async Task UpdateTicket(ClaimsPrincipal user, Action<AuthenticationTicket> updateAction)
     {
         var session = await GetSession(user);
+        if (session == null)
+        {
+            logger.LogDebug("Failed to find a session to update, bailing out");
+            return;
+        }
         var ticket = session.Deserialize(protector, logger) ??
                      throw new InvalidOperationException("Failed to deserialize authentication ticket from session");
 
