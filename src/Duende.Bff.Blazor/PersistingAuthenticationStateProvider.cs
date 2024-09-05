@@ -3,11 +3,14 @@
 
 using System.Diagnostics;
 using System.Security.Claims;
+using Duende.Bff.Blazor.Client;
+using IdentityModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 // This is based on the PersistingServerAuthenticationStateProvider from ASP.NET
 // 8's templates.
@@ -18,12 +21,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff.Blazor;
 
+
 // This is a server-side AuthenticationStateProvider that uses
 // PersistentComponentState to flow the authentication state to the client which
 // is then used to initialize the authentication state in the WASM application. 
-public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
+public sealed class BffServerAuthenticationStateProvider : RevalidatingServerAuthenticationStateProvider, IDisposable
 {
     private readonly IClaimsService _claimsService;
+    private readonly IUserSessionStore _sessionStore;
     private readonly PersistentComponentState _state;
     private readonly NavigationManager _navigation;
     private readonly ILogger<BffServerAuthenticationStateProvider> _logger;
@@ -32,16 +37,25 @@ public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationS
 
     private Task<AuthenticationState>? _authenticationStateTask;
 
+    protected override TimeSpan RevalidationInterval { get; }
+
     public BffServerAuthenticationStateProvider(
         IClaimsService claimsService,
+        IUserSessionStore sessionStore,
         PersistentComponentState persistentComponentState,
         NavigationManager navigation,
-        ILogger<BffServerAuthenticationStateProvider> logger)
+        IOptions<BffBlazorOptions> options,
+        ILoggerFactory loggerFactory)
+        : base(loggerFactory)
     {
         _claimsService = claimsService;
+        _sessionStore = sessionStore;
         _state = persistentComponentState;
         _navigation = navigation;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<BffServerAuthenticationStateProvider>();
+
+        // TODO - Consider separate options for server and client
+        RevalidationInterval = TimeSpan.FromMilliseconds(options.Value.StateProviderPollingInterval);
 
         AuthenticationStateChanged += OnAuthenticationStateChanged;
         _subscription = _state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
@@ -87,5 +101,18 @@ public sealed class BffServerAuthenticationStateProvider : ServerAuthenticationS
     {
         _subscription.Dispose();
         AuthenticationStateChanged -= OnAuthenticationStateChanged;
+    }
+
+    protected override async Task<bool> ValidateAuthenticationStateAsync(AuthenticationState authenticationState, CancellationToken cancellationToken)
+    {
+        var sid = authenticationState.User.FindFirstValue(JwtClaimTypes.SessionId);
+        var sub = authenticationState.User.FindFirstValue(JwtClaimTypes.Subject);
+
+        var sessions = await _sessionStore.GetUserSessionsAsync(new UserSessionsFilter
+        {
+            SessionId = sid,
+            SubjectId = sub
+        });
+        return sessions.Count != 0;
     }
 }
