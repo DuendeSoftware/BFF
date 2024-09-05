@@ -4,20 +4,27 @@
 <div class="card">
     <h3 class="card-header">@Header</h3>
     <div class="card-body">
-        <h5 class="card-subtitle">@RenderModeContext.WhereAmI()</h5>
+        <AuthorizeView>
+            <NotAuthorized>
+                <p>You are not logged in.</p>
+            </NotAuthorized>
+            <Authorized>
+                <h5 class="card-subtitle">@RenderModeContext.WhereAmI()</h5>
 
-        @if(apiResult != null)
-        {
-                <p class="card-text">
-                    Token ID: @apiResult.jti
-                    <br />Retrieved at @apiResult.time
-                </p>
-        } else
-        {
-            <p class="card-text">API Result: not called yet</p>
-        }
+                @if(apiResult != null)
+                {
+                        <p class="card-text">
+                            Token ID: @apiResult.jti
+                            <br />Retrieved at @apiResult.time
+                        </p>
+                } else
+                {
+                    <p class="card-text">API Result: not called yet</p>
+                }
 
-        <button class="btn btn-primary" disabled="@DisableUi" @onclick="CallApiAsync">Call API</button>
+                <button class="btn btn-primary" disabled="@DisableUi" @onclick="CallApiAsync">Call API</button>
+            </Authorized>
+        </AuthorizeView>
     </div>
 </div>
 
