@@ -8,7 +8,10 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddScoped<IRenderModeContext, ClientRenderModeContext>();
 
 builder.Services
-    .AddBffBlazorClient()
+    .AddBffBlazorClient(opt =>
+    {
+        opt.RemoteApiPath = "/remote-apis";
+    })
     .AddCascadingAuthenticationState()
     .AddRemoteApiHttpClient("callApi");
 

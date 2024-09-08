@@ -12,7 +12,8 @@ builder.Services.AddBff()
     .AddServerSideSessions()
     .AddBlazorServer()
     .AddRemoteApis();
-builder.Services.AddUserAccessTokenHttpClient("callApi", configureClient: client => client.BaseAddress = new Uri("https://localhost:5010/"));
+builder.Services.AddUserAccessTokenHttpClient("callApi", 
+    configureClient: client => client.BaseAddress = new Uri("https://localhost:5010/"));
 
 // General blazor services
 builder.Services.AddRazorComponents()

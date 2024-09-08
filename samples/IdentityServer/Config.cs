@@ -88,9 +88,10 @@ namespace IdentityServerHost
                         OidcConstants.GrantTypes.TokenExchange
                     },
 
-                    RedirectUris = { "https://localhost:5002/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:5002/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:5004/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:5004/signout-oidc",
+                    BackChannelLogoutUri = "https://localhost:5004/bff/backchannel",
+                    PostLogoutRedirectUris = { "https://localhost:5004/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
