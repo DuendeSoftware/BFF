@@ -1,9 +1,10 @@
 <Project>
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
         <FrameworkVersionRuntime>8.0.0</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>8.0.0</FrameworkVersionTesting>
+        <FrameworkVersionTesting>8.0.8</FrameworkVersionTesting>
+        <WilsonVersion>7.1.2</WilsonVersion> <!-- Used in samples -->
         <YarpVersion>2.1.0</YarpVersion>
-        <IdentityServerVersion>7.0.4</IdentityServerVersion>
+        <IdentityServerVersion>7.0.6</IdentityServerVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,15 +14,26 @@
 
         <!-- runtime -->
         <PackageReference Update="IdentityModel" Version="7.0.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0-preview.3" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="$(FrameworkVersionRuntime)"  />
+        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Microsoft.AspNetCore.Components.Authorization" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
+
+        <!-- samples -->
+        <PackageReference Update="Serilog.AspNetCore" Version="8.0.2" />
+        <PackageReference Update="Microsoft.IdentityModel.JsonWebTokens" Version="$(WilsonVersion)" />
+        <PackageReference Update="System.IdentityModel.Tokens.Jwt" Version="$(WilsonVersion)" />
 
         <!-- testing -->
         <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(FrameworkVersionTesting)" />
-        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="$(FrameworkVersionTesting)" />
+        <!-- Test timeprovider is released separately from the framework, so we can't use FrameworkVersionTesting -->
+        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />
         
         <PackageReference Update="Duende.IdentityServer" Version="$(IdentityServerVersion)" />
         

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Duende.AccessTokenManagement.OpenIdConnect;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +32,12 @@ public class DefaultLogoutService : ILogoutService
     /// The return URL validator
     /// </summary>
     protected readonly IReturnUrlValidator ReturnUrlValidator;
-    
+
+    /// <summary>
+    /// Service to interact with the token endpoint.
+    /// </summary>
+    protected readonly IUserTokenEndpointService TokenEndpoint;
+
     /// <summary>
     /// The logger
     /// </summary>
@@ -40,18 +46,16 @@ public class DefaultLogoutService : ILogoutService
     /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="options"></param>
-    /// <param name="authenticationAuthenticationSchemeProviderProvider"></param>
-    /// <param name="returnUrlValidator"></param>
-    /// <param name="logger"></param>
     public DefaultLogoutService(IOptions<BffOptions> options, 
         IAuthenticationSchemeProvider authenticationAuthenticationSchemeProviderProvider, 
         IReturnUrlValidator returnUrlValidator,
+        IUserTokenEndpointService tokenEndpoint,
         ILogger<DefaultLogoutService> logger)
     {
         Options = options.Value;
         AuthenticationSchemeProvider = authenticationAuthenticationSchemeProviderProvider;
         ReturnUrlValidator = returnUrlValidator;
+        TokenEndpoint = tokenEndpoint;
         Logger = logger;
     }
 
@@ -85,6 +89,21 @@ public class DefaultLogoutService : ILogoutService
             if (!await ReturnUrlValidator.IsValidAsync(returnUrl))
             {
                 throw new Exception("returnUrl is not valid: " + returnUrl);
+            }
+        }
+
+        if (Options.RevokeRefreshTokenOnLogout && result.Ticket != null)
+        {
+            var refreshToken = result.Ticket.Properties.GetTokenValue("refresh_token");
+            if (!String.IsNullOrWhiteSpace(refreshToken))
+            {
+                await TokenEndpoint.RevokeRefreshTokenAsync(new UserToken { RefreshToken = refreshToken }, new UserTokenRequestParameters());
+
+                Logger.LogDebug("Refresh token revoked for sub {sub} and sid {sid}", result.Ticket.GetSubjectId(), result.Ticket.GetSessionId());
+            }
+            else
+            {
+                Logger.LogTrace("Refresh token not found for sub {sub} and sid {sid}", result.Ticket.GetSubjectId(), result.Ticket.GetSessionId());
             }
         }
 

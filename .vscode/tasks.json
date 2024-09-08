@@ -31,7 +31,7 @@
         "command": "dotnet",
         "args": [
             "build",
-            "${workspaceFolder}/samples/Api/Api.csproj",
+            "${workspaceFolder}/samples/Apis/Api/Api.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],
@@ -43,7 +43,7 @@
         "command": "dotnet",
         "args": [
             "build",
-            "${workspaceFolder}/samples/Api.DPoP/Api.DPoP.csproj",
+            "${workspaceFolder}/samples/Apis/Api.DPoP/Api.DPoP.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],
@@ -55,7 +55,7 @@
         "command": "dotnet",
         "args": [
             "build",
-            "${workspaceFolder}/samples/Api.Isolated/Api.Isolated.csproj",
+            "${workspaceFolder}/samples/Apis/Api.Isolated/Api.Isolated.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],
@@ -110,12 +110,25 @@
         "problemMatcher": "$msCompile"
       },
       {
-        "label": "build-blazor.wasm",
+        "label": "build-PerComponent",
         "type": "process",
         "command": "dotnet",
         "args": [
             "build",
-            "${workspaceFolder}/samples/Blazor.Wasm/Blazor.Wasm.Bff/Blazor.Wasm.Bff.csproj",
+            "${workspaceFolder}/samples/Blazor/PerComponent/PerComponent/PerComponent.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      },
+      
+      {
+        "label": "build-WebAssembly",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+            "build",
+            "${workspaceFolder}/samples/Blazor/WebAssembly/WebAssembly/WebAssembly.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
         ],

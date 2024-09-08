@@ -43,7 +43,7 @@ public static class AuthenticationTicketExtensions
     {
         return ticket.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
     }
-        
+
     /// <summary>
     /// Extracts the issuance time
     /// </summary>
@@ -51,46 +51,13 @@ public static class AuthenticationTicketExtensions
     {
         return ticket.Properties.IssuedUtc?.UtcDateTime ?? DateTime.UtcNow;
     }
-        
+
     /// <summary>
     /// Extracts the expiration time
     /// </summary>
     public static DateTime? GetExpiration(this AuthenticationTicket ticket)
     {
         return ticket.Properties.ExpiresUtc?.UtcDateTime;
-    }
-
-    /// <summary>
-    /// Converts a ClaimsPrincipalLite to ClaimsPrincipal
-    /// </summary>
-    private static ClaimsPrincipal ToClaimsPrincipal(this ClaimsPrincipalLite principal)
-    {
-        var claims = principal.Claims.Select(x => new Claim(x.Type, x.Value, x.ValueType ?? ClaimValueTypes.String)).ToArray();
-        var id = new ClaimsIdentity(claims, principal.AuthenticationType, principal.NameClaimType, principal.RoleClaimType);
-            
-        return new ClaimsPrincipal(id);
-    }
-        
-    /// <summary>
-    /// Converts a ClaimsPrincipal to ClaimsPrincipalLite
-    /// </summary>
-    private static ClaimsPrincipalLite ToClaimsPrincipalLite(this ClaimsPrincipal principal)
-    {
-        var claims = principal.Claims.Select(
-            x => new ClaimLite
-            {
-                Type = x.Type,
-                Value = x.Value,
-                ValueType = x.ValueType == ClaimValueTypes.String ? null : x.ValueType
-            }).ToArray();
-
-        return new ClaimsPrincipalLite
-        {
-            AuthenticationType = principal.Identity!.AuthenticationType,
-            NameClaimType = principal.Identities.First().NameClaimType,
-            RoleClaimType = principal.Identities.First().RoleClaimType,
-            Claims = claims
-        };
     }
         
     /// <summary>
@@ -189,53 +156,6 @@ public static class AuthenticationTicketExtensions
         /// The items
         /// </summary>
         public IDictionary<string, string?> Items { get; set; } = default!;
-    }
-        
-    /// <summary>
-    /// Serialization friendly claim
-    /// </summary>
-    public class ClaimLite
-    {
-        /// <summary>
-        /// The type
-        /// </summary>
-        public string Type { get; init; } = default!;
-            
-        /// <summary>
-        /// The value
-        /// </summary>
-        public string Value { get; init; } = default!;
-
-        /// <summary>
-        /// The value type
-        /// </summary>
-        public string? ValueType { get; init; }
-    }
-        
-    /// <summary>
-    /// Serialization friendly ClaimsPrincipal
-    /// </summary>
-    public class ClaimsPrincipalLite
-    {
-        /// <summary>
-        /// The authentication type
-        /// </summary>
-        public string? AuthenticationType { get; init; }
-
-        /// <summary>
-        /// The name claim type
-        /// </summary>
-        public string? NameClaimType { get; init; }
-
-        /// <summary>
-        /// The role claim type
-        /// </summary>
-        public string? RoleClaimType { get; init; }
-
-        /// <summary>
-        /// The claims
-        /// </summary>
-        public ClaimLite[] Claims { get; init; } = default!;
     }
 
     /// <summary>
