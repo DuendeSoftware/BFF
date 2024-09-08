@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -37,7 +38,7 @@ public class ServerSideTokenStoreTests
         // Use the ticket store to save the user's initial session
         // Note that we don't yet have tokens in the session
         var sessionService = new ServerSideTicketStore(sessionStore, dataProtection, Substitute.For<ILogger<ServerSideTicketStore>>());
-        sessionService.StoreAsync(new AuthenticationTicket(
+        await sessionService.StoreAsync(new AuthenticationTicket(
             user,
             props,
             "test"
@@ -48,7 +49,8 @@ public class ServerSideTokenStoreTests
             tokensInProps,
             sessionStore,
             dataProtection,
-            Substitute.For<ILogger<ServerSideTokenStore>>());
+            Substitute.For<ILogger<ServerSideTokenStore>>(),
+            Substitute.For<AuthenticationStateProvider, IHostEnvironmentAuthenticationStateProvider>());
 
         await sut.StoreTokenAsync(user, expectedToken);
         var actualToken = await sut.GetTokenAsync(user);
