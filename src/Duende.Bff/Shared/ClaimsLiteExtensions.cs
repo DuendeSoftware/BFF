@@ -1,11 +1,12 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System.Linq;
 using System.Security.Claims;
 
 namespace Duende.Bff;
 
-public static class ClaimsLiteExtensions
+internal static class ClaimsLiteExtensions
 {
     /// <summary>
     /// Converts a ClaimsPrincipalLite to ClaimsPrincipal
