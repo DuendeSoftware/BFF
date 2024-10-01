@@ -6,7 +6,7 @@ namespace Duende.Bff;
 /// <summary>
 /// Serialization friendly ClaimsPrincipal
 /// </summary>
-public class ClaimsPrincipalLite
+internal class ClaimsPrincipalLite
 {
     /// <summary>
     /// The authentication type

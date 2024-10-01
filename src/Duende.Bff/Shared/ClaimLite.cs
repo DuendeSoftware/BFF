@@ -6,7 +6,7 @@ namespace Duende.Bff;
 /// <summary>
 /// Serialization friendly claim
 /// </summary>
-public class ClaimLite
+internal class ClaimLite
 {
     /// <summary>
     /// The type
