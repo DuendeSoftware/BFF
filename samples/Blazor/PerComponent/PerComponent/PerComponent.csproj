@@ -12,9 +12,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PerComponent.Client\PerComponent.Client.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Duende.Bff\Duende.Bff.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Duende.Bff.Yarp\Duende.Bff.Yarp.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Duende.Bff.Blazor\Duende.Bff.Blazor.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Bff\Bff.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Bff.Yarp\Bff.Yarp.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Bff.Blazor\Bff.Blazor.csproj" />
   </ItemGroup>
 
 </Project>

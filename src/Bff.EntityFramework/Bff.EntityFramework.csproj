@@ -4,14 +4,14 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
-
     <AssemblyName>Duende.BFF.EntityFramework</AssemblyName>
+    <RootNamespace>Duende.Bff.EntityFramework</RootNamespace>
     <Description>Entity Framework Core support for backend for frontend (BFF) host for ASP.NET Core</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     
-    <ProjectReference Include="..\Duende.Bff\Duende.Bff.csproj" />
+    <ProjectReference Include="..\Bff\Bff.csproj" />
   </ItemGroup>
 </Project>

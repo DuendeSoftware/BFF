@@ -4,12 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>Duende.BFF.Blazor.Client</AssemblyName>
+    <RootNamespace>Duende.Bff.Blazor.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Duende.Bff\Shared\ClaimLite.cs" Link="Shared\ClaimLite.cs" />
-    <Compile Include="..\Duende.Bff\Shared\ClaimsLiteExtensions.cs" Link="Shared\ClaimsLiteExtensions.cs" />
-    <Compile Include="..\Duende.Bff\Shared\ClaimsPrincipalLite.cs" Link="Shared\ClaimsPrincipalLite.cs" />
+    <Compile Include="..\Bff\Shared\ClaimLite.cs" Link="Shared\ClaimLite.cs" />
+    <Compile Include="..\Bff\Shared\ClaimsLiteExtensions.cs" Link="Shared\ClaimsLiteExtensions.cs" />
+    <Compile Include="..\Bff\Shared\ClaimsPrincipalLite.cs" Link="Shared\ClaimsPrincipalLite.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,11 +19,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <!-- Explicitly taking this version so that we don't pull in vulnerable old versions. -->
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Duende.Bff.Blazor.Client.UnitTests" />
+    <InternalsVisibleTo Include="Bff.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

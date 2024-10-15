@@ -12,7 +12,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Duende.Bff.Yarp\Duende.Bff.Yarp.csproj" />
+      <ProjectReference Include="..\..\src\Bff.Yarp\Bff.Yarp.csproj" />
     </ItemGroup>
 
 </Project>

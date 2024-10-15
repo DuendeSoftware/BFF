@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net8.0</TargetFrameworks>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
-
         <AssemblyName>Duende.BFF</AssemblyName>
+        <RootNamespace>Duende.Bff</RootNamespace>
         <Description>Backend for frontend (BFF) host for ASP.NET Core</Description>
     </PropertyGroup>
 
@@ -16,6 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-       <InternalsVisibleTo Include="Duende.Bff.Blazor" />
+       <InternalsVisibleTo Include="Duende.BFF.Blazor" />
     </ItemGroup>
 </Project>
