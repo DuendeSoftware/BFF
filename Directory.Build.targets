@@ -1,8 +1,8 @@
 <Project>
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
         <FrameworkVersionRuntime>8.0.0</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>8.0.8</FrameworkVersionTesting>
-        <WilsonVersion>7.1.2</WilsonVersion> <!-- Used in samples -->
+        <FrameworkVersionTesting>8.0.11</FrameworkVersionTesting>
+        <WilsonVersion>8.0.1</WilsonVersion>
         <YarpVersion>2.1.0</YarpVersion>
         <IdentityServerVersion>7.0.6</IdentityServerVersion>
     </PropertyGroup>
