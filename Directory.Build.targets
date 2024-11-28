@@ -13,8 +13,8 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 
         <!-- runtime -->
-        <PackageReference Update="IdentityModel" Version="7.0.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0" />
+        <PackageReference Update="Duende.IdentityModel" Version="7.0.0" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.1.0-preview.1" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="$(FrameworkVersionRuntime)" />

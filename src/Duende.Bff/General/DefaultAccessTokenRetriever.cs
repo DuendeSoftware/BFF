@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Duende.Bff.Logging;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 

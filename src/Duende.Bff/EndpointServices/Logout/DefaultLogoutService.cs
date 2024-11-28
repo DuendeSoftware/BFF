@@ -2,7 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using Duende.AccessTokenManagement.OpenIdConnect;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
