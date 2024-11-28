@@ -4,7 +4,7 @@
         <FrameworkVersionTesting>8.0.11</FrameworkVersionTesting>
         <WilsonVersion>8.0.1</WilsonVersion>
         <YarpVersion>2.1.0</YarpVersion>
-        <IdentityServerVersion>7.0.6</IdentityServerVersion>
+        <IdentityServerVersion>7.1.0-preview.1</IdentityServerVersion>
     </PropertyGroup>
 
     <ItemGroup>
