@@ -15,7 +15,8 @@
         <!-- runtime -->
         <PackageReference Update="Duende.IdentityModel" Version="7.0.0" />
         <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.1.0-preview.1" />
-        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
+        <!-- Need this version because so 'Microsoft.Extensions.Caching.Memory' is at least 8.0.1 that addresses known high severity vulnerability -->
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
         <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="$(FrameworkVersionRuntime)"  />
