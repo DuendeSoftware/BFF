@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Duende.AccessTokenManagement;
 using Duende.Bff.Logging;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Transforms;
 

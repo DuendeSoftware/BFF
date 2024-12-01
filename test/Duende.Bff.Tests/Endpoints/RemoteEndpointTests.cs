@@ -393,7 +393,7 @@ namespace Duende.Bff.Tests.Endpoints
                     opts.DPoPJsonWebKey = jwk;
                 });
             };
-            BffHost.InitializeAsync().Wait();
+            await BffHost.InitializeAsync();
 
             var req = new HttpRequestMessage(HttpMethod.Get, BffHost.Url("/api_client/test"));
             req.Headers.Add("x-csrf", "1");

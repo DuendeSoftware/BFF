@@ -4,8 +4,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Duende.Bff;
-using IdentityModel;
-using IdentityModel.Client;
+using Duende.IdentityModel;
+using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 
 namespace Host8;

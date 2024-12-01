@@ -1,10 +1,10 @@
 <Project>
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
         <FrameworkVersionRuntime>8.0.0</FrameworkVersionRuntime>
-        <FrameworkVersionTesting>8.0.8</FrameworkVersionTesting>
-        <WilsonVersion>7.1.2</WilsonVersion> <!-- Used in samples -->
+        <FrameworkVersionTesting>8.0.11</FrameworkVersionTesting>
+        <WilsonVersion>8.0.1</WilsonVersion>
         <YarpVersion>2.1.0</YarpVersion>
-        <IdentityServerVersion>7.0.6</IdentityServerVersion>
+        <IdentityServerVersion>7.1.0-preview.1</IdentityServerVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,9 +13,10 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 
         <!-- runtime -->
-        <PackageReference Update="IdentityModel" Version="7.0.0" />
-        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.0.0" />
-        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersionRuntime)" />
+        <PackageReference Update="Duende.IdentityModel" Version="7.0.0" />
+        <PackageReference Update="Duende.AccessTokenManagement.OpenIdConnect" Version="3.1.0-preview.1" />
+        <!-- Need this version because so 'Microsoft.Extensions.Caching.Memory' is at least 8.0.1 that addresses known high severity vulnerability -->
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
         <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="$(FrameworkVersionRuntime)"  />
@@ -24,7 +25,7 @@
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
 
         <!-- samples -->
-        <PackageReference Update="Serilog.AspNetCore" Version="8.0.2" />
+        <PackageReference Update="Serilog.AspNetCore" Version="8.0.3" />
         <PackageReference Update="Microsoft.IdentityModel.JsonWebTokens" Version="$(WilsonVersion)" />
         <PackageReference Update="System.IdentityModel.Tokens.Jwt" Version="$(WilsonVersion)" />
 
@@ -38,14 +39,14 @@
         <PackageReference Update="Duende.IdentityServer" Version="$(IdentityServerVersion)" />
         
         <PackageReference Update="CsQuery.NETStandard" Version="1.3.6.1" />
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.1" />
-        <PackageReference Update="xunit" Version="2.4.2" />
-        <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5">
+        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Update="xunit" Version="2.9.2" />
+        <PackageReference Update="xunit.runner.visualstudio" Version="2.8.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Update="FluentAssertions" Version="6.7.0" />
-        <PackageReference Update="coverlet.collector" Version="3.1.2">
+        <PackageReference Update="coverlet.collector" Version="6.0.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
