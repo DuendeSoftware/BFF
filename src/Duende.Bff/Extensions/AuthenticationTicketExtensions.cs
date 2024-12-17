@@ -140,7 +140,7 @@ public static class AuthenticationTicketExtensions
     /// <summary>
     /// Serialization friendly AuthenticationTicket
     /// </summary>
-    internal class AuthenticationTicketLite
+    public class AuthenticationTicketLite
     {
         /// <summary>
         /// The scheme

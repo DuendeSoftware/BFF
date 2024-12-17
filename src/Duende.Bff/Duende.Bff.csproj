@@ -12,10 +12,9 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" />
-    </ItemGroup>
 
-    <ItemGroup>
-       <InternalsVisibleTo Include="Duende.Bff.Blazor" />
+        <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" />
+
+        <ProjectReference Include="../Duende.Bff.Shared/Duende.Bff.Shared.csproj" />
     </ItemGroup>
 </Project>
