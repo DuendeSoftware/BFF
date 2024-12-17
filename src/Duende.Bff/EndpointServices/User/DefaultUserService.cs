@@ -1,12 +1,16 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Duende.Bff.Logging;
@@ -20,11 +24,6 @@ namespace Duende.Bff;
 public class DefaultUserService : IUserService
 {
     /// <summary>
-    /// The claims service
-    /// </summary>
-    protected readonly IClaimsService Claims;
-    
-    /// <summary>
     /// The options
     /// </summary>
     protected readonly BffOptions Options;
@@ -37,12 +36,10 @@ public class DefaultUserService : IUserService
     /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="claims"></param>
     /// <param name="options"></param>
     /// <param name="loggerFactory"></param>
-    public DefaultUserService(IClaimsService claims, IOptions<BffOptions> options, ILoggerFactory loggerFactory)
+    public DefaultUserService(IOptions<BffOptions> options, ILoggerFactory loggerFactory)
     {
-        Claims = claims;
         Options = options.Value;
         Logger = loggerFactory.CreateLogger(LogCategories.ManagementEndpoints);
     }
@@ -73,18 +70,9 @@ public class DefaultUserService : IUserService
         }
         else
         {
-            // In blazor, it is sometimes necessary to copy management claims
-            // into the session. So, we don't want duplicate mgmt claims.
-            // Instead, they should overwrite the existing mgmt claims (in case
-            // they changed when the session slid, etc)
-            var claims = (await GetUserClaimsAsync(result)).ToList();
-            var mgmtClaims = await GetManagementClaimsAsync(context, result);
-
-            foreach (var claim in mgmtClaims)
-            {
-                claims.RemoveAll(c => c.type == claim.type);
-                claims.Add(claim);
-            }
+            var claims = new List<ClaimRecord>();
+            claims.AddRange(GetUserClaims(result));
+            claims.AddRange(GetManagementClaims(context, result));
 
             var json = JsonSerializer.Serialize(claims);
 
@@ -101,8 +89,10 @@ public class DefaultUserService : IUserService
     /// </summary>
     /// <param name="authenticateResult"></param>
     /// <returns></returns>
-    protected virtual Task<IEnumerable<ClaimRecord>> GetUserClaimsAsync(AuthenticateResult authenticateResult) => 
-        Claims.GetUserClaimsAsync(authenticateResult.Principal, authenticateResult.Properties);
+    protected virtual IEnumerable<ClaimRecord> GetUserClaims(AuthenticateResult authenticateResult)
+    {
+        return authenticateResult.Principal?.Claims.Select(x => new ClaimRecord(x.Type, x.Value)) ?? Enumerable.Empty<ClaimRecord>();
+    }
 
     /// <summary>
     /// Collect management claims
@@ -110,15 +100,44 @@ public class DefaultUserService : IUserService
     /// <param name="context"></param>
     /// <param name="authenticateResult"></param>
     /// <returns></returns>
-    protected virtual Task<IEnumerable<ClaimRecord>> GetManagementClaimsAsync(HttpContext context, AuthenticateResult authenticateResult)
+    protected virtual IEnumerable<ClaimRecord> GetManagementClaims(HttpContext context, AuthenticateResult authenticateResult)
     {
-        return Claims.GetManagementClaimsAsync(context.Request.PathBase, authenticateResult.Principal, authenticateResult.Properties);
-    }
-}
+        var claims = new List<ClaimRecord>();
 
-/// <summary>
-/// Serialization-friendly claim
-/// </summary>
-/// <param name="type"></param>
-/// <param name="value"></param>
-public record ClaimRecord(string type, object value);
+        var pathBase = context.Request.PathBase;
+
+        var sessionId = authenticateResult.Principal?.FindFirst(JwtClaimTypes.SessionId)?.Value;
+        if (!String.IsNullOrWhiteSpace(sessionId))
+        {
+            claims.Add(new ClaimRecord(
+                Constants.ClaimTypes.LogoutUrl,
+                pathBase + Options.LogoutPath.Value + $"?sid={UrlEncoder.Default.Encode(sessionId)}"));
+        }
+
+        if (authenticateResult.Properties != null)
+        {
+            if (authenticateResult.Properties.ExpiresUtc.HasValue)
+            {
+                var expiresInSeconds =
+                    authenticateResult.Properties.ExpiresUtc.Value.Subtract(DateTimeOffset.UtcNow).TotalSeconds;
+                claims.Add(new ClaimRecord(
+                    Constants.ClaimTypes.SessionExpiresIn,
+                    Math.Round(expiresInSeconds)));
+            }
+
+            if (authenticateResult.Properties.Items.TryGetValue(OpenIdConnectSessionProperties.SessionState, out var sessionState) && sessionState is not null)
+            {
+                claims.Add(new ClaimRecord(Constants.ClaimTypes.SessionState, sessionState));
+            }
+        }
+
+        return claims;
+    }
+        
+    /// <summary>
+    /// Serialization-friendly claim
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="value"></param>
+    protected record ClaimRecord(string type, object value);
+}
