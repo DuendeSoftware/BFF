@@ -2,8 +2,6 @@
 # Backend for Frontend (BFF) Security Framework 
 _Securing SPAs and Blazor WASM applications once and for all._
 
-Welcome to the official GitHub repository for the [Duende](https://duendesoftware.com) Backend for Frontend (BFF) Security Framework!
-
 ## Overview
 Duende.BFF is a framework for building services that solve security and identity problems in browser based applications such as SPAs and Blazor WASM applications. It is used to create a backend host that is paired with a frontend application. This backend is called the Backend For Frontend (BFF) host, and is responsible for all of the OAuth and OIDC protocol interactions. Moving the protocol handling out of JavaScript provides important security benefits and works around changes in browser privacy rules that increasingly disrupt OAuth and OIDC protocol flows in browser based applications. The Duende.BFF library makes it easy to build and secure BFF hosts by providing [session and token management](https://docs.duendesoftware.com/identityserver/v7/bff/session/), [API endpoint protection](https://docs.duendesoftware.com/identityserver/v7/bff/apis/), and [logout notifications](https://docs.duendesoftware.com/identityserver/v7/bff/session/management/back-channel-logout/).
 
@@ -35,3 +33,7 @@ Duende.BFF is source-available, but requires a paid [license](https://duendesoft
 ## Reporting Issues and Getting Support
 - For bug reports or feature requests, open an issue on GitHub: [Submit an Issue](https://github.com/DuendeSoftware/Support/issues/new/choose).
 - For security-related concerns, please contact us privately at: **security@duendesoftware.com**.
+
+## Related Packages
+- [Duende.Bff.Yarp](https://www.nuget.org/packages/Duende.Bff.Yarp) - BFF integration with YARP (Yet Another Reverse Proxy)
+- [Duende.Bff.EntityFramework](https://www.nuget.org/packages/Duende.Bff.EntityFramework) - A store for Duende.BFF's server side sessions implemented with Entity Framework
