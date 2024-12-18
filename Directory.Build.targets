@@ -19,7 +19,7 @@
         <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
         <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="$(FrameworkVersionRuntime)" />
-        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="$(FrameworkVersionRuntime)"  />
+        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.Authorization" Version="$(FrameworkVersionRuntime)" />
         <PackageReference Update="Yarp.ReverseProxy" Version="$(YarpVersion)" />
@@ -33,8 +33,7 @@
         <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(FrameworkVersionTesting)" />
         <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(FrameworkVersionTesting)" />
-        <!-- Test timeprovider is released separately from the framework, so we can't use FrameworkVersionTesting -->
-        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />
+        <PackageReference Update="Microsoft.Extensions.TimeProvider.Testing" Version="$(FrameworkVersionTesting)" />
         
         <PackageReference Update="Duende.IdentityServer" Version="$(IdentityServerVersion)" />
         
