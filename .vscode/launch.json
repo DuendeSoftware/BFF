@@ -94,6 +94,27 @@
             }
         },
         {
+            "name": "JS.Yarp",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-jsyarp",
+            "program": "${workspaceFolder}/samples/JS.Yarp/bin/Debug/net9.0/JS.Yarp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/JS.Yarp",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "externalTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 10
+            }
+        },
+        {
             "name": "JS8",
             "type": "coreclr",
             "request": "launch",
