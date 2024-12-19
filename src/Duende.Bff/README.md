@@ -24,7 +24,7 @@ If you're ready to dive into development, check out our [Quickstart Tutorial](ht
 For more in-depth documentation, visit [our documentation portal](https://docs.duendesoftware.com).
 
 ## Licensing
-Duende.BFF is source-available, but requires a paid [license](https://duendesoftware.com/products/identityserver) for production use.
+Duende.BFF is source-available, but requires a paid [license](https://duendesoftware.com/products/bff) for production use.
 
 - **Development and Testing**: You are free to use and explore the code for development, testing, or personal projects without a license.
 - **Production**: A license is required for production environments. 

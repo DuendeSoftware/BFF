@@ -11,7 +11,7 @@ This package integrates the BFF with Microsoft's YARP (Yet Another Reverse Proxy
 For in-depth documentation, please see the Duende.BFF.Yarp [documentation page](https://docs.duendesoftware.com/identityserver/v7/bff/apis/yarp/).
 
 ## Licensing
-Duende.BFF.Yarp is source-available, but requires a paid [license](https://duendesoftware.com/products/identityserver) for production use.
+Duende.BFF.Yarp is source-available, but requires a paid [license](https://duendesoftware.com/products/bff) for production use.
 
 - **Development and Testing**: You are free to use and explore the code for development, testing, or personal projects without a license.
 - **Production**: A license is required for production environments. 

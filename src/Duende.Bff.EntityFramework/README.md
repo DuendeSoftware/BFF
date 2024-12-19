@@ -11,7 +11,7 @@ This package provides an implementation of server side sessions for the BFF usin
 For in-depth documentation, please see [here](https://docs.duendesoftware.com/identityserver/v7/bff/session/server_side_sessions/#using-entity-framework-for-the-server-side-session-store).
 
 ## Licensing
-Duende.BFF.EntityFramework is source-available, but requires a paid [license](https://duendesoftware.com/products/identityserver) for production use.
+Duende.BFF.EntityFramework is source-available, but requires a paid [license](https://duendesoftware.com/products/bff) for production use.
 
 - **Development and Testing**: You are free to use and explore the code for development, testing, or personal projects without a license.
 - **Production**: A license is required for production environments. 
