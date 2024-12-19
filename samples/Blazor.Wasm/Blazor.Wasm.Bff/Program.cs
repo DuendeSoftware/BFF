@@ -27,7 +27,7 @@ builder.Services.AddAuthentication(options =>
         options.Authority = "https://localhost:5001";
 
         // confidential client using code flow + PKCE
-        options.ClientId = "spa";
+        options.ClientId = "bff";
         options.ClientSecret = "secret";
         options.ResponseType = "code";
         options.ResponseMode = "query";

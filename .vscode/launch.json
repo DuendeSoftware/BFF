@@ -19,6 +19,15 @@
           // "order": 10
         }
       },
+      {
+        "name": "IdentityServer + All APIs",
+        "configurations": ["IdentityServer", "Api", "Api with DPoP", "Api with resource isolation"],
+        "presentation": {
+          "hidden": false,
+          "group": "10-compunds",
+          // "order": 10
+        }
+      },
     ],
     "configurations": [
         {
@@ -76,7 +85,7 @@
             }
         },
         {
-            "name": "Isolated Api",
+            "name": "Api with resource isolation",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api.isolated",
@@ -94,13 +103,34 @@
             }
         },
         {
-            "name": "JS8",
+            "name": "Bff (.NET 8)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-js8",
-            "program": "${workspaceFolder}/samples/JS8/bin/Debug/net8.0/JS8.dll",
+            "preLaunchTask": "build-bff-8",
+            "program": "${workspaceFolder}/samples/Bff/bin/Debug/net8.0/Bff.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/JS8",
+            "cwd": "${workspaceFolder}/samples/Bff",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "externalTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 100
+            }
+        },
+        {
+            "name": "Bff (.NET 9)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-bff-9",
+            "program": "${workspaceFolder}/samples/Bff/bin/Debug/net9.0/Bff.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/Bff",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
@@ -115,13 +145,13 @@
             }
         },
         {
-            "name": "JS8 DPoP",
+            "name": "Bff DPoP (.NET 8)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-js8dpop",
-            "program": "${workspaceFolder}/samples/JS8.DPoP/bin/Debug/net8.0/JS8.DPoP.dll",
+            "preLaunchTask": "build-bffdpop-8",
+            "program": "${workspaceFolder}/samples/Bff.DPoP/bin/Debug/net8.0/Bff.DPoP.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/JS8.DPoP",
+            "cwd": "${workspaceFolder}/samples/Bff.DPoP",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
@@ -132,17 +162,17 @@
             "console": "externalTerminal",
             "presentation": {
               "hidden": false,
-              "order": 10
+              "order": 101
             }
         },
         {
-            "name": "JS8 EF",
+            "name": "Bff DPoP (.NET 9)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-js8ef",
-            "program": "${workspaceFolder}/samples/JS8.EF/bin/Debug/net8.0/JS8.EF.dll",
+            "preLaunchTask": "build-bffdpop-9",
+            "program": "${workspaceFolder}/samples/Bff.DPoP/bin/Debug/net9.0/Bff.DPoP.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/JS8.EF",
+            "cwd": "${workspaceFolder}/samples/Bff.DPoP",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
@@ -153,7 +183,49 @@
             "console": "externalTerminal",
             "presentation": {
               "hidden": false,
-              "order": 10
+              "order": 11
+            }
+        },
+        {
+            "name": "Bff EF (.NET 8)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-bffef-8",
+            "program": "${workspaceFolder}/samples/Bff.EF/bin/Debug/net8.0/Bff.EF.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/Bff.EF",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "externalTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 102
+            }
+        },
+        {
+            "name": "Bff EF (.NET 9)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-bffef-9",
+            "program": "${workspaceFolder}/samples/Bff.EF/bin/Debug/net9.0/Bff.EF.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/Bff.EF",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "externalTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 12
             }
         },
         {
@@ -174,7 +246,7 @@
             "console": "externalTerminal",
             "presentation": {
               "hidden": false,
-              "order": 10
+              "order": 50
             }
         }
     ]

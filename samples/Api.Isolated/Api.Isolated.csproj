@@ -9,11 +9,4 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Serilog.AspNetCore" />
     </ItemGroup>
-
-    <ItemGroup>
-        <!-- These are included because the JwtBearer handler has a transitive 
-         dependency on lower versions that have vulnerabilities -->
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-    </ItemGroup>
 </Project>

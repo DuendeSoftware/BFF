@@ -1,3 +1,4 @@
+using System;
 using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace UserSessionDb
             {
                 using (var context = scope.ServiceProvider.GetService<SessionDbContext>())
                 {
+                    Console.WriteLine("MIGRATING"); // TODO
                     context.Database.Migrate();
                 }
             }
