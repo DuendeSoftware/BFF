@@ -34,7 +34,8 @@ jobs:
       with:
         dotnet-version: |
           8.0.x
-        
+          9.0.x
+
     - run: dotnet --info
     
     - if: contains(matrix.runs-on, 'macOS') || contains(matrix.runs-on, 'ubuntu')

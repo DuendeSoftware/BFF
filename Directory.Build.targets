@@ -1,8 +1,12 @@
 <Project>
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
         <AspNetCoreVersion>8.0.1</AspNetCoreVersion>
-        <!-- Need EF to be at least 8.0.10 so that 'Microsoft.Extensions.Caching.Memory' is at least 8.0.1, which addresses a known high severity vulnerability -->
-        <EFCoreVersion>8.0.10</EFCoreVersion> 
+        <!-- EF must be at least 8.0.10 so that 'Microsoft.Extensions.Caching.Memory'
+             is at least 8.0.1, which addresses a known high severity vulnerability.
+             The SQL Server EF provider that is commonly used has a transitive
+             vulnerability in 8.0.10 that is fixed in 8.0.11, so going to 8.0.11 seems 
+             prudent. -->
+        <EFCoreVersion>8.0.11</EFCoreVersion> 
         <IdentityServerVersion>7.1.0-rc.1</IdentityServerVersion>
         <MicrosoftExtensionsVersion>8.0.1</MicrosoftExtensionsVersion>
         <YarpVersion>2.1.0</YarpVersion>
@@ -35,8 +39,11 @@
         <PackageReference Update="Microsoft.AspNetCore.Components.Authorization" Version="$(AspNetCoreVersion)" />
 
         <!-- Entity Framework Core -->
-        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreVersion)" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="$(EFCoreVersion)" />
         <PackageReference Update="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCoreVersion)" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreVersion)" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCoreVersion)" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCoreVersion)" />
 
         <!-- Microsoft Extensions -->
         <PackageReference Update="Microsoft.Extensions.Http" Version="$(MicrosoftExtensionsVersion)" />
