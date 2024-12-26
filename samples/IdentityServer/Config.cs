@@ -36,12 +36,12 @@ namespace IdentityServerHost
                 {
                     ClientId = "bff",
                     ClientSecrets = { new Secret("secret".Sha256()) },
-                    
-                    AllowedGrantTypes = 
-                    { 
-                        GrantType.AuthorizationCode, 
+
+                    AllowedGrantTypes =
+                    {
+                        GrantType.AuthorizationCode,
                         GrantType.ClientCredentials,
-                        OidcConstants.GrantTypes.TokenExchange 
+                        OidcConstants.GrantTypes.TokenExchange
                     },
 
                     RedirectUris = { "https://localhost:5002/signin-oidc" },
@@ -59,11 +59,11 @@ namespace IdentityServerHost
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     RequireDPoP = true,
 
-                    AllowedGrantTypes = 
-                    { 
-                        GrantType.AuthorizationCode, 
+                    AllowedGrantTypes =
+                    {
+                        GrantType.AuthorizationCode,
                         GrantType.ClientCredentials,
-                        OidcConstants.GrantTypes.TokenExchange 
+                        OidcConstants.GrantTypes.TokenExchange
                     },
 
                     RedirectUris = { "https://localhost:5003/signin-oidc" },
@@ -72,21 +72,22 @@ namespace IdentityServerHost
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
-                    
+
                     AccessTokenLifetime = 75 // Force refresh
                 },
                 new Client
                 {
                     ClientId = "bff.ef",
                     ClientSecrets = { new Secret("secret".Sha256()) },
-                    
-                    AllowedGrantTypes = 
-                    { 
-                        GrantType.AuthorizationCode, 
+
+                    AllowedGrantTypes =
+                    {
+                        GrantType.AuthorizationCode,
                         GrantType.ClientCredentials,
-                        OidcConstants.GrantTypes.TokenExchange 
+                        OidcConstants.GrantTypes.TokenExchange
                     },
                     RedirectUris = { "https://localhost:5004/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:5004/signout-oidc",
                     BackChannelLogoutUri = "https://localhost:5004/bff/backchannel",
                     PostLogoutRedirectUris = { "https://localhost:5004/signout-callback-oidc" },
 
@@ -94,7 +95,28 @@ namespace IdentityServerHost
                     AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
 
                     AccessTokenLifetime = 75 // Force refresh
-                }
+                },
+
+                 new Client
+                {
+                    ClientId = "blazor",
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    AllowedGrantTypes =
+                    {
+                        GrantType.AuthorizationCode,
+                        GrantType.ClientCredentials,
+                        OidcConstants.GrantTypes.TokenExchange
+                    },
+
+                    RedirectUris = { "https://localhost:5005/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:5005/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "openid", "profile", "api", "scope-for-isolated-api" },
+
+                    AccessTokenLifetime = 75
+                 }
             ];
     }
 }

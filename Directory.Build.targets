@@ -33,7 +33,7 @@
         <!-- ASP.NET Core -->
         <PackageReference Update="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
         <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
-        <PackageReference Update="Microsoft.AspNet Core.Components.WebAssembly" Version="$(AspNetCoreVersion)" />
+        <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly" Version="$(AspNetCoreVersion)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="$(AspNetCoreVersion)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="$(AspNetCoreVersion)" />
         <PackageReference Update="Microsoft.AspNetCore.Components.Authorization" Version="$(AspNetCoreVersion)" />
