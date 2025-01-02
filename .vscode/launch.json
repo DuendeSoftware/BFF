@@ -41,7 +41,7 @@
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
               "group": "Infrastructure",
               "hidden": false,
@@ -53,13 +53,13 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api",
-            "program": "${workspaceFolder}/samples/Api/bin/Debug/net8.0/Api.dll",
+            "program": "${workspaceFolder}/samples/Apis/Api/bin/Debug/net8.0/Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/Api",
+            "cwd": "${workspaceFolder}/samples/Apis/Api",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
                 "group": "Infrastructure",
                 "hidden": false,
@@ -71,13 +71,13 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api.dpop",
-            "program": "${workspaceFolder}/samples/Api.DPoP/bin/Debug/net8.0/Api.DPoP.dll",
+            "program": "${workspaceFolder}/samples/Apis/Api.DPoP/bin/Debug/net8.0/Api.DPoP.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/Api.DPoP",
+            "cwd": "${workspaceFolder}/samples/Apis/Api.DPoP",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
                 "group": "Infrastructure",
                 "hidden": false,
@@ -89,13 +89,13 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-api.isolated",
-            "program": "${workspaceFolder}/samples/Api.Isolated/bin/Debug/net8.0/Api.Isolated.dll",
+            "program": "${workspaceFolder}/samples/Apis/Api.Isolated/bin/Debug/net8.0/Api.Isolated.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/Api.Isolated",
+            "cwd": "${workspaceFolder}/samples/Apis/Api.Isolated",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
                 "group": "Infrastructure",
                 "hidden": false,
@@ -138,7 +138,7 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
               "hidden": false,
               "order": 10
@@ -159,7 +159,7 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
               "hidden": false,
               "order": 101
@@ -180,7 +180,7 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
               "hidden": false,
               "order": 11
@@ -229,13 +229,13 @@
             }
         },
         {
-            "name": "Blazor Wasm",
+            "name": "Blazor PerComponent",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-blazor.wasm",
-            "program": "${workspaceFolder}/samples/Blazor.Wasm/Blazor.Wasm.Bff/bin/Debug/net8.0/Blazor.Wasm.Bff.dll",
+            "preLaunchTask": "build-PerComponent",
+            "program": "${workspaceFolder}/samples/Blazor/PerComponent/PerComponent/bin/Debug/net8.0/PerComponent.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/samples/Blazor.Wasm/Blazor.Wasm.Bff",
+            "cwd": "${workspaceFolder}/samples/Blazor/PerComponent/PerComponent",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
@@ -243,10 +243,31 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "presentation": {
               "hidden": false,
-              "order": 50
+              "order": 500
+            }
+        },
+        {
+            "name": "Blazor WebAssembly",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-WebAssembly",
+            "program": "${workspaceFolder}/samples/Blazor/WebAssembly/WebAssembly/bin/Debug/net8.0/WebAssembly.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/samples/Blazor/WebAssembly/WebAssembly",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "console": "integratedTerminal",
+            "presentation": {
+              "hidden": false,
+              "order": 501
             }
         }
     ]

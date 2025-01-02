@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Infrastucture" type="CompoundRunConfigurationType">
-    <toRun name="IdentityServer" type="LaunchSettings" />
-    <toRun name="API" type="LaunchSettings" />
-    <method v="2" />
-  </configuration>
-</component>

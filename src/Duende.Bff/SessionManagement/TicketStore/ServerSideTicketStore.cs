@@ -3,14 +3,12 @@
 
 #nullable disable
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Logging;
 
 namespace Duende.Bff;
@@ -20,6 +18,12 @@ namespace Duende.Bff;
 /// </summary>
 public class ServerSideTicketStore : IServerTicketStore
 {
+    /// <summary>
+    /// The "purpose" string to use when protecting and unprotecting server side
+    /// tickets.
+    /// </summary>
+    public static string DataProtectorPurpose = "Duende.Bff.ServerSideTicketStore";
+
     private readonly IUserSessionStore _store;
     private readonly IDataProtector _protector;
     private readonly ILogger<ServerSideTicketStore> _logger;
@@ -36,7 +40,7 @@ public class ServerSideTicketStore : IServerTicketStore
         ILogger<ServerSideTicketStore> logger)
     {
         _store = store;
-        _protector = dataProtectionProvider.CreateProtector("Duende.Bff.ServerSideTicketStore");
+        _protector = dataProtectionProvider.CreateProtector(DataProtectorPurpose);
         _logger = logger;
     }
 
